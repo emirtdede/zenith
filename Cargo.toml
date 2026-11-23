@@ -15,7 +15,7 @@ serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
 time = { version = "0.3.55", features = ["parsing", "formatting"] }
 uuid = { version = "1.29.3", features = ["v4", "serde"] }
-sha2 = "0.10.9"
+sha2 = "0.11.1"
 hmac = "0.12.1"
 hex = "0.4.3"
 rusqlite = { version = "0.43.0", features = ["bundled"] }
