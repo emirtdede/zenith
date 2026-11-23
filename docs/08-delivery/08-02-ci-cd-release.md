@@ -21,24 +21,24 @@ each row carries a status that reflects the repository, not the aspiration.
 
 | # | Stage | Command / action | Status today |
 | :--- | :--- | :--- | :--- |
-| 1 | Fetch | `npm ci`, `cargo fetch --locked` | ✅ specified; run manually |
-| 2 | Lint | `cargo fmt --all --check` | ✅ passes |
-| 3 | Lint | `cargo clippy --workspace --all-targets -- -D warnings` | ✅ passes |
-| 4 | Types | `npx tsc --noEmit` | ✅ passes |
-| 5 | Tests | `cargo test --workspace` | ✅ 255 pass |
-| 6 | Tests (FE) | `vitest run` | ✅ 110 pass |
-| 7 | Contract & policy | `node scripts/*.mjs` × 14 | ✅ pass (incl. `check:licenses`, `check:deny`, `check:sbom`, `check:unused-keys`, `check:step-keys`) |
-| 8 | Zero-Stub | `zenith-audit --all` | ✅ clean |
-| 9 | Build | `npx vite build` | ✅ 694 kB JS |
-| 10 | Bundle | `npm run tauri build` | ✅ 2.77 MiB NSIS |
-| 11 | Sign | Authenticode (EV) | ❌ **not configured** (DEF-028) |
-| 12 | SBOM | `node scripts/generate-sbom.mjs` | ✅ generated - 277 components, all lockfile-hashed |
-| 13 | Publish | GitHub release + updater manifest | ❌ **no repo/updater** (DEF-050) |
+| 1 | Fetch | `npm ci`, `cargo fetch --locked` | PASS specified; run manually |
+| 2 | Lint | `cargo fmt --all --check` | PASS passes |
+| 3 | Lint | `cargo clippy --workspace --all-targets -- -D warnings` | PASS passes |
+| 4 | Types | `npx tsc --noEmit` | PASS passes |
+| 5 | Tests | `cargo test --workspace` | PASS 255 pass |
+| 6 | Tests (FE) | `vitest run` | PASS 110 pass |
+| 7 | Contract & policy | `node scripts/*.mjs` × 14 | PASS pass (incl. `check:licenses`, `check:deny`, `check:sbom`, `check:unused-keys`, `check:step-keys`) |
+| 8 | Zero-Stub | `zenith-audit --all` | PASS clean |
+| 9 | Build | `npx vite build` | PASS 694 kB JS |
+| 10 | Bundle | `npm run tauri build` | PASS 3.14 MiB NSIS |
+| 11 | Sign | Authenticode (EV) | FAIL **not configured** (DEF-028) |
+| 12 | SBOM | `node scripts/generate-sbom.mjs` | PASS generated - 277 components, all lockfile-hashed |
+| 13 | Publish | GitHub release + updater manifest | FAIL **no repo/updater** (DEF-050) |
 
 Stages 1-10 are the `npm run verify` chain plus the Tauri bundler. Stage 9 in that table is the
 `build` script inside `verify`, so the same chain produces the installer.
 
-> **Why stages 11 and 13 are marked ❌.** `src-tauri/tauri.conf.json` declares no `bundle.windows.signCommand`
+> **Why stages 11 and 13 are marked FAIL.** `src-tauri/tauri.conf.json` declares no `bundle.windows.signCommand`
 > and no `publish` block. Adding them without a certificate and a release host
 > would be configuration with no consumer - a live L3 violation. They are specified here, tracked as
 > DEF-028/DEF-050 in `10-02`, and deliberately absent from the tree until the key material
@@ -65,21 +65,22 @@ supply-chain argument in `04-01` §4 hold. A per-user install would let the user
 
 ## 3. Release evidence (measured)
 
-Produced by `npm run tauri build` on 2026-11-22. The build identity is now resolved by
+Produced by `npm run tauri build` on 2026-11-24 with `ZENITH_BUILD_COMMIT=release-20261123`
+(the UTC day the binary was linked). The build identity is now resolved by
 `src-tauri/build.rs` (DEF-075), so a rebuild changes these bytes - re-hash after every build rather
 than quoting this table:
 
 | Artefact | Bytes | SHA-256 |
 | :--- | ---: | :--- |
-| `target/release/zenith.exe` | 6,156,800 | `c73302733c57b5e406d0c06e47e0b1bb18b715198ae67dd8aa1aec5e82a6a4f2` |
-| `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | 2,907,191 | `8643904e40f9620861fe728c9434893ab5c6ec8c6469ba012339fca6efc834fc` |
+| `target/release/zenith.exe` | 6,629,888 | `ede6c34574232407bcffce94c70e83fc018a7b903ed08c437fc810507b8e3f67` |
+| `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | 3,294,723 | `c908ac4c8e02c0ceb9d3d5f6cf816e32ed551e4ad20f06c07331eacb498a37c2` |
 
 | Check | Result |
 | :--- | :--- |
-| Binary size vs REQ-N-010 (≤ 9 MB) | ✅ 5.87 MiB (`6,156,800` B) |
-| Installer size vs REQ-N-007 (≤ 18 MB) | ✅ 2.77 MiB (`2,907,191` B) |
-| Build identity shown in Trust Center | ✅ `release-20261122` - the UTC day the binary was built, matched to its own mtime by `check-build-identity.mjs` (DEF-075, DEF-092, DEF-109, DEF-113) |
-| Signing status | ⚠️ **unsigned** - `Get-AuthenticodeSignature` returns `NotSigned`; `app_info_get` reports `signature.status = "unknown"`, never "valid". Pipeline built and rehearsed in §3.2; only the EV certificate is missing (DEF-028) |
+| Binary size vs REQ-N-010 (≤ 9 MB) | PASS 6.32 MiB (`6,629,888` B) |
+| Installer size vs REQ-N-007 (≤ 18 MB) | PASS 3.14 MiB (`3,294,723` B) |
+| Build identity shown in Trust Center | PASS `release-20261123` - the UTC day the binary was built, matched to its own mtime by `check-build-identity.mjs` (DEF-075, DEF-092, DEF-109, DEF-113) |
+| Signing status | WARN **unsigned** - `Get-AuthenticodeSignature` returns `NotSigned`; `app_info_get` reports `signature.status = "unknown"`, never "valid". Pipeline built and rehearsed in §3.2; only the EV certificate is missing (DEF-028) |
 | `ZENITH_BUILD_COMMIT` | `dev` unless set at build time (honest default, not a fake hash) |
 
 The Trust Center shows the signature field as *"Not verified here"* for an unsigned build
@@ -212,12 +213,12 @@ Third-party notices hold: 277 components (273 cargo, 4 npm), 57 licence texts, 1
 
 | Item | Status |
 | :--- | :--- |
-| Notices generator | ✅ `scripts/generate-licenses.mjs` reads the Windows x64 Cargo graph and the production npm graph |
-| `resources/licenses/` populated | ✅ `THIRD-PARTY-NOTICES.txt` (335,560 B) + `manifest.json` (machine-checked coverage) |
-| Trust Center view | ✅ `TrustScreen.tsx` renders the file offline via Vite `?raw`; no filesystem capability needed |
-| Freshness | ✅ `manifest.sources` pins `Cargo.lock` / `package-lock.json`; `check:licenses` fails when they move |
-| Coverage | ✅ 273 crates + 4 npm packages; every declared SPDX id has at least one verbatim text |
-| REQ-F-135 satisfied | ✅ **yes** - DEF-056 closed 2026-11-20 |
+| Notices generator | PASS `scripts/generate-licenses.mjs` reads the Windows x64 Cargo graph and the production npm graph |
+| `resources/licenses/` populated | PASS `THIRD-PARTY-NOTICES.txt` (335,560 B) + `manifest.json` (machine-checked coverage) |
+| Trust Center view | PASS `TrustScreen.tsx` renders the file offline via Vite `?raw`; no filesystem capability needed |
+| Freshness | PASS `manifest.sources` pins `Cargo.lock` / `package-lock.json`; `check:licenses` fails when they move |
+| Coverage | PASS 273 crates + 4 npm packages; every declared SPDX id has at least one verbatim text |
+| REQ-F-135 satisfied | PASS **yes** - DEF-056 closed 2026-11-20 |
 
 The texts are copied from the packages as shipped (deduped by body, with per-component copyright
 lines preserved). No licence text was transcribed by hand: when a crate ships no file, the manifest

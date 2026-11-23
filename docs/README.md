@@ -134,7 +134,7 @@ docs/
 | `WP-n` | Work package with a behavioral definition of done. |
 | **MUST / SHOULD / MAY** | RFC 2119 semantics. `MUST` is a release blocker. |
 | `→` | "is traced to". |
-| 🟥 / 🟨 / 🟩 | Severity: blocker / should-fix / advisory. |
+| RED / AMBER / GREEN | Severity: blocker / should-fix / advisory. |
 
 Language of record is **English** for engineering artifacts. Product copy ships in every reviewed locale - 1.0.0 ships **en** and **	r**
 (see [06-01](06-i18n/06-01-i18n-strategy.md) §1).

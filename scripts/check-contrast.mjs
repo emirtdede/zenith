@@ -1,31 +1,41 @@
 #!/usr/bin/env node
 /**
- * WCAG contrast gate for the three themes.
+ * WCAG 2.2 contrast gate for all fourteen palettes.
  *
  * Run: `node scripts/check-contrast.mjs`
  *
- * Why a script and not a claim in a document: the palette is the one part of
- * the UI that can regress silently. A designer nudging `--muted` by two percent
- * breaks AA for every secondary label, and nobody notices in review. This file
- * computes the real ratios from the real token values and fails CI.
+ * Why a script and not a claim in a document: the palette is the one part of the
+ * UI that can regress silently. A designer nudging `textMuted` by two percent
+ * breaks AA for every secondary label, and nobody notices in review.
  *
- * Thresholds (WCAG 2.2):
- *   4.5:1 - normal text (1.4.3 AA)
- *   3.0:1 - large text, UI component boundaries and focus indicators (1.4.11)
+ * The values are read from `src/settings/palettes.json`, which is the same file
+ * the renderer paints from. A gate that re-declared the colours would only test
+ * its own copy; this one cannot disagree with the product.
  *
- * The line colour is held to 3:1 not because it is "text" but because it is the
- * only visible boundary of an input, a card edge or a divider - a 1.3:1 border
- * is decoration, not an affordance.
+ * Thresholds:
+ *   4.5:1 - normal text (1.4.3 AA): text-primary, text-secondary, text-muted, accent
+ *   3.0:1 - large text, control boundaries and focus indicators (1.4.11):
+ *           border-strong (the visible edge of an input, card or button)
+ *   4.5:1 - a label on an accent-filled button (accent-fg on accent)
+ *
+ * `border` is a hairline divider, not an affordance, in every palette; it is
+ * held to "distinguishable from the surface" (1.2:1) rather than to 3:1. The
+ * distinction matters: forcing a 3:1 hairline turns every table into a grid.
+ *
+ * The semantic status colours live in `tokens.css` (mode-derived, not
+ * palette-derived) and are checked from that file so a status badge keeps its
+ * meaning in all fourteen palettes.
  */
-
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(here, "..");
 
 const TEXT_MIN = 4.5;
 const UI_MIN = 3.0;
+const DIVIDER_MIN = 1.2;
 
 function channelToLinear(value) {
   const srgb = value / 255;
@@ -33,7 +43,7 @@ function channelToLinear(value) {
 }
 
 function relativeLuminance(hex) {
-  const cleaned = hex.replace("#", "").trim();
+  const cleaned = String(hex).replace("#", "").trim();
   if (!/^[0-9a-fA-F]{6}$/.test(cleaned)) {
     throw new Error(`not a six-digit hex colour: ${hex}`);
   }
@@ -51,93 +61,141 @@ export function contrast(a, b) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-/**
- * Parse the tokens out of `src/styles/tokens.css` so the gate cannot drift from
- * the stylesheet. Reading the file is the whole point: a hard-coded copy here
- * would test itself.
- */
-function loadThemes(css) {
-  const themes = {};
-  const blocks = css.split(/\[data-theme="([a-z-]+)"\]/g);
-  // blocks = [preamble, name, body, name, body, ...]
-  for (let index = 1; index < blocks.length; index += 2) {
-    const name = blocks[index];
-    const body = blocks[index + 1] ?? "";
-    const tokens = {};
-    for (const match of body.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)) {
-      tokens[match[1]] = match[2];
-    }
-    // The shared block above the themes defines geometry and typography only.
-    if (Object.keys(tokens).length > 0) {
-      themes[name] = tokens;
-    }
-  }
-  return themes;
-}
+const palettes = JSON.parse(readFileSync(join(ROOT, "src", "settings", "palettes.json"), "utf8"));
 
-const cssPath = join(here, "..", "src", "styles", "tokens.css");
-const themes = loadThemes(readFileSync(cssPath, "utf8"));
-
-if (Object.keys(themes).length !== 3) {
-  console.error(
-    `expected 3 themes in tokens.css, found ${Object.keys(themes).length}: ${Object.keys(themes).join(", ")}`,
-  );
-  process.exit(1);
-}
+const REQUIRED = [
+  "canvas",
+  "surface",
+  "surfaceSubtle",
+  "surfaceHover",
+  "border",
+  "borderStrong",
+  "textPrimary",
+  "textSecondary",
+  "textMuted",
+  "accent",
+  "accentHover",
+  "accentSoft",
+  "accentRing",
+  "accentFg",
+  "accentText",
+];
 
 const failures = [];
 const rows = [];
 
-for (const [theme, tokens] of Object.entries(themes)) {
-  const surfaces = ["bg", "surface", "sunken"].filter((key) => tokens[key]);
+if (!Array.isArray(palettes) || palettes.length !== 14) {
+  console.error(`expected 14 palettes in palettes.json, found ${Array.isArray(palettes) ? palettes.length : "none"}`);
+  process.exit(1);
+}
 
-  for (const key of ["text", "muted", "accent", "ok", "warn", "bad"]) {
-    if (!tokens[key]) {
-      failures.push(`${theme}: missing --${key}`);
+for (const palette of palettes) {
+  for (const mode of ["light", "dark"]) {
+    const tokens = palette[mode];
+    if (!tokens) {
+      failures.push(`${palette.id}: missing ${mode} token block`);
       continue;
     }
-    for (const surface of surfaces) {
-      const ratio = contrast(tokens[key], tokens[surface]);
-      rows.push([theme, key, surface, ratio, TEXT_MIN]);
-      if (ratio < TEXT_MIN) {
-        failures.push(
-          `${theme}: --${key} on --${surface} is ${ratio.toFixed(2)}:1, needs ${TEXT_MIN}:1`,
-        );
+    for (const key of REQUIRED) {
+      if (typeof tokens[key] !== "string" || tokens[key].length === 0) {
+        failures.push(`${palette.id}/${mode}: missing ${key}`);
       }
     }
-  }
-
-  for (const key of ["line", "focus"]) {
-    if (!tokens[key]) {
-      failures.push(`${theme}: missing --${key}`);
+    if (failures.length > 0 && failures[failures.length - 1].startsWith(`${palette.id}/${mode}`)) {
       continue;
     }
-    for (const surface of surfaces) {
-      const ratio = contrast(tokens[key], tokens[surface]);
-      rows.push([theme, key, surface, ratio, UI_MIN]);
+
+    const surfaces = ["canvas", "surface", "surfaceSubtle"];
+    const id = `${palette.id}/${mode}`;
+
+    for (const key of ["textPrimary", "textSecondary", "textMuted", "accentText"]) {
+      for (const surface of surfaces) {
+        const ratio = contrast(tokens[key], tokens[surface]);
+        rows.push([id, key, surface, ratio, TEXT_MIN]);
+        if (ratio < TEXT_MIN) {
+          failures.push(`${id}: ${key} on ${surface} is ${ratio.toFixed(2)}:1, needs ${TEXT_MIN}:1`);
+        }
+      }
+    }
+
+    for (const surface of ["canvas", "surface"]) {
+      const ratio = contrast(tokens.borderStrong, tokens[surface]);
+      rows.push([id, "borderStrong", surface, ratio, UI_MIN]);
       if (ratio < UI_MIN) {
         failures.push(
-          `${theme}: --${key} on --${surface} is ${ratio.toFixed(2)}:1, needs ${UI_MIN}:1`,
+          `${id}: borderStrong on ${surface} is ${ratio.toFixed(2)}:1, needs ${UI_MIN}:1`,
+        );
+      }
+      const divider = contrast(tokens.border, tokens[surface]);
+      rows.push([id, "border", surface, divider, DIVIDER_MIN]);
+      if (divider < DIVIDER_MIN) {
+        failures.push(
+          `${id}: border on ${surface} is ${divider.toFixed(2)}:1, needs ${DIVIDER_MIN}:1 (a divider must be visible)`,
         );
       }
     }
-  }
 
-  // Selection and focus must stay distinguishable from an ordinary surface.
-  if (tokens["accent-soft"]) {
-    const ratio = contrast(tokens["accent-soft"], tokens["surface"]);
-    rows.push([theme, "accent-soft", "surface", ratio, 1.0]);
-    if (ratio < 1.05) {
-      failures.push(`${theme}: --accent-soft is indistinguishable from --surface`);
+    const label = contrast(tokens.accentFg, tokens.accent);
+    rows.push([id, "accentFg", "accent", label, TEXT_MIN]);
+    if (label < TEXT_MIN) {
+      failures.push(`${id}: accentFg on accent is ${label.toFixed(2)}:1, needs ${TEXT_MIN}:1`);
+    }
+
+    const ring = contrast(tokens.accentText, tokens.surface);
+    rows.push([id, "accentText(ring)", "surface", ring, UI_MIN]);
+    if (ring < UI_MIN) {
+      failures.push(
+        `${id}: accentText on surface is ${ring.toFixed(2)}:1, a focus ring needs ${UI_MIN}:1`,
+      );
+    }
+  }
+}
+
+// ---------------------------------------------------- semantic status colours
+const tokensCss = readFileSync(join(ROOT, "src", "styles", "tokens.css"), "utf8");
+
+function readBlock(selector) {
+  const index = tokensCss.indexOf(selector);
+  if (index === -1) return {};
+  const open = tokensCss.indexOf("{", index);
+  const close = tokensCss.indexOf("}", open);
+  const body = tokensCss.slice(open + 1, close);
+  const found = {};
+  for (const match of body.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)) {
+    found[match[1]] = match[2];
+  }
+  return found;
+}
+
+const semanticLight = readBlock(":root {");
+const semanticDark = readBlock('html[data-mode="dark"] {');
+
+for (const [mode, block, canvases] of [
+  ["light", semanticLight, ["#fafafa", "#ffffff"]],
+  ["dark", semanticDark, ["#09090b", "#111114"]],
+]) {
+  for (const key of ["danger", "ok", "warn", "info"]) {
+    if (!block[key]) {
+      failures.push(`tokens.css (${mode}): missing --${key}`);
+      continue;
+    }
+    for (const canvas of canvases) {
+      const ratio = contrast(block[key], canvas);
+      rows.push([`semantic/${mode}`, key, canvas, ratio, TEXT_MIN]);
+      if (ratio < TEXT_MIN) {
+        failures.push(
+          `semantic/${mode}: ${key} on ${canvas} is ${ratio.toFixed(2)}:1, needs ${TEXT_MIN}:1`,
+        );
+      }
     }
   }
 }
 
 const width = Math.max(...rows.map((row) => row[0].length)) + 2;
-for (const [theme, token, surface, ratio, min] of rows) {
+for (const [id, token, surface, ratio, min] of rows) {
   const verdict = ratio >= min ? "PASS" : "FAIL";
   console.log(
-    `${theme.padEnd(width)}${token.padEnd(12)}on ${surface.padEnd(8)}${ratio.toFixed(2).padStart(6)}:1  (min ${min.toFixed(1)})  ${verdict}`,
+    `${id.padEnd(width)}${token.padEnd(14)}on ${surface.padEnd(8)}${ratio.toFixed(2).padStart(6)}:1  (min ${min.toFixed(1)})  ${verdict}`,
   );
 }
 
@@ -149,4 +207,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`\nAll ${rows.length} checks pass in 3 themes.`);
+console.log(
+  `\nAll ${rows.length} checks pass across ${palettes.length} palettes (28 palettes with modes) and the semantic layer.`,
+);

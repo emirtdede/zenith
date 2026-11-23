@@ -83,11 +83,11 @@ was "the sum with C10 capped at its weight". Both statements could not be true -
 | C2 | Architecture | 7 | **12** | 24 ADRs with consequences; `manifest.rs` → `catalog.generated.ts` drift test; single-source enforced by `catalog_in_sync` |
 | C3 | Destructive core | 4 | **14** | `snapshot::*` (15), `executor::*` (16), `scope::*` (11), `retention::*` (8); 4-tier honesty tested; HMAC tag covers action id; cancellation timed under 500 ms on a silent child |
 | C4 | Security | 3 | **13** | `04-01` STRIDE + attacker model; S-1..S-4 closed; `dpapi::*`, `handover::*` (3), `redact::*` (18); seeded-secret bundle test builds a real zip and re-reads it; 25 error codes bilingual |
-| C5 | FFI | 4 | **9** | 106 `unsafe` blocks plus 2 `unsafe impl`s, each with its own `// SAFETY:` comment (110 comments in total). Two independent proofs: `cargo clippy -D warnings` compiles the real `#[cfg(windows)]` surface on this `x86_64-pc-windows-msvc` host and `clippy::undocumented_unsafe_blocks` is `deny`-level, so a missing comment is a build error (verified with a throwaway crate: the lint fires, exit 101); `check:ffi` independently re-reads the 45 source files and pairs every block with its comment without trusting the compiler. `win32_code` on every HRESULT; `03-06` standard |
+| C5 | FFI | 4 | **9** | 115 `unsafe` blocks plus 2 `unsafe impl`s, each with its own `// SAFETY:` comment (110 comments in total). Two independent proofs: `cargo clippy -D warnings` compiles the real `#[cfg(windows)]` surface on this `x86_64-pc-windows-msvc` host and `clippy::undocumented_unsafe_blocks` is `deny`-level, so a missing comment is a build error (verified with a throwaway crate: the lint fires, exit 101); `check:ffi` independently re-reads the 45 source files and pairs every block with its comment without trusting the compiler. `win32_code` on every HRESULT; `03-06` standard |
 | C6 | Data & privacy | 3 | **9** | `03-03` migrations + recovery; `04-02` D1-D11 inventory; consent-before-prune tested; purge with token |
 | C7 | Interface & a11y | 5 | **9** | `05-02` 6 screens/5 overlays/key map; `check-contrast` 75×3 all pass; `05-03` assesses **31 criteria, all verified** (1.2.x is N/A - no media) with the live screen-reader session still open as DEF-043, which is the −1 on this row; zoom reflow 1.4.4/1.4.10 measured at 320 px / 200 % / 400 % across 54 cells (DEF-044 closed) |
-| C8 | Localization | 4 | **6** | ICU subset; `check-locales` 533×2 exact parity, `check-unused-keys` 0 of 533 unreachable, `check-step-keys` 328 emitted keys present, 0 missing from either catalogue; ADR-023 tiers honest about 2 shipped locales |
-| C9 | Tests & automation | 4 | **8** | 306 Rust tests + 166 vitest tests (reducer, ICU formatter, 47 render, 2 render-boundary, 9 focus-trap, 8 controller, 1 diagnose-budget, 11 audit-export, 4 boot-timing, 13 log-text, 17 candidate-wiring); 22-step `npm run verify` (17 node script gates + `check:fe` + `zenith-audit --all` + `cargo test --workspace` + build, the last three being the only steps that execute code rather than read it); contract 15/15/15/15; 3-journey/11-step WebDriver E2E (`scripts/e2e-journeys.mjs`, exit 0, re-run after every UI change) |
+| C8 | Localization | 4 | **6** | ICU subset; `check-locales` 866×2 exact parity, `check-unused-keys` 0 of 866 unreachable, `check-step-keys` 328 emitted keys present, 0 missing from either catalogue; ADR-023 tiers honest about 2 shipped locales |
+| C9 | Tests & automation | 4 | **8** | 341 Rust tests + 196 vitest tests (reducer, ICU formatter, 47 render, 2 render-boundary, 9 focus-trap, 8 controller, 1 diagnose-budget, 11 audit-export, 4 boot-timing, 13 log-text, 17 candidate-wiring); 22-step `npm run verify` (17 node script gates + `check:fe` + `zenith-audit --all` + `cargo test --workspace` + build, the last three being the only steps that execute code rather than read it); contract 15/15/15/15; 3-journey/11-step WebDriver E2E (`scripts/e2e-journeys.mjs`, exit 0, re-run after every UI change) |
 | C10 | Delivery & truth | 6 | **6** | `08-02`/`08-03`/`08-04`; 167-row register with 9 admitted-open rows; installer built, hashed, install→uninstall tested (`08-02` §8.1), and the uninstaller now offers data deletion |
 | **Total** | | **45** | **98** | |
 
@@ -192,7 +192,7 @@ will not recur:
 | DEF-086 | T-FE-21 drives Tab and Shift+Tab through a real dialog; the attribute and its promise are now checked together |
 | DEF-087 | `probe-focus-trap.mjs` measures focus in the **packaged** binary (inside-on-open, wrap at both edges, restore to trigger), and `check-focus-trap-mutation.mjs` proves the `autoFocus` regression case fails when the fix is removed |
 | DEF-088 | `check-step-keys.mjs` proves every `steps.*`/`error.*`/`remedy.*` key the core can emit exists in both catalogues and no `steps.*` key is emitted-less; `logText.test.ts` (6 cases) pins the one function that turns a line into words |
-| DEF-089 | `check-unused-keys.mjs` reports 0 of 533 unreachable and runs as step 2 of `npm run verify`; `wiring089.test.tsx` (14 cases) asserts the *value* each key names reaches the screen |
+| DEF-089 | `check-unused-keys.mjs` reports 0 of 866 unreachable and runs as step 2 of `npm run verify`; `wiring089.test.tsx` (14 cases) asserts the *value* each key names reaches the screen |
 | DEF-090 | `our_own_process_is_refused_not_terminated` asserts the core returns `RefusedSelf` for its own pid, and `wiring089.test.tsx` asserts the dialog offers no checkbox for the self row |
 | DEF-091 | `wiring089.test.tsx` asserts the hung-family heading and cell are distinct strings, so a sentence used as a label fails loudly |
 | DEF-092 | `check-build-identity.mjs` reads the embedded `release-YYYYMMDD` out of the binary and requires it to equal the artefact's own date and that no shipped source is newer; `build.rs` also emits `rerun-if-changed=src`, so the stamp cannot survive a source edit |
@@ -239,7 +239,7 @@ will not recur:
 
 `scripts/check-scorecard.mjs` recomputes
 the rubric weights, both totals, the withheld-versus-shortfall equality and the register's row and id
-totals, and runs as step 14 of the 28-step `npm run verify` chain; it now also parses the owner's eight bands, requires the
+totals, and runs as step 14 of the 31-step `npm run verify` chain; it now also parses the owner's eight bands, requires the
 real denominator (110) and the 1.4-point agreement to be the ones written. Two mutation scripts prove the
 gates still catch the original errors by reintroducing them and asserting a non-zero exit:
 `check-scorecard-mutation.mjs` (three rubric mutations) and `check-bands-mutation.mjs` (four band
@@ -267,19 +267,19 @@ credible:
 
 | Withheld | Criterion | Reason | Deficiency |
 | ---: | :--- | :--- | :--- |
-| −1 | C5 | 106 `unsafe` blocks are documented and `check:ffi` proves the pairing, but the mutating Win32 paths are *decision-tested*, not exercised on a scratch VM. The FFI boundary is correct by review and by unit test, not yet by running against a real Windows image | DEF-047 |
+| −1 | C5 | 115 `unsafe` blocks are documented and `check:ffi` proves the pairing, but the mutating Win32 paths are *decision-tested*, not exercised on a scratch VM. The FFI boundary is correct by review and by unit test, not yet by running against a real Windows image | DEF-047 |
 | −1 | C7 | NVDA has not been run. Zoom reflow is now measured and fixed (DEF-044 closed); screen-reader output is still source-inspected ARIA | DEF-043 |
 
-Two open 🟥 blockers deliberately do **not** deduct a point, and the reason is stated rather than assumed:
+Two open RED blockers deliberately do **not** deduct a point, and the reason is stated rather than assumed:
 
 - **DEF-050 (no CI pipeline).** C9 scores the automation that exists and runs, and it does: the 20-step
-  `npm run verify` chain and 306 Rust tests are green on demand. What is missing is a host that runs them
+  `npm run verify` chain and 341 Rust tests are green on demand. What is missing is a host that runs them
   *for* you on push. That is a delivery-infrastructure gap, recorded and weighted in `08-04`, not a lie
   about testing capability.
 - **DEF-028 (no EV certificate).** C10 scores the *honesty* of the delivery story, and `08-02` states the
   unsigned status plainly rather than claiming a signature.
 
-Both are still 🟥 in `10-02`, and **Gate G2 (`00-01` §6) requires zero open 🟥, so G2 is not satisfied.**
+Both are still RED in `10-02`, and **Gate G2 (`00-01` §6) requires zero open RED, so G2 is not satisfied.**
 98 is a **documentation and implementation score, not a shipping clearance** - the two facts are
 compatible and this section exists so that they cannot be confused.
 
@@ -291,14 +291,14 @@ Every number in §3 comes from one of these. Re-run them to reproduce the score.
 
 | Claim | Command | Observed |
 | :--- | :--- | :--- |
-| 306 Rust tests pass | `cargo test --workspace` | 48 + 247 + 2 = 306 passed, 0 failed |
+| 341 Rust tests pass | `cargo test --workspace` | 57 + 282 + 2 = 341 passed, 0 failed |
 | 134 frontend tests pass | `npx vitest run` | 12 files: 25 reducer + 9 formatter + 39 render + 9 audit export + 4 boot timing + 9 log text + 6 boundary + 1 boundary wiring + 9 focus trap + 6 controller + 1 diagnose budget + 16 DEF-089/090/107/108 wiring, 0 failed |
 | Warnings are errors | `cargo clippy --workspace --all-targets -- -D warnings` | exit 0 |
 | Formatting | `cargo fmt --all --check` | exit 0 |
 | 15 commands agree | `node scripts/check-contract.mjs` | 15 documented = declared = registered = called |
 | 6 events agree | same | 6 documented, 6 in `EventMap` |
 | 25 error codes bilingual | same | 25 checked in `en` + `tr` |
-| 533 keys × 2 in parity | `node scripts/check-locales.mjs` | `All 2 locales agree with English on 533 keys` |
+| 866 keys × 2 in parity | `node scripts/check-locales.mjs` | `All 2 locales agree with English on 866 keys` |
 | 75 contrast pairs × 3 themes | `node scripts/check-contrast.mjs` | all pass; worst text 5.64:1 |
 | Simulator cannot touch the OS | `node scripts/check-simulator.mjs` | 4-module graph, no native import |
 | Zero stubs / dead config / TODOs | `cargo run -q -p zenith-core --bin zenith-audit -- --all` | clean |
@@ -346,7 +346,7 @@ the code builds and tests cleanly on the stated toolchain, and the hard safety p
 (snapshot-before-mutation, scope allowlist, tamper detection, honest reversibility) are implemented and
 tested.
 
-**It does not mean:** the product is ready to ship to the public. Gate G2 requires zero open 🟥
+**It does not mean:** the product is ready to ship to the public. Gate G2 requires zero open RED
 deficiencies and three remain - signing, the VM suite, and CI. `10-02` §3
 states this without softening it.
 

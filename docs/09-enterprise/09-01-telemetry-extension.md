@@ -190,13 +190,13 @@ withholds diagnostics to upsell would contradict the product's reason to exist.
 
 | Component | Status |
 | :--- | :--- |
-| Schema (this document) | ✅ specified, versioned |
-| Consent model | ✅ specified |
-| Policy registry contract | ✅ specified |
-| `enterprise-telemetry` Cargo feature | ❌ **absent** (DEF-060) |
-| Transport crate | ❌ absent (gated on DEF-060) |
-| Collector / dashboard | ❌ out of scope for the client repo |
-| Free-build symbol proof | ⚠️ command defined; trivially true today |
+| Schema (this document) | PASS specified, versioned |
+| Consent model | PASS specified |
+| Policy registry contract | PASS specified |
+| `enterprise-telemetry` Cargo feature | FAIL **absent** (DEF-060) |
+| Transport crate | FAIL absent (gated on DEF-060) |
+| Collector / dashboard | FAIL out of scope for the client repo |
+| Free-build symbol proof | WARN command defined; trivially true today |
 
 This is a specification document, and it says so. When the feature ships, `10-02` DEF-060 closes and
 this table changes - not before.

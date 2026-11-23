@@ -1,0 +1,77 @@
+name: Bug report
+description: Something in Zenith behaves differently from what the documentation says.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Two notes before you start:
+
+        - A defect in the diagnosis itself is easier to fix when the support
+          bundle is attached, because it contains the measured values, not a
+          description of them.
+        - Security issues do not belong here. `SECURITY.md` explains the private
+          channel.
+
+  - type: input
+    id: version
+    attributes:
+      label: Zenith version
+      description: Settings > Update and About shows it, as does `zenith --version`.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Build identity
+      description: The Trust Center shows `release-YYYYMMDD` or a commit. Paste it exactly.
+      placeholder: "release-20261123"
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and build
+      description: Run `winver`, or paste the output of `cmd /c ver`.
+      placeholder: "Windows 11 23H2, 22631.4460"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: If an action was involved, name it. If it failed, the console has the error code and the correlation id.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: bundle
+    attributes:
+      label: Diagnostics
+      options:
+        - label: I can attach a support bundle (Settings > Data and backup, or Trust Center)
+        - label: The problem reproduces with the simulation mode enabled
+        - label: The problem involves an action that needed elevation

@@ -223,14 +223,14 @@ cites a `REQ-N` that `02-02` does not define.
 | REQ-N-065 | Every module has one responsibility, stated at the top of the file | - | CI quality gate | every WP |
 | REQ-N-066 | Golden-file tests for all generated artifacts (scripts, manifests, i18n skeleton) | - | CI quality gate | every WP |
 | REQ-N-067 | Build warnings: zero in release profile | - | CI quality gate | every WP |
-| REQ-N-070 | Windows 11 23H2 (22631), 24H2 (26100), 25H2 (26200), 26H2 (26300+) - full support | ✅ declared target; T-WIN VM suite open (DEF-047) | VM matrix | WP-8 |
-| REQ-N-071 | Windows 10 22H2 (19045) - supported with ESU lifecycle banner | ⚠️ declared, **unverified**; no 22H2 VM run (DEF-047) | VM matrix | WP-8 |
-| REQ-N-072 | x64 and ARM64 builds; ARM64 emulation not required | ❌ **x64 only**; ARM64 not built (DEF-058) | VM matrix | WP-8 |
-| REQ-N-073 | WebView2 Runtime ≥ 120 assumed; bootstrapper + offline installer bundled | ✅ NSIS bootstrapper; pinned in `resources/manifest.json` | VM matrix | WP-8 |
-| REQ-N-074 | Display 960×680 minimum, 3840×2160 maximum tested, 100-200% scaling | ⚠️ min window enforced; zoom capture open (DEF-044) | VM matrix | WP-8 |
-| REQ-N-075 | High-contrast OS theme respected without breaking the token system | ✅ tokens derive from OS theme (`05-01`) | VM matrix | WP-8 |
-| REQ-N-076 | No dependency on PowerShell 7; Windows PowerShell 5.1 is the floor for exported scripts | ✅ scripts target 5.1 | VM matrix | WP-8 |
-| REQ-N-077 | Exported `.bat` must run on cmd.exe 10.0.19045+ | ✅ no PS7-only syntax | VM matrix | WP-8 |
+| REQ-N-070 | Windows 11 23H2 (22631), 24H2 (26100), 25H2 (26200), 26H2 (26300+) - full support | PASS declared target; T-WIN VM suite open (DEF-047) | VM matrix | WP-8 |
+| REQ-N-071 | Windows 10 22H2 (19045) - supported with ESU lifecycle banner | WARN declared, **unverified**; no 22H2 VM run (DEF-047) | VM matrix | WP-8 |
+| REQ-N-072 | x64 and ARM64 builds; ARM64 emulation not required | FAIL **x64 only**; ARM64 not built (DEF-058) | VM matrix | WP-8 |
+| REQ-N-073 | WebView2 Runtime ≥ 120 assumed; bootstrapper + offline installer bundled | PASS NSIS bootstrapper; pinned in `resources/manifest.json` | VM matrix | WP-8 |
+| REQ-N-074 | Display 960×680 minimum, 3840×2160 maximum tested, 100-200% scaling | WARN min window enforced; zoom capture open (DEF-044) | VM matrix | WP-8 |
+| REQ-N-075 | High-contrast OS theme respected without breaking the token system | PASS tokens derive from OS theme (`05-01`) | VM matrix | WP-8 |
+| REQ-N-076 | No dependency on PowerShell 7; Windows PowerShell 5.1 is the floor for exported scripts | PASS scripts target 5.1 | VM matrix | WP-8 |
+| REQ-N-077 | Exported `.bat` must run on cmd.exe 10.0.19045+ | PASS no PS7-only syntax | VM matrix | WP-8 |
 | REQ-N-080 | Every run produces a correlation id usable in support | - | T-CLI + support tests | WP-9 |
 | REQ-N-081 | Log rotation: 5 MB × 3 files, then oldest dropped | - | T-CLI + support tests | WP-9 |
 | REQ-N-082 | Support bundle generation ≤ 5 s and ≤ 5 MB | - | T-CLI + support tests | WP-9 |
@@ -278,13 +278,13 @@ cites a `REQ-N` that `02-02` does not define.
 
 | Check | Rule | Current |
 | :--- | :--- | :--- |
-| Every functional REQ has ≥1 test id | 118/118 | ✅ 118 |
-| Every non-functional REQ has ≥1 verification row | 86/86 | ✅ 86 |
-| Every matrix row cites a defined requirement | 204/204 | ✅ 204 |
-| Every test id referenced exists in `07-01` §5 | 100% | ✅ |
-| Every REQ has a design section | 100% | ✅ |
-| Every action has all contracts | 22/22 | ✅ `03-05` |
-| Every command has schema + errors | 15/15 | ✅ `03-04` §5 |
+| Every functional REQ has ≥1 test id | 118/118 | PASS 118 |
+| Every non-functional REQ has ≥1 verification row | 86/86 | PASS 86 |
+| Every matrix row cites a defined requirement | 204/204 | PASS 204 |
+| Every test id referenced exists in `07-01` §5 | 100% | PASS |
+| Every REQ has a design section | 100% | PASS |
+| Every action has all contracts | 22/22 | PASS `03-05` |
+| Every command has schema + errors | 15/15 | PASS `03-04` §5 |
 
 Unmapped requirements: **0**.
 

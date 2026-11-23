@@ -62,14 +62,14 @@
 
 | Actor | Capability | Motivation | In scope |
 | :--- | :--- | :--- | :--- |
-| **T1 Standard local user** | Runs the app, reads its data directory, can write `%LOCALAPPDATA%`, cannot write `%ProgramData%\Vellium` | Escalate to admin, hide activity | ✅ primary |
-| **T2 Same-user malware** | Runs as the user, can call the app's CLI, can attempt handover | Escalate via UAC prompt | ✅ |
-| **T3 Malicious snapshot** | Crafts a DB row or archive if it can reach the store | Arbitrary admin write | ✅ |
-| **T4 Network attacker** | Intercepts update traffic | Distribute modified binary | ✅ |
-| **T5 Supplier compromise** | Compromised dependency | Backdoor | ✅ partially (SBOM, lockfile, review) |
-| **T6 Admin-level malware** | Full local control | Anything | ❌ out of scope (game over by definition) |
-| **T7 Physical access** | Offline disk access | Read user files | ❌ out of scope (BitLocker is the answer) |
-| **T8 Remote unauthenticated** | Network only | - | ❌ no listening service |
+| **T1 Standard local user** | Runs the app, reads its data directory, can write `%LOCALAPPDATA%`, cannot write `%ProgramData%\Vellium` | Escalate to admin, hide activity | PASS primary |
+| **T2 Same-user malware** | Runs as the user, can call the app's CLI, can attempt handover | Escalate via UAC prompt | PASS |
+| **T3 Malicious snapshot** | Crafts a DB row or archive if it can reach the store | Arbitrary admin write | PASS |
+| **T4 Network attacker** | Intercepts update traffic | Distribute modified binary | PASS |
+| **T5 Supplier compromise** | Compromised dependency | Backdoor | PASS partially (SBOM, lockfile, review) |
+| **T6 Admin-level malware** | Full local control | Anything | FAIL out of scope (game over by definition) |
+| **T7 Physical access** | Offline disk access | Read user files | FAIL out of scope (BitLocker is the answer) |
+| **T8 Remote unauthenticated** | Network only | - | FAIL no listening service |
 
 **Explicitly out of scope** must be stated because a threat model that claims to stop T6 is lying.
 

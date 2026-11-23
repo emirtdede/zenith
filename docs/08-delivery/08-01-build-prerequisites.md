@@ -71,14 +71,14 @@ guarantee, not a record of the compiler used.
 
 | Tool | Minimum supported | Verified-on (this repository) | Match |
 | :--- | :--- | :--- | :--- |
-| `rustc` | 1.90.0 | **1.100.0** | ✅ above MSRV |
-| `cargo` | 1.90.0 | **1.100.0** | ✅ |
-| `node` | 24.22.3 | **v26.13.1** | ✅ above pin |
-| `npm` | 11.x | **11.20.0** | ✅ |
-| `typescript` | - | **5.9.3** | ✅ |
-| `vite` | - | **7.3.8** | ✅ |
-| Tauri | 2.12.5 | **2.12.5 declared → 2.12.7 locked** | ✅ patch update inside the caret range; `Cargo.lock` is the measured version |
-| React | 19 | **19.x** | ✅ |
+| `rustc` | 1.90.0 | **1.100.0** | PASS above MSRV |
+| `cargo` | 1.90.0 | **1.100.0** | PASS |
+| `node` | 24.22.3 | **v26.13.1** | PASS above pin |
+| `npm` | 11.x | **11.20.0** | PASS |
+| `typescript` | - | **5.9.3** | PASS |
+| `vite` | - | **7.3.8** | PASS |
+| Tauri | 2.12.5 | **2.12.5 declared → 2.12.7 locked** | PASS patch update inside the caret range; `Cargo.lock` is the measured version |
+| React | 19 | **19.x** | PASS |
 
 > **Why the pin and the verifier differ.** A hard `rust-toolchain.toml` channel pin forces every
 > machine to download a second toolchain on first `cargo` call, and fails outright on an air-gapped

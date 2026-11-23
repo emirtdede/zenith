@@ -1,0 +1,146 @@
+# GitHub Release Checklist
+
+| Field | Value |
+| :--- | :--- |
+| Document ID | DOC-11-02 |
+| Version | 1.0.0 |
+| Owner | Release Engineering |
+| Closes | REQ-N-046 |
+| Channel | GitHub open source (repository, release asset, CI) |
+| Tree under review | `1.0.0`, working tree at commit `755885d` plus the uncommitted redesign |
+| Reviewed on | 2026-11-23 |
+
+This is the checklist the repository itself has to satisfy before a public
+release is announced. It is a measurement, not a plan: every row names the
+command that decides it and the file that holds the output. A row is `PASS` only
+when the command exits `0` **and** the evidence file in this tree is the output
+of that command; anything that has not been run, or that depends on a setting
+outside this machine, is `FAIL` with the reason and the owner action.
+
+`FAIL` rows are the point of the document. A checklist that cannot fail is a
+newsletter.
+
+## 1. Source, licence, and repository metadata
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-01 | The licence is OSI-approved MIT and the file is the unmodified canonical text | `Get-Content LICENSE` | `LICENSE` | PASS |
+| G-02 | Copyright holder and year are correct for the publishing entity | `Get-Content LICENSE -TotalCount 3` | `LICENSE` | PASS |
+| G-03 | Version in `package.json`, `Cargo.toml`, `tauri.conf.json`, and the installer all agree | `node scripts/check-doc-counts.mjs`; `node scripts/check-contract.mjs` | `evidence/verify-final.log` | PASS |
+| G-04 | Git tag exists for the released version | `git tag --list` | local tag `1.0.0` | FAIL - the tag is local only; it is not on the published repository, so `https://github.com/emirtdede/zenith/tree/1.0.0` does not resolve. Owner action: push the tag with the release commit. |
+| G-05 | Published repository description and licence are set | `https://github.com/emirtdede/zenith` | repository page | PASS |
+| G-06 | Repository topics are set so the project is discoverable | repository settings | none | FAIL - no topics. Owner action: add `windows`, `tauri`, `rust`, `diagnostics`, `self-healing`, `open-source`. |
+| G-07 | The default branch carries the reviewed tree | `git status --porcelain` | 134 modified paths | FAIL - this review is against an uncommitted tree; the published `main` still advertises 306 tests, 166 Vitest tests, three themes, and a shorter gate than the 31 steps this tree runs. Owner action: commit and push, then re-run this row. |
+| G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | none | FAIL - no run can exist for a commit that has not been pushed. |
+
+## 2. README and public documentation
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-09 | README follows the fixed section order and holds both language halves | inspection | `README.md` | PASS |
+| G-10 | README badges state real values (version, stack, licence, languages, palettes) | badge values vs `package.json`, `Cargo.toml`, `src/settings/palettes.json`, `src/i18n/languages.ts` | `README.md` lines 24-40 | PASS |
+| G-11 | The CI badge points at the workflow file that exists | `Select-String README.md -Pattern 'verify.yml'` | `README.md` | PASS - the badge previously targeted `ci.yml`, a file this repository does not have |
+| G-12 | Every relative link in the README resolves | `node scripts/check-docs.mjs` | `evidence/verify-final.log` | PASS |
+| G-13 | No emoji anywhere in the tree | `npm run check:emoji` | `evidence/verify-final.log` | PASS |
+| G-14 | No em dash or en dash in authored text | `npm run check:dashes` | `evidence/verify-final.log` | PASS |
+| G-15 | The documentation library is complete, numbered, and free of broken links | `npm run check:docs` | `evidence/verify-final.log` | PASS |
+| G-16 | Quantitative claims in the docs match the tree | `npm run check:doc-counts` | `evidence/verify-final.log` | PASS |
+| G-17 | CHANGELOG records the release | `Get-Content CHANGELOG.md` | `CHANGELOG.md` | PASS |
+| G-18 | SECURITY.md gives a private disclosure channel and a response window | `Get-Content SECURITY.md` | `SECURITY.md` | PASS |
+| G-19 | Support policy names a channel and a scope | `Get-Content public/legal/support.md` | `public/legal/support.md` | PASS |
+| G-20 | Accessibility statement exists and is reachable from the app | `Get-Content public/legal/accessibility.md` | `public/legal/accessibility.md` | PASS |
+| G-21 | CONTRIBUTING explains the gate a change must pass | `Get-Content CONTRIBUTING.md` | `CONTRIBUTING.md` | PASS |
+| G-22 | CODE_OF_CONDUCT is present | `Get-Content CODE_OF_CONDUCT.md` | `CODE_OF_CONDUCT.md` | PASS |
+| G-23 | Issue templates exist | `.github/ISSUE_TEMPLATE/*` | none | FAIL - no issue forms. Owner action: add bug-report and feature-request forms that ask for version, build commit, and a support bundle. |
+| G-24 | Pull request template exists | `.github/pull_request_template.md` | none | FAIL - owner action: add a template whose first line is `npm run verify`. |
+
+## 3. Security and supply chain
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-25 | No secret in the working tree or in any commit | `npm run check:secrets` | `evidence/gitleaks.log` | PASS - worktree and 5-commit history clean under the default rule set |
+| G-26 | `.gitignore` excludes certificates, keys, `.env`, and build output | `Get-Content .gitignore` | `.gitignore` | PASS |
+| G-27 | Only non-secret configuration is documented in `.env.example` | `Get-Content .env.example` | `.env.example` | PASS |
+| G-28 | Dependency advisories are clean | `npm run check:deny` | `evidence/verify-final.log` | PASS |
+| G-29 | SBOM is generated from the real dependency graph and is current | `npm run check:sbom` | `evidence/verify-final.log` | PASS |
+| G-30 | Third-party licence notices are generated, not hand-written | `npm run check:licenses` | `evidence/verify-final.log` | PASS |
+| G-31 | Workflow actions are pinned to commit SHAs | inspection of `.github/workflows/verify.yml` | `uses: actions/checkout@v4` | FAIL - tags are mutable. Owner action: pin `checkout`, `setup-node`, and the Rust action to full SHAs and let Dependabot bump them. |
+| G-32 | The workflow token is least-privilege | `Select-String .github/workflows/verify.yml -Pattern 'permissions'` | `contents: read` | PASS |
+| G-33 | Telemetry is off unless the user consents, and consent is tested | `npm run check:fe` | `evidence/vitest-counts.json` | PASS |
+| G-34 | Content Security Policy is restrictive and every remote origin is deliberate | `Select-String src-tauri/tauri.conf.json -Pattern 'csp'` | `src-tauri/tauri.conf.json` | PASS - `self`, `ipc:`, `http://ipc.localhost`, and `https://api.github.com` (the update feed) only |
+| G-35 | Secret scanning and push protection are enabled on the repository | repository security settings | not available from this machine | FAIL - owner action: enable both in Settings > Code security. A local gitleaks run cannot prove a server-side setting. |
+| G-36 | Dependabot is configured for npm and cargo | `.github/dependabot.yml` | none | FAIL - owner action: add weekly npm and cargo ecosystems. |
+
+## 4. Quality gates
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-37 | The full release chain is green | `npm run verify` | `evidence/verify-final.log` | PASS - 31 steps, exit 0, on the tree that produced `release-20261123` |
+| G-38 | Rust test suite | `cargo test --workspace --locked` | `evidence/verify-final.log` | PASS - 341 tests |
+| G-39 | Frontend test suite | `npm run check:fe` | `evidence/vitest-counts.json` | PASS - 196 tests in 14 files |
+| G-40 | TypeScript type check | `npx tsc --noEmit` | `evidence/verify-final.log` | PASS |
+| G-41 | Locale parity and placeholder agreement | `npm run check:locales` | `evidence/verify-final.log` | PASS - 866 keys in each full catalogue |
+| G-42 | No catalogue key is dead | `npm run check:unused-keys` | `evidence/verify-final.log` | PASS |
+| G-43 | IPC contract: docs, attributes, handler, and renderer agree on 15 commands | `npm run check:contract` | `evidence/verify-final.log` | PASS |
+| G-44 | WCAG contrast across every palette and mode | `npm run check:contrast` | `evidence/verify-final.log` | PASS - 520 checks, 14 palettes |
+| G-45 | Every `unsafe` block pairs with a `SAFETY` comment | `npm run check:ffi` | `evidence/verify-final.log` | PASS - 115 blocks, 2 impls |
+| G-46 | Evidence ledger describes every artefact | `npm run check:evidence-ledger` | `evidence/verify-final.log` | PASS |
+| G-47 | Negative and mutation gates catch their own regressions | `npm run check:mutate-restore` and the mutation logs | `evidence/def1*.log` | PASS |
+| G-48 | A clean clone builds and verifies | `npm run verify` with `dist/` removed | `evidence/def167-clean-clone.log` | PASS |
+| G-49 | Desktop end-to-end journeys pass against the release binary | `npm run e2e -- --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | `evidence/e2e-final.log` | PASS - 3 journeys, 11 steps, 0 failures against the `release-20261123` binary |
+| G-50 | CI runs the same chain, not a hand-copied subset | `npm run check:workflows` | `evidence/verify-final.log` | PASS |
+
+## 5. Build and release assets
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-51 | The release binary is built from this tree with the lockfile | `npm run tauri build`; `node scripts/check-build-identity.mjs` | `target/release/zenith.exe` | PASS - 6,629,888 bytes, `release-20261123`, no shipped source newer than the binary |
+| G-52 | The installer is built from the same commit as the binary | file timestamps and `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | PASS - `npm run tauri build` on 2026-11-24 produced the binary and the bundle in the same run, identity `release-20261123`, and `check-build-identity` passes against the pair |
+| G-53 | The installer and the binary are Authenticode-signed | `Get-AuthenticodeSignature target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | `NotSigned` | FAIL - DEF-028, no EV certificate on this machine. Owner action: supply the certificate and re-run `npm run tauri build`. |
+| G-54 | Installer icons are the project set, with no Tauri default | `npm run check:icons` | `evidence/verify-final.log` | PASS - 17 files reproduced byte-for-byte |
+| G-55 | The installer offers 73 languages and the NSIS list matches | `npm run check:installer` | `evidence/verify-final.log` | PASS - 73 rows, 71 real translations, 2 fall back to `en` |
+| G-56 | Uninstall deletes user data only when the user asks | `src-tauri/installer/hooks.nsh` | `evidence/verify-final.log` | PASS - gated on `$DeleteAppDataCheckboxState` |
+| G-57 | SHA-256 checksums are published next to the release asset | release page | none | FAIL - no release has been published. Owner action: attach the installer and a `SHA256SUMS.txt` generated from it. |
+| G-58 | GitHub build-provenance attestation is attached | `gh attestation verify` | none | FAIL - requires the release workflow that does not exist yet. |
+| G-59 | The update check reads GitHub Releases and never downloads in-app | `node scripts/check-update-path.mjs` (inspection of `AboutPanel`) | `src/ui/SettingsScreen.tsx` | PASS - semver comparison only; the Store channel is answered locally |
+| G-60 | ARM64 build exists | `cargo build --release --target aarch64-pc-windows-msvc` | not attempted | FAIL - open register row; no ARM64 toolchain on this machine. |
+| G-61 | Windows 10 and 11 x64 are tested on real hosts | VM matrix | not run | FAIL - open register row (DEF-047). |
+| G-62 | MacOS/Linux are explicitly unsupported, not silently broken | `npm run check:nonwindows` | `evidence/verify-final.log` | PASS |
+
+## 6. Release publication
+
+| ID | Requirement | Verification | Evidence | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| G-63 | Release notes are written from CHANGELOG, not from commit titles | release draft | none | FAIL - owner action: open the release draft for tag `1.0.0`. |
+| G-64 | The published README matches this tree | compare repository README with `README.md` | published README is the pre-redesign text | FAIL - consequence of G-07. |
+| G-65 | A rollback plan exists for a bad release | `Get-Content docs/08-delivery/08-02-ci-cd-release.md` | release document | PASS |
+| G-66 | Supported versions and their support window are stated | `public/legal/support.md` | support policy | PASS |
+
+## 7. Summary
+
+<!-- STATS -->
+
+### 7.1 FAIL register
+
+| ID | Blocker | Owner action |
+| :--- | :--- | :--- |
+| G-04 | Local-only tag | Push the tag with the release commit |
+| G-06 | No repository topics | Add six topics in repository settings |
+| G-07 | Uncommitted tree differs from the published default branch | Commit and push, then re-run `npm run verify` in CI |
+| G-08 | No CI run for the reviewed tree | Same commit that closes G-07 |
+| G-23 | No issue templates | Add bug and feature forms |
+| G-24 | No pull request template | Add `.github/pull_request_template.md` |
+| G-31 | Actions pinned by tag | Pin to SHAs, add Dependabot |
+| G-35 | Server-side secret scanning unverified | Enable secret scanning and push protection |
+| G-36 | No Dependabot configuration | Add `.github/dependabot.yml` |
+| G-53 | Installer unsigned | Supply the EV certificate (DEF-028) |
+| G-57 | No checksums published | Attach `SHA256SUMS.txt` to the release |
+| G-58 | No provenance attestation | Add a release workflow with `actions/attest-build-provenance` |
+| G-60 | No ARM64 build | Install the ARM64 MSVC target and build |
+| G-61 | No real-host Windows matrix | Run the T-WIN matrix (DEF-047) |
+| G-63 | No release draft | Draft the release from CHANGELOG |
+| G-64 | Published README is stale | Follows from G-07 |
+
+Sixteen FAIL rows remain, all of them publication or owner-asset actions. Every
+one of them is a blocker for announcing the release; none of them is a defect in
+the code, and none is hidden in this document.

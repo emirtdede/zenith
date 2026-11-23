@@ -654,13 +654,13 @@ irreversible selection refused with 5 before any disk access, dry run reports wi
 
 | Change | Allowed in patch | Requires MAJOR |
 | :--- | :--- | :--- |
-| Add optional request field | ✅ | |
-| Add response field | ✅ (clients ignore unknown) | |
-| Add new command | ✅ | |
-| Add event `v: 2` | ✅ (both versions emitted during migration) | |
-| Rename command/event | | ✅ |
-| Change semantics of an existing field | | ✅ |
-| Remove field | | ✅ |
+| Add optional request field | PASS | |
+| Add response field | PASS (clients ignore unknown) | |
+| Add new command | PASS | |
+| Add event `v: 2` | PASS (both versions emitted during migration) | |
+| Rename command/event | | PASS |
+| Change semantics of an existing field | | PASS |
+| Remove field | | PASS |
 
 The frontend declares the IPC version it expects in `AppInfo`; a mismatch shows a "please update"
 screen rather than undefined behaviour.

@@ -44,12 +44,12 @@ opening the artefact and measuring it.
 
 | Severity | Meaning | Found | Closed |
 | :--- | :--- | ---: | ---: |
-| 🟥 Critical | The shipped artefact does not do what it claims, or loses user data silently | 3 | 3 |
-| 🟧 High | A user-facing promise is broken on a normal path | 1 | 1 |
-| 🟨 Medium | A failure is misreported, or a rule holds in one place and not another | 5 | 5 |
-| 🟦 Low | Cosmetic, or a consistency gap with no user-visible effect | 0 | 0 |
+| RED Critical | The shipped artefact does not do what it claims, or loses user data silently | 3 | 3 |
+| ORANGE High | A user-facing promise is broken on a normal path | 1 | 1 |
+| AMBER Medium | A failure is misreported, or a rule holds in one place and not another | 5 | 5 |
+| BLUE Low | Cosmetic, or a consistency gap with no user-visible effect | 0 | 0 |
 
-No finding in the 🔴 or 🟧 bands remains open in this audit. The register's nine open rows (listed in
+No finding in the RED or ORANGE bands remains open in this audit. The register's nine open rows (listed in
 §7) are blocked on owner-supplied assets or external infrastructure, not on code, and none of them is
 an audit finding of this pass.
 
@@ -59,15 +59,15 @@ an audit finding of this pass.
 
 | ID | Severity | Location | Defect | Fix |
 | :--- | :--- | :--- | :--- | :--- |
-| DEF-155 | 🟥 Critical | `src-tauri/Cargo.toml` | No `custom-protocol` feature, so `cargo build --release` linked a binary that loads `devUrl` instead of the embedded bundle. Shipped as-is it shows the browser's connection-refused page | `default = ["custom-protocol"]`; `scripts/check-bundle.mjs` measures manifest, cargo feature resolution and `dist/` freshness, and is the last step of the gate |
-| DEF-150 | 🟥 Critical | `crates/zenith-core/src/engine/db.rs:737`, `:770` | Purge cleared the owned directories with `let _ =` on both calls and returned only row counts, so a directory that refused to disappear left archives with no ledger entry and a `PurgeSummary` claiming success | `purge_snapshots` returns `(u64, Vec<String>)`, `purge` returns `(u64, u64, Vec<String>)`; failures reach `PurgeSummary.warnings`; `query_row(..).unwrap_or(0)` became `map_err(..)?` |
-| DEF-152 | 🟥 Critical | `crates/zenith-core/src/engine/db.rs:850`, `:873` | Startup recovery opened the backups directory with `if let Ok(entries)`, so an unreadable directory skipped the whole scan and returned a report indistinguishable from a clean install | `RecoveryReport.unreadable_directories`, folded into `is_empty()` and `summary()`; a missing directory stays silent; two tests pin both cases, including the `Store::open` field-by-field copy that dropped the new field on first attempt |
-| DEF-149 | 🟧 High | `src-tauri/src/commands.rs:1276` | `let _ = state.save_preferences(..)` before the elevation handover, so a failed write started a UAC-elevated session in the previous theme and language with no message | `save_preferences(..)?` propagates before the ticket exists |
-| DEF-151 | 🟨 Medium | `src-tauri/src/state.rs:295` | `let _ = std::fs::create_dir_all(parent)` made the following write fail with `ENOENT` on `preferences.json.tmp`, naming a file the user never asked for instead of the directory that could not be made | `create_dir_all(..).map_err(..)?` names the parent and the OS error |
-| DEF-153 | 🟨 Medium | `src-tauri/src/logging.rs:120` | `rotate_if_needed` returned `()` with six `let _ =` inside and read size with `metadata(..).unwrap_or(0)`, so a locked log grew past the published `LOG_MAX_BYTES` with nothing said anywhere | Returns `Vec<String>`; `append` prints each failure to stderr and still writes the line; partial rotation is reported rather than pretended atomic |
-| DEF-154 | 🟨 Medium | `src/ui/ActionGrid.tsx:188`, `:198` | The pin and hide buttons rendered `★` and `◌` as text while `icons.tsx` exists to hand-draw exactly those shapes, so the zero-fallback-icon rule held for the sidebar and not for the card tools | `PinIcon`, `UnpinIcon`, `HideIcon`, `ShowIcon` are inline SVG with `aria-hidden` and `focusable="false"`; the buttons now have no text content, so `aria-label` is the only name |
-| DEF-156 | 🟨 Medium | `src/styles/app.css:510`, `:654` | The junk KPI label rendered as `GEÇİCİ DO...` in the shipped Turkish UI, and card footers on one grid row sat 43px apart because `flex: 1` on the description absorbed the spare height | `dt` wraps and the value is bottom-pinned; `margin-top: auto` on `.card-badges` pins badges and footer to the card edge; footers verified at one baseline |
-| DEF-157 | 🟨 Medium | `src/styles/app.css:731` | Cards in one grid row had three footer heights (44, 70 and 88px), and the status label of the tallest broke in half at 36px tall: a single-row footer with `space-between` does not hold once three buttons must share the width with a status label | `.card-foot` is `column-reverse` with `align-items: stretch`, so every footer is one geometry regardless of button count; measured `footH` 70 and `statusH` 18 on every card, button rows on one baseline per row |
+| DEF-155 | RED Critical | `src-tauri/Cargo.toml` | No `custom-protocol` feature, so `cargo build --release` linked a binary that loads `devUrl` instead of the embedded bundle. Shipped as-is it shows the browser's connection-refused page | `default = ["custom-protocol"]`; `scripts/check-bundle.mjs` measures manifest, cargo feature resolution and `dist/` freshness, and is the last step of the gate |
+| DEF-150 | RED Critical | `crates/zenith-core/src/engine/db.rs:737`, `:770` | Purge cleared the owned directories with `let _ =` on both calls and returned only row counts, so a directory that refused to disappear left archives with no ledger entry and a `PurgeSummary` claiming success | `purge_snapshots` returns `(u64, Vec<String>)`, `purge` returns `(u64, u64, Vec<String>)`; failures reach `PurgeSummary.warnings`; `query_row(..).unwrap_or(0)` became `map_err(..)?` |
+| DEF-152 | RED Critical | `crates/zenith-core/src/engine/db.rs:850`, `:873` | Startup recovery opened the backups directory with `if let Ok(entries)`, so an unreadable directory skipped the whole scan and returned a report indistinguishable from a clean install | `RecoveryReport.unreadable_directories`, folded into `is_empty()` and `summary()`; a missing directory stays silent; two tests pin both cases, including the `Store::open` field-by-field copy that dropped the new field on first attempt |
+| DEF-149 | ORANGE High | `src-tauri/src/commands.rs:1276` | `let _ = state.save_preferences(..)` before the elevation handover, so a failed write started a UAC-elevated session in the previous theme and language with no message | `save_preferences(..)?` propagates before the ticket exists |
+| DEF-151 | AMBER Medium | `src-tauri/src/state.rs:295` | `let _ = std::fs::create_dir_all(parent)` made the following write fail with `ENOENT` on `preferences.json.tmp`, naming a file the user never asked for instead of the directory that could not be made | `create_dir_all(..).map_err(..)?` names the parent and the OS error |
+| DEF-153 | AMBER Medium | `src-tauri/src/logging.rs:120` | `rotate_if_needed` returned `()` with six `let _ =` inside and read size with `metadata(..).unwrap_or(0)`, so a locked log grew past the published `LOG_MAX_BYTES` with nothing said anywhere | Returns `Vec<String>`; `append` prints each failure to stderr and still writes the line; partial rotation is reported rather than pretended atomic |
+| DEF-154 | AMBER Medium | `src/ui/ActionGrid.tsx:188`, `:198` | The pin and hide buttons rendered `★` and `◌` as text while `icons.tsx` exists to hand-draw exactly those shapes, so the zero-fallback-icon rule held for the sidebar and not for the card tools | `PinIcon`, `UnpinIcon`, `HideIcon`, `ShowIcon` are inline SVG with `aria-hidden` and `focusable="false"`; the buttons now have no text content, so `aria-label` is the only name |
+| DEF-156 | AMBER Medium | `src/styles/app.css:510`, `:654` | The junk KPI label rendered as `GEÇİCİ DO...` in the shipped Turkish UI, and card footers on one grid row sat 43px apart because `flex: 1` on the description absorbed the spare height | `dt` wraps and the value is bottom-pinned; `margin-top: auto` on `.card-badges` pins badges and footer to the card edge; footers verified at one baseline |
+| DEF-157 | AMBER Medium | `src/styles/app.css:731` | Cards in one grid row had three footer heights (44, 70 and 88px), and the status label of the tallest broke in half at 36px tall: a single-row footer with `space-between` does not hold once three buttons must share the width with a status label | `.card-foot` is `column-reverse` with `align-items: stretch`, so every footer is one geometry regardless of button count; measured `footH` 70 and `statusH` 18 on every card, button rows on one baseline per row |
 
 Full narrative, evidence and negative proofs are in the deficiency register
 ([`10-02`](10-02-deficiency-register.md)). This table is the audit's index into it.
@@ -230,7 +230,7 @@ and the verdict says so.
 
 | Claim | Evidence | Where |
 | :--- | :--- | :--- |
-| The release gate passes end to end | 28-step chain, exit 0 | `evidence/verify-final.log` |
+| The release gate passes end to end | 31-step chain, exit 0 | `evidence/verify-final.log` |
 | The release binary renders its own UI | `location.href` is `http://tauri.localhost/`, 22 action cards, 5 tabs, 6 nav destinations | WebDriver probe; sweep journal |
 | Every screen renders without overflow, blank paint or console error | 10 of 10 states pass | `evidence/screens/*.png` |
 | Card footers share a baseline | `footBottom` equal across each grid row; footer spread 0 | `measure-cards.mjs` |
@@ -238,7 +238,7 @@ and the verdict says so.
 | Every unsafe block and unsafe impl is documented | 106 blocks + 2 impls, 108 `SAFETY` comments | `check:ffi` |
 | No emoji, no fallback glyph, no typographic dash in production sources | 0 hits across 120 files | glyph sweep, `check:dashes` |
 | The bundle is self-contained | manifest, cargo resolution and `dist/` freshness all measured | `check:bundle` |
-| Counts in the documents match the tree | 306 Rust tests, 166 vitest tests in 12 files, 527 catalogue keys, 158 register rows (149 closed, 9 open) | `check:doc-counts` |
+| Counts in the documents match the tree | 341 Rust tests, 196 vitest tests in 14 files, 527 catalogue keys, 158 register rows (149 closed, 9 open) | `check:doc-counts` |
 
 Every artefact above has a row in the evidence ledger
 ([`evidence/README.md`](../../evidence/README.md)), which `check:evidence-ledger` enforces.
@@ -252,15 +252,15 @@ because an audit that reports only what it fixed is a sales document:
 
 | ID | Severity | Why it is open |
 | :--- | :--- | :--- |
-| DEF-028 | 🟥 Critical for distribution | Requires an EV code-signing certificate, which is an owner purchase. The build signs with whatever certificate the machine has, and an unsigned installer is not shippable |
-| DEF-043 | 🟧 High | Screen-reader verification needs NVDA and Narrator on a real host. The a11y work is measured by `computeAccessibleName` and the focus-trap probe, but a synthetic name is not a listening session |
-| DEF-047 | 🟧 High | The T-WIN VM suite needs a clean Windows VM matrix. The suite is written; the hosts are not provisioned |
-| DEF-050 | 🟧 High | Continuous integration needs the repository to exist on a remote with runners. The workflow is written and the chain it runs is green locally |
-| DEF-057 | 🟨 Medium | Native-speaker review of the Turkish catalogue. The translations are complete and structurally checked; they are not reviewed by a native speaker |
-| DEF-058 | 🟨 Medium | The ARM64 target needs `aarch64-pc-windows-msvc` std installed, which is a toolchain decision |
-| DEF-059 | 🟨 Medium | The updater manifest must be signed with the same certificate as DEF-028 |
-| DEF-060 | 🟦 Low | The `enterprise-telemetry` feature flag is specified in `09-01` and not built. It is a paid-tier capability, deliberately out of 1.0.0 scope |
-| DEF-066 | 🟦 Low | `chrono` arrives transitively through `serde_with` into `tauri-utils`. Replacing it means patching an upstream dependency graph, and `check:deny` documents the exception |
+| DEF-028 | RED Critical for distribution | Requires an EV code-signing certificate, which is an owner purchase. The build signs with whatever certificate the machine has, and an unsigned installer is not shippable |
+| DEF-043 | ORANGE High | Screen-reader verification needs NVDA and Narrator on a real host. The a11y work is measured by `computeAccessibleName` and the focus-trap probe, but a synthetic name is not a listening session |
+| DEF-047 | ORANGE High | The T-WIN VM suite needs a clean Windows VM matrix. The suite is written; the hosts are not provisioned |
+| DEF-050 | ORANGE High | Continuous integration needs the repository to exist on a remote with runners. The workflow is written and the chain it runs is green locally |
+| DEF-057 | AMBER Medium | Native-speaker review of the Turkish catalogue. The translations are complete and structurally checked; they are not reviewed by a native speaker |
+| DEF-058 | AMBER Medium | The ARM64 target needs `aarch64-pc-windows-msvc` std installed, which is a toolchain decision |
+| DEF-059 | AMBER Medium | The updater manifest must be signed with the same certificate as DEF-028 |
+| DEF-060 | BLUE Low | The `enterprise-telemetry` feature flag is specified in `09-01` and not built. It is a paid-tier capability, deliberately out of 1.0.0 scope |
+| DEF-066 | BLUE Low | `chrono` arrives transitively through `serde_with` into `tauri-utils`. Replacing it means patching an upstream dependency graph, and `check:deny` documents the exception |
 
 An audit is a statement about the tree at a moment. This one is paired with a green gate and a
 measurement of the shipped artefact, which is the strongest form the statement can take here: the

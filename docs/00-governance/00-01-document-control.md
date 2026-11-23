@@ -119,13 +119,13 @@ Mechanical definition:
 
 | Gate | Condition | Evidence artifact | State today |
 | :--- | :--- | :--- | :--- |
-| G1 | Scorecard total ≥ 95.0 | [`10-01`](../10-audit/10-01-scorecard.md) | ✅ 98 (v2.0.0) |
-| G2 | Zero open 🟥 defects in `10-02` | [`10-02`](../10-audit/10-02-deficiency-register.md) | ❌ 3 open (028, 047, 050) |
-| G3 | Every requirement has a test mapping | [`02-03`](../02-requirements/02-03-traceability-matrix.md) | ✅ 118/118 |
-| G4 | Every action has diagnose / execute / rollback / i18n / script contract | [`03-05`](../03-architecture/03-05-actions-manifest.md) | ✅ 22/22 |
-| G5 | Every command has a typed schema and an error table | [`03-04`](../03-architecture/03-04-ipc-contract.md) | ✅ 15/15 |
-| G6 | Threat model has no unmitigated High finding | [`04-01`](../04-security/04-01-threat-model.md) §8 | ✅ |
-| G7 | Owner signature | This document §7 | ❌ pending |
+| G1 | Scorecard total ≥ 95.0 | [`10-01`](../10-audit/10-01-scorecard.md) | PASS 98 (v2.0.0) |
+| G2 | Zero open RED defects in `10-02` | [`10-02`](../10-audit/10-02-deficiency-register.md) | FAIL 3 open (028, 047, 050) |
+| G3 | Every requirement has a test mapping | [`02-03`](../02-requirements/02-03-traceability-matrix.md) | PASS 118/118 |
+| G4 | Every action has diagnose / execute / rollback / i18n / script contract | [`03-05`](../03-architecture/03-05-actions-manifest.md) | PASS 22/22 |
+| G5 | Every command has a typed schema and an error table | [`03-04`](../03-architecture/03-04-ipc-contract.md) | PASS 15/15 |
+| G6 | Threat model has no unmitigated High finding | [`04-01`](../04-security/04-01-threat-model.md) §8 | PASS |
+| G7 | Owner signature | This document §7 | FAIL pending |
 
 **Honest position.** G1, G3-G6 hold; G2 and G7 do not. Implementation proceeded in parallel with
 documentation rather than after a freeze, which is a deliberate deviation from the original gate

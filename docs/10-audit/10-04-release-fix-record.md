@@ -24,15 +24,15 @@ what was actually changed, in what order, and how the change was proved.
 
 | Defect | Severity | Files touched | Tests added | Proof |
 | :--- | :--- | ---: | ---: | :--- |
-| DEF-155 | 🟥 Critical | 2 | 0 (gate instead) | `check:bundle` passes; binary loads `http://tauri.localhost/` |
-| DEF-150 | 🟥 Critical | 2 | 1 | `a_purge_reports_a_directory_it_could_not_clear` |
-| DEF-152 | 🟥 Critical | 1 | 2 | `an_unreadable_backups_directory_crosses_the_open_boundary` |
-| DEF-149 | 🟧 High | 1 | 0 (existing check) | `cargo check -p zenith --tests` clean |
-| DEF-151 | 🟨 Medium | 1 | 0 (existing check) | `cargo check -p zenith --tests` clean |
-| DEF-153 | 🟨 Medium | 1 | 2 | `rotation_reports_a_failure_instead_of_silently_missing_the_cap` |
-| DEF-154 | 🟨 Medium | 3 | 0 (strengthened) | glyph sweep 0 hits; render test asserts empty `textContent` |
-| DEF-156 | 🟨 Medium | 1 | 0 (measured) | footer spread 0, KPI `clipped: false` |
-| DEF-157 | 🟨 Medium | 1 | 0 (measured) | every card `footH` 70, `statusH` 18, one baseline per row |
+| DEF-155 | RED Critical | 2 | 0 (gate instead) | `check:bundle` passes; binary loads `http://tauri.localhost/` |
+| DEF-150 | RED Critical | 2 | 1 | `a_purge_reports_a_directory_it_could_not_clear` |
+| DEF-152 | RED Critical | 1 | 2 | `an_unreadable_backups_directory_crosses_the_open_boundary` |
+| DEF-149 | ORANGE High | 1 | 0 (existing check) | `cargo check -p zenith --tests` clean |
+| DEF-151 | AMBER Medium | 1 | 0 (existing check) | `cargo check -p zenith --tests` clean |
+| DEF-153 | AMBER Medium | 1 | 2 | `rotation_reports_a_failure_instead_of_silently_missing_the_cap` |
+| DEF-154 | AMBER Medium | 3 | 0 (strengthened) | glyph sweep 0 hits; render test asserts empty `textContent` |
+| DEF-156 | AMBER Medium | 1 | 0 (measured) | footer spread 0, KPI `clipped: false` |
+| DEF-157 | AMBER Medium | 1 | 0 (measured) | every card `footH` 70, `statusH` 18, one baseline per row |
 
 Totals: **five tests added, one gate added, one step added to the release chain.**
 

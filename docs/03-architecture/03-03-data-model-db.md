@@ -316,11 +316,11 @@ SYSTEM/Administrator (ADR-006).
 
 | Threat | Protected |
 | :--- | :--- |
-| Standard user edits `payload_json` | ✅ tag invalid |
-| Standard user copies a snapshot to another machine | ✅ key differs |
-| Malware running as the same standard user | ✅ |
-| Malware running elevated | ❌ (it can read the key - accepted; elevated malware already owns the machine) |
-| Disk corruption | ✅ detected |
+| Standard user edits `payload_json` | PASS tag invalid |
+| Standard user copies a snapshot to another machine | PASS key differs |
+| Malware running as the same standard user | PASS |
+| Malware running elevated | FAIL (it can read the key - accepted; elevated malware already owns the machine) |
+| Disk corruption | PASS detected |
 
 ---
 

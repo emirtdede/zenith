@@ -118,16 +118,16 @@
 
 | ID | Requirement | State in 1.0.0 |
 | :--- | :--- | :--- |
-| REQ-N-070 | Windows 11 23H2 (22631), 24H2 (26100), 25H2 (26200), 26H2 (26300+) - full support | ✅ declared target; T-WIN VM suite open (DEF-047) |
-| REQ-N-071 | Windows 10 22H2 (19045) - supported with ESU lifecycle banner | ⚠️ declared, **unverified**; no 22H2 VM run (DEF-047) |
-| REQ-N-072 | x64 and ARM64 builds; ARM64 emulation not required | ❌ **x64 only**; ARM64 not built (DEF-058) |
-| REQ-N-073 | WebView2 Runtime ≥ 120 assumed; bootstrapper + offline installer bundled | ✅ NSIS bootstrapper; pinned in `resources/manifest.json` |
-| REQ-N-074 | Display 960×680 minimum, 3840×2160 maximum tested, 100-200% scaling | ⚠️ min window enforced; zoom capture open (DEF-044) |
-| REQ-N-075 | High-contrast OS theme respected without breaking the token system | ✅ tokens derive from OS theme (`05-01`) |
-| REQ-N-076 | No dependency on PowerShell 7; Windows PowerShell 5.1 is the floor for exported scripts | ✅ scripts target 5.1 |
-| REQ-N-077 | Exported `.bat` must run on cmd.exe 10.0.19045+ | ✅ no PS7-only syntax |
+| REQ-N-070 | Windows 11 23H2 (22631), 24H2 (26100), 25H2 (26200), 26H2 (26300+) - full support | PASS declared target; T-WIN VM suite open (DEF-047) |
+| REQ-N-071 | Windows 10 22H2 (19045) - supported with ESU lifecycle banner | WARN declared, **unverified**; no 22H2 VM run (DEF-047) |
+| REQ-N-072 | x64 and ARM64 builds; ARM64 emulation not required | FAIL **x64 only**; ARM64 not built (DEF-058) |
+| REQ-N-073 | WebView2 Runtime ≥ 120 assumed; bootstrapper + offline installer bundled | PASS NSIS bootstrapper; pinned in `resources/manifest.json` |
+| REQ-N-074 | Display 960×680 minimum, 3840×2160 maximum tested, 100-200% scaling | WARN min window enforced; zoom capture open (DEF-044) |
+| REQ-N-075 | High-contrast OS theme respected without breaking the token system | PASS tokens derive from OS theme (`05-01`) |
+| REQ-N-076 | No dependency on PowerShell 7; Windows PowerShell 5.1 is the floor for exported scripts | PASS scripts target 5.1 |
+| REQ-N-077 | Exported `.bat` must run on cmd.exe 10.0.19045+ | PASS no PS7-only syntax |
 
-The three ⚠️/❌ rows are not rounding errors. REQ-N-071/072 name platforms the 1.0.0 build does not
+The three WARN/FAIL rows are not rounding errors. REQ-N-071/072 name platforms the 1.0.0 build does not
 prove: ARM64 is a different target, and 22H2 needs its own VM image. Both are tracked as DEF-058 and
 DEF-047 and gated in `08-02` §8 phase 3. A requirements table that marked them "done" because the
 code compiles on one machine would be exactly the overstatement `00-01` L1 forbids.

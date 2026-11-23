@@ -36,7 +36,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SKIP = /node_modules|[\\/]target[\\/]|[\\/]dist[\\/]|[\\/]\.git[\\/]|resources[\\/]licenses|resources[\\/]sbom|evidence[\\/]screens|[\\/]tools[\\/]/;
+const SKIP = /node_modules|[\\/]target[\\/]|[\\/]dist[\\/]|[\\/]\.git[\\/]|resources[\\/]licenses|resources[\\/]sbom|evidence[\\/]screens|[\\/]tools[\\/]|\[EK-[^\]]+\]/;
 const EXTS = /\.(ts|tsx|rs|mjs|js|md|json|toml|css|html|ps1|yml|yaml|nsh|txt|xml|sql)$/i;
 
 const EM = String.fromCharCode(0x2014);

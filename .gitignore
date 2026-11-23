@@ -16,6 +16,14 @@ coverage/
 # absent) - the exact class of defect that only a fresh checkout exposes.
 !evidence/**/*.log
 
+# External specification attachments. These are the two reference documents the
+# redesign was measured against, kept locally for the audit trail. They are not
+# product copy: `check:dashes`, `check:emoji`, and gitleaks all skip them on
+# purpose, because they are someone else's text quoted as a requirement. They do
+# not belong in the published tree.
+[[]EK-A]*.txt
+[[]EK-B]*.txt
+
 # Editor and OS noise.
 .vscode/
 .idea/

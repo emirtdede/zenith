@@ -5,7 +5,7 @@
 | Document ID | ZEN-L10N-001 |
 | Version | 2.0.0 |
 | Owner | Frontend / Localization |
-| Shipped locales | `en` (source), `tr` (reviewed) - 533 keys each |
+| Shipped locales | `en` (source), `tr` (reviewed) - 866 keys each |
 | Gate | `node scripts/check-locales.mjs` |
 | Closes | DEF-005 (flat key/value, no plurals), DEF-006 (English errors in a Turkish UI) |
 
@@ -21,12 +21,12 @@ the gate.
 
 | Locale | Tier | Status | Keys | Evidence |
 | :--- | :--- | :--- | ---: | :--- |
-| `en` | A | Source of truth | 533 | `src/i18n/en.ts` |
-| `tr` | A | Translated + reviewed, full parity | 533 | `src/i18n/tr.ts` |
+| `en` | A | Source of truth | 866 | `src/i18n/en.ts` |
+| `tr` | A | Translated + reviewed, full parity | 866 | `src/i18n/tr.ts` |
 
 ```text
 $ node scripts/check-locales.mjs
-All 2 locales agree with English on 533 keys.
+All 2 locales agree with English on 866 keys.
 ```
 
 Parity is necessary but not sufficient, and DEF-089 is the reason this document says so: the gate was
@@ -40,7 +40,7 @@ immediately after `check:locales` at step 1:
 | `scripts/check-unused-keys.mjs` | Is every catalogue key referenced by `src/`? | 52 unreachable keys: 30 described behaviour that did not exist (deleted) and 22 described measured data the UI never showed (wired) |
 | `scripts/check-step-keys.mjs` | Does every `steps.*` / `error.*` / `remedy.*` key the core can emit exist in **both** catalogues - and does every `steps.*` key have an emitter? | DEF-088's missing `steps.processSelfRefused`, and any dead `steps.*` key |
 
-The shipped total is **533** keys in each catalogue, 39 of them `steps.*` and 20 `remedy.*` (59
+The shipped total is **866** keys in each catalogue, 39 of them `steps.*` and 20 `remedy.*` (59
 core-owned). The 442 figure this paragraph used to carry described an intermediate tree: 30 dead keys
 were deleted and one live key (`steps.processSelfRefused`, DEF-090) was added, and the renderer work
 afterwards grew the catalogue to its measured size. A catalogue's size is not a quality measure; its

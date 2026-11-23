@@ -20,17 +20,17 @@ proves it. `02-03` maps 118 functional requirements into exactly these nine pack
 
 | WP | Title | Requirements | Status | Gate |
 | :--- | :--- | ---: | :--- | :--- |
-| WP-1 | Manifest, models, generated catalogue | 9 | ✅ done | `catalog_in_sync`, `manifest::*` |
-| WP-2 | i18n engine + `en`/`tr` | 8 | ✅ done | `check-locales` |
-| WP-3 | Core engine: db, snapshot, retention, purge | 18 | ✅ done | `cargo test -p zenith-core` |
-| WP-4 | Win32 adapters, IPC, elevation handover | 34 | ✅ done (VM suite open) | `cargo test`, `check-contract` |
-| WP-5 | Bridge + simulator + store | 6 | ✅ done | `check-simulator`, `tsc` |
-| WP-6 | UI: 6 screens, 5 overlays, 3 themes | 23 | ✅ done | `vite build`, `check-contrast`, 38 render tests |
-| WP-7 | Safe preset, script export, trust, privacy | 12 | ✅ done | `cargo test`, `05-*` |
-| WP-8 | Signing, SBOM, VM matrix, release | 2 | ⚠️ **partial** - pipeline built, certificate/CI/VMs missing | `sign-release.ps1` rehearsed; blockers DEF-028/047/050 (`08-02` §1) |
-| WP-9 | Headless CLI, support bundle, log | 6 | ✅ done | `07-02`, `cli::`/`headless::` |
+| WP-1 | Manifest, models, generated catalogue | 9 | PASS done | `catalog_in_sync`, `manifest::*` |
+| WP-2 | i18n engine + `en`/`tr` | 8 | PASS done | `check-locales` |
+| WP-3 | Core engine: db, snapshot, retention, purge | 18 | PASS done | `cargo test -p zenith-core` |
+| WP-4 | Win32 adapters, IPC, elevation handover | 34 | PASS done (VM suite open) | `cargo test`, `check-contract` |
+| WP-5 | Bridge + simulator + store | 6 | PASS done | `check-simulator`, `tsc` |
+| WP-6 | UI: 6 screens, 5 overlays, 3 themes | 23 | PASS done | `vite build`, `check-contrast`, 38 render tests |
+| WP-7 | Safe preset, script export, trust, privacy | 12 | PASS done | `cargo test`, `05-*` |
+| WP-8 | Signing, SBOM, VM matrix, release | 2 | WARN **partial** - pipeline built, certificate/CI/VMs missing | `sign-release.ps1` rehearsed; blockers DEF-028/047/050 (`08-02` §1) |
+| WP-9 | Headless CLI, support bundle, log | 6 | PASS done | `07-02`, `cli::`/`headless::` |
 
-Statuses match `07-01` §3. A ✅ here means the command in the gate column ran and passed; it does not
+Statuses match `07-01` §3. A PASS here means the command in the gate column ran and passed; it does not
 mean every sub-feature is complete, which is why two rows carry a parenthetical.
 
 ---
@@ -54,11 +54,11 @@ generator and the test, so an edited manifest without regenerating fails byte co
 | Deliverable | File |
 | :--- | :--- |
 | ICU subset formatter, callable translator | `src/i18n/index.tsx` |
-| English catalogue (533 keys) | `src/i18n/en.ts` |
-| Turkish catalogue (533 keys, exact parity) | `src/i18n/tr.ts` |
+| English catalogue (866 keys) | `src/i18n/en.ts` |
+| Turkish catalogue (866 keys, exact parity) | `src/i18n/tr.ts` |
 | Parity gate | `scripts/check-locales.mjs` |
 
-**Gate.** `node scripts/check-locales.mjs` → `All 2 locales agree with English on 533 keys`, keys/placeholders/ICU branches match.
+**Gate.** `node scripts/check-locales.mjs` → `All 2 locales agree with English on 866 keys`, keys/placeholders/ICU branches match.
 ADR-023's two-tier locale plan is documented; 1.0.0 ships only the two reviewed locales (see `10-02`
 DEF-057 for the 73-locale claim closure). Reachability is gated separately - `check-unused-keys`
 (0 of 453 unreachable) and `check-step-keys` (every core-emitted key present in both catalogues) - because
@@ -82,7 +82,7 @@ DEF-089 proved that, at the time, parity alone was green while 52 keys could not
 
 | Deliverable | File |
 | :--- | :--- |
-| 11 Win32 adapter modules, 106 `unsafe` blocks, each `// SAFETY:`-commented | `crates/zenith-core/src/adapters/` |
+| 11 Win32 adapter modules, 115 `unsafe` blocks, each `// SAFETY:`-commented | `crates/zenith-core/src/adapters/` |
 | 15 IPC commands | `src-tauri/src/commands.rs` |
 | Single-use handover ticket (nonce + SID + expiry) | `src-tauri/src/handover.rs` |
 | Contract gate | `scripts/check-contract.mjs` |
@@ -109,11 +109,11 @@ Summarised because their evidence is in `05-*` and `07-01`:
 
 | Deliverable | Status | Evidence |
 | :--- | :--- | :--- |
-| Log writer (redaction, rotation, bounds) | ✅ | `logging::*` (3 tests) |
-| Retention/quarantine maintenance caller | ✅ | `maintenance::*` (6 tests) |
-| Support bundle (allowlist, budget, redaction) | ✅ | `support::*` (3 tests) |
-| Audit export (CSV/JSON via `file_save_text`) | ✅ done | Snapshots screen buttons → `src/export.ts`; RFC 4180 CSV + versioned JSON (DEF-055 closed) |
-| Headless CLI (`--headless`, `--dry-run`, `--json`) | ✅ | `cli::*` (15), `headless::*` (3) |
+| Log writer (redaction, rotation, bounds) | PASS | `logging::*` (3 tests) |
+| Retention/quarantine maintenance caller | PASS | `maintenance::*` (6 tests) |
+| Support bundle (allowlist, budget, redaction) | PASS | `support::*` (3 tests) |
+| Audit export (CSV/JSON via `file_save_text`) | PASS done | Snapshots screen buttons → `src/export.ts`; RFC 4180 CSV + versioned JSON (DEF-055 closed) |
+| Headless CLI (`--headless`, `--dry-run`, `--json`) | PASS | `cli::*` (15), `headless::*` (3) |
 
 **Gate for the completed parts.** Cargo accepts one test-name filter, so these are four
 invocations, not two - the previous form failed with `unexpected argument`, which is a gate

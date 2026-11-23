@@ -1,0 +1,59 @@
+name: Feature request
+description: Propose a capability or a change in behaviour.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Zenith is deliberately small. A proposal that adds a new mutation has to
+        answer a higher bar than one that improves an existing screen: every
+        action must declare how far it can be undone, and a permanent action has
+        to say so before the click.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is the user unable to do today? Describe the situation, not the implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Diagnosis
+        - An action (repair)
+        - Snapshots and rollback
+        - Settings and appearance
+        - Accessibility
+        - Localisation
+        - CLI, MCP, or the local API
+        - Webhook
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: reversibility
+    attributes:
+      label: If this changes the machine, how is it undone?
+      description: Leave this empty when the proposal is read-only.
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints this proposal respects
+      options:
+        - label: No telemetry is added, or it is opt-in and disclosed
+        - label: No account is required
+        - label: The result can be explained in one sentence without a marketing claim

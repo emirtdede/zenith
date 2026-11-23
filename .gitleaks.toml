@@ -1,0 +1,36 @@
+# gitleaks configuration for the Zenith release gate.
+#
+# The default rule set is used unchanged. This file adds only the exemptions a
+# redaction library needs and a build tree creates; it never disables a rule.
+#
+# Every allowlisted string below is a **published example credential**, not a
+# live one: GitHub's own documentation token, AWS's documentation key, and the
+# jwt.io sample JWT. They exist in `redact.rs` and `child.rs` precisely so the
+# tests can prove that the redactor removes them, and in `04-02` as the example
+# command line the document says is redacted. Allowlisting the exact value keeps
+# the rules armed for everything else in those files.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Build output and published example credentials used by the redaction tests"
+paths = [
+  '''^target/''',
+  '''^node_modules/''',
+  '''^dist/''',
+  '''^resources/licenses/''',
+  '''^resources/sbom/''',
+  '''^evidence/screens/''',
+  '''^tools/''',
+  '''\[EK-[^\]]+\]''',
+]
+regexes = [
+  '''ghp_16C7e42F292c6912E7710c838347Ae178B4a''',
+  '''ghp_0123456789abcdefghijklmnopqrstuvwxyz''',
+  '''AKIAIOSFODNN7EXAMPLE''',
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NSJ9\.[A-Za-z0-9_-]+''',
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.[A-Za-z0-9_-]+''',
+  '''abcd1234efgh''',
+  '''S3cr3tP@ss''',
+]

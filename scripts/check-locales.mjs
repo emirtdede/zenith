@@ -26,7 +26,17 @@ const i18nDir = join(here, "..", "src", "i18n");
 function parseCatalogue(file) {
   const source = readFileSync(file, "utf8");
   const entries = new Map();
-  const re = /^\s*"([a-zA-Z0-9._]+)":\s*"((?:[^"\\]|\\.)*)"/gm;
+  // The value may start on the next line: the catalogues are formatted, and a
+  // long sentence is wrapped after the colon. Without the `s` flag those keys
+  // were invisible here while `check-doc-counts` counted them, so the two gates
+  // disagreed about the size of the catalogue by exactly the number of wrapped
+  // strings.
+  //
+  // The key class includes `-` because the notification keys are hyphenated
+  // (`notify.profile.in-app-only`, `notify.kind.action-complete`). Without it
+  // eight keys were never parity-checked: a missing Turkish translation of the
+  // "In-app only" preset would have rendered as a raw key in Settings.
+  const re = /^\s*"([a-zA-Z0-9._-]+)":\s*"((?:[^"\\]|\\.)*)"/gms;
   let match;
   while ((match = re.exec(source)) !== null) {
     entries.set(match[1], match[2]);
@@ -89,7 +99,13 @@ const files = readdirSync(i18nDir).filter(
     name.endsWith(".ts") &&
     !name.endsWith(".test.ts") &&
     name !== "format.ts" &&
-    name !== "index.tsx",
+    name !== "index.tsx" &&
+    // A catalogue is identified by its content, not by living in this folder:
+    // `languages.ts` and the `chrome/` layer are registries, and parsing them as
+    // catalogues would report every key as missing from a file that was never
+    // meant to hold one. The marker is the product name every full catalogue
+    // must carry.
+    readFileSync(join(i18nDir, name), "utf8").includes('"app.name"'),
 );
 if (!files.includes("en.ts")) {
   console.error("src/i18n/en.ts is missing; it is the schema every locale is checked against.");
