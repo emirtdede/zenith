@@ -46,6 +46,7 @@ of a command named below, and the command is what to run if the file and the cod
 | `verify-final3.log` | `npm run verify` | superseded; the 442-key / 110-test run |
 | `verify-final2.log` | `npm run verify` | superseded; the 15-step chain |
 | `e2e-final.log` | `node scripts/e2e-journeys.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | 3 journeys, 11 steps, 0 failures, exit 0 |
+| `repo-settings.log` | `gh api repos/emirtdede/zenith --jq '{visibility, default_branch, license, topics, security_and_analysis}'` | the repository settings the checklists cite: public, MIT, six topics, secret scanning enabled, push protection enabled, Dependabot security updates enabled |
 | `tauri-build-current.log` | `npm run tauri build` | NSIS installer, 3.14 MiB, exit 0 (2026-11-24, identity `release-20261123`); the run that wrapped the redesigned `target/release/zenith.exe` after the notification delivery work, the boot skeleton, and the context menu rewrite. `check-build-identity` passes against these bytes. The 2.77 MiB bundle it replaced was built on 2026-11-22 against an older renderer |
 | `tauri-build-final.log` | `npm run tauri build` | superseded by `tauri-build-current.log`; at the time of that run the bytes were `6,155,776` / `2,908,841` (`6718A795…` / `25AA362C…`) |
 | `tauri-build-final9.log` | `npm run tauri build` | NSIS bundle at 2.77 MiB, exit 0 (2026-11-21) - superseded by `build-final13.log`; recorded because it is the run where the installer first bundled instead of falling back to a bare executable |

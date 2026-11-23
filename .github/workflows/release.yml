@@ -1,0 +1,129 @@
+name: release
+
+# The publish path, and only the publish path. `verify.yml` answers "is this tree
+# correct"; this workflow answers "can that answer be attached to a downloadable
+# file that a user can check". They are separate on purpose: a tag is the only
+# thing that starts a release, and a release is the only thing that uploads a
+# binary.
+#
+# Every action is pinned to a full commit SHA for the same reason `verify.yml`
+# pins them.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and attach, for example v1.0.0"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    name: Build and attest
+    runs-on: windows-2022
+    timeout-minutes: 240
+
+    steps:
+      - name: Check out the tagged tree
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Node 24.22.3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Rust 1.90.0
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+          rustup default 1.90.0
+          rustc --version
+          cargo --version
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build the renderer
+        run: npm run build
+
+      # A release builds files that people install. Running the chain here is not
+      # duplication for its own sake: the artefact must come from a tree that
+      # passed the gate, and "it passed on the branch" is a claim about a
+      # different commit as soon as the tag moves.
+      - name: Release gate (31 steps)
+        run: npm run verify
+
+      # `tauri::generate_context!` embeds the frontend only; the identity the
+      # Trust Center shows comes from this variable. A date stamp is used rather
+      # than the commit hash because `check-build-identity.mjs` reads it as
+      # `release-YYYYMMDD`, and a CI rebuild of the same tag on a later day is
+      # then a different, honest build rather than a silent one.
+      - name: Build the installer with a release identity
+        shell: pwsh
+        run: |
+          $stamp = "release-$((Get-Date).ToUniversalTime().ToString('yyyyMMdd'))"
+          "ZENITH_BUILD_COMMIT=$stamp" >> $env:GITHUB_ENV
+          $env:ZENITH_BUILD_COMMIT = $stamp
+          npm run tauri build
+
+      - name: Prove the identity matches the bytes
+        shell: pwsh
+        run: node scripts/check-build-identity.mjs
+
+      - name: Write the checksum file
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          $lines = @(
+            "$((Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower())  $($installer.Name)"
+          )
+          $binary = "target/release/zenith.exe"
+          if (Test-Path $binary) {
+            $lines += "$((Get-FileHash $binary -Algorithm SHA256).Hash.ToLower())  zenith.exe"
+          }
+          $lines | Set-Content -Encoding ascii "target/release/bundle/nsis/SHA256SUMS.txt"
+          Get-Content "target/release/bundle/nsis/SHA256SUMS.txt"
+
+      # The attestation is the difference between "the maintainer says these
+      # bytes came from this commit" and "the maintainer's CI can prove it".
+      - name: Attest the installer
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        with:
+          subject-path: |
+            target/release/bundle/nsis/*.exe
+            target/release/zenith.exe
+
+      # A draft, not a publication. The installer is not Authenticode-signed yet
+      # (DEF-028), so the release exists with its assets, its checksums, and its
+      # attestation, and the last step - pressing publish - stays a decision a
+      # person makes after reading the signature status.
+      - name: Attach assets to a draft release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: Zenith ${{ github.event.inputs.tag || github.ref_name }}
+          body_path: docs/11-release/11-04-release-notes-1.0.0.md
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            target/release/bundle/nsis/*.exe
+            target/release/bundle/nsis/SHA256SUMS.txt
