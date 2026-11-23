@@ -1,6 +1,6 @@
 name: verify
 
-# The same gate a release depends on: `npm run verify`, twenty-six steps,
+# The same gate a release depends on: `npm run verify`, twenty-seven steps,
 # stopping at the first failure. A green run here is the only claim this
 # workflow makes; it does not build an installer or publish anything.
 #
@@ -97,10 +97,10 @@ jobs:
           cargo clippy --workspace --all-targets -- -D warnings
           if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      # Twenty-six steps. Each one is a named gate in `package.json`, and
+      # Twenty-seven steps. Each one is a named gate in `package.json`, and
       # `check:verify-chain` fails if the chain gains or loses a step without the
       # test plan being updated to say so.
-      - name: Release gate (26 steps)
+      - name: Release gate (27 steps)
         run: npm run verify
 
       # A failed run is only useful if the output survives. The gate writes

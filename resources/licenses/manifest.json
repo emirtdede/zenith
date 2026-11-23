@@ -3,13 +3,13 @@
   "generator": "scripts/generate-licenses.mjs",
   "target": "x86_64-pc-windows-msvc",
   "sources": {
-    "Cargo.lock": "f08c89d5a092a808aaf32342cc538077ad3073fb41a79ef839d84ad2fdb0b276",
+    "Cargo.lock": "efa20e7d13a2ad43e9e31e63008fc9d2744bf86dab483c0b62fb4af4ff11bc3f",
     "package-lock.json": "fae219ea544abc5ae14b71b922f75340f8e7ce61c70daa3f019e1cb6e07a213f"
   },
   "counts": {
-    "cargo": 273,
+    "cargo": 270,
     "npm": 4,
-    "components": 277,
+    "components": 274,
     "licenceTexts": 57
   },
   "licenceIds": [
@@ -2371,24 +2371,6 @@
     },
     {
       "ecosystem": "cargo",
-      "name": "lock_api",
-      "version": "0.5.0",
-      "license": "MIT OR Apache-2.0",
-      "repository": "https://github.com/Amanieu/parking_lot",
-      "authors": [
-        "Amanieu d'Antras <amanieu@gmail.com>"
-      ],
-      "copyright": [
-        "Copyright (c) 2016 The Rust Project Developers"
-      ],
-      "licenceFiles": [
-        "LICENSE-APACHE",
-        "LICENSE-MIT"
-      ],
-      "hasShippedText": true
-    },
-    {
-      "ecosystem": "cargo",
       "name": "log",
       "version": "0.4.35",
       "license": "MIT OR Apache-2.0",
@@ -2638,42 +2620,6 @@
       "ecosystem": "cargo",
       "name": "parking_lot",
       "version": "0.12.5",
-      "license": "MIT OR Apache-2.0",
-      "repository": "https://github.com/Amanieu/parking_lot",
-      "authors": [
-        "Amanieu d'Antras <amanieu@gmail.com>"
-      ],
-      "copyright": [
-        "Copyright (c) 2016 The Rust Project Developers"
-      ],
-      "licenceFiles": [
-        "LICENSE-APACHE",
-        "LICENSE-MIT"
-      ],
-      "hasShippedText": true
-    },
-    {
-      "ecosystem": "cargo",
-      "name": "parking_lot",
-      "version": "0.13.0",
-      "license": "MIT OR Apache-2.0",
-      "repository": "https://github.com/Amanieu/parking_lot",
-      "authors": [
-        "Amanieu d'Antras <amanieu@gmail.com>"
-      ],
-      "copyright": [
-        "Copyright (c) 2016 The Rust Project Developers"
-      ],
-      "licenceFiles": [
-        "LICENSE-APACHE",
-        "LICENSE-MIT"
-      ],
-      "hasShippedText": true
-    },
-    {
-      "ecosystem": "cargo",
-      "name": "parking_lot_core",
-      "version": "0.10.0",
       "license": "MIT OR Apache-2.0",
       "repository": "https://github.com/Amanieu/parking_lot",
       "authors": [
@@ -5310,5 +5256,5 @@
     }
   ],
   "notices": "THIRD-PARTY-NOTICES.txt",
-  "noticesSha256": "13edbfa6b4ebc92cf3ef8330c2ce2975410263331c32960083ff1329b40e99de"
+  "noticesSha256": "f3abd3c1a98ad875272dd10f4a1baa0134c64d7e6c7ee8720f781308ad7f76b6"
 }

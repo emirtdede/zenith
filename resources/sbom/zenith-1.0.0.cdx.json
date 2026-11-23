@@ -1,7 +1,7 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:d945b303-6618-5bf2-bb78-7b3ca1ea40d2",
+  "serialNumber": "urn:uuid:17b8b82b-3d61-52d1-b775-610cf60d2c2e",
   "version": 1,
   "metadata": {
     "tools": [
@@ -2918,33 +2918,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/lock_api@0.5.0",
-      "name": "lock_api",
-      "version": "0.5.0",
-      "purl": "pkg:cargo/lock_api@0.5.0",
-      "description": "Wrappers to create fully-featured Mutex and RwLock types. Compatible with no_std.",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT OR Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "65d91b22da179613dcf4d6ec8349563f52a363f6849e03b00dd0a185ec4a59af"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/Amanieu/parking_lot"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/log@0.4.35",
       "name": "log",
       "version": "0.4.35",
@@ -3312,60 +3285,6 @@
         {
           "alg": "SHA-256",
           "content": "93857453250e3077bd71ff98b6a65ea6621a19bb0f559a85248955ac12c45a1a"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/Amanieu/parking_lot"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/parking_lot@0.13.0",
-      "name": "parking_lot",
-      "version": "0.13.0",
-      "purl": "pkg:cargo/parking_lot@0.13.0",
-      "description": "More compact and efficient implementations of the standard synchronization primitives.",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT OR Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "a9cf937ca4e1d0b7578784559063422fc39ae7c5a00f02471f2614d5486fd226"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/Amanieu/parking_lot"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/parking_lot_core@0.10.0",
-      "name": "parking_lot_core",
-      "version": "0.10.0",
-      "purl": "pkg:cargo/parking_lot_core@0.10.0",
-      "description": "An advanced API for creating custom synchronization primitives.",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT OR Apache-2.0"
-          }
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "9cfff060068cc18aa7815010fcaf80c68c7fb9e85fc7f5c0f9bf142c21d19826"
         }
       ],
       "externalReferences": [
@@ -7590,7 +7509,6 @@
         "pkg:cargo/libsqlite3-sys@0.40.0",
         "pkg:cargo/litemap@0.8.3",
         "pkg:cargo/lock_api@0.4.14",
-        "pkg:cargo/lock_api@0.5.0",
         "pkg:cargo/log@0.4.35",
         "pkg:cargo/markup5ever@0.39.0",
         "pkg:cargo/memchr@2.8.3",
@@ -7605,8 +7523,6 @@
         "pkg:cargo/once_cell@1.21.4",
         "pkg:cargo/option-ext@0.2.0",
         "pkg:cargo/parking_lot@0.12.5",
-        "pkg:cargo/parking_lot@0.13.0",
-        "pkg:cargo/parking_lot_core@0.10.0",
         "pkg:cargo/parking_lot_core@0.9.12",
         "pkg:cargo/percent-encoding@2.3.2",
         "pkg:cargo/phf@0.13.1",

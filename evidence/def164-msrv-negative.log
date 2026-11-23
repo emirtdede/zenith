@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def164.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T05:52:06.276Z
+# exit: 0
+baseline                    exit 0  green
+rust-version 1.90 -> 1.85   exit 1  caught
+rust-version removed        exit 1  caught
+rust-version "latest"       exit 1  caught
+restored                    exit 0  green
+restore byte-identical: yes
+
+All 3 mutations caught with the intended message; baseline and restored tree both green.

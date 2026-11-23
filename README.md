@@ -107,7 +107,7 @@ Every action is declared once in a Rust manifest and generated into the renderer
 ### ![Flask](https://img.shields.io/badge/-Built_to_Be_Verified-1f6feb?style=flat-square) 306 Rust Tests, 166 Frontend Tests, 26 Gates
 
 - **306 Rust tests** and **166 Vitest tests** across 12 files.
-- A **26-step release gate** (`npm run verify`) that stops at the first failure, from locale parity to FFI safety to a self-contained-bundle proof of the shipped binary.
+- A **27-step release gate** (`npm run verify`) that stops at the first failure, from locale parity to FFI safety to a self-contained-bundle proof of the shipped binary.
 - A **file-by-file pre-deployment audit** with a verdict for every production source file, and a fix record for every change it produced: [`10-03`](docs/10-audit/10-03-pre-deployment-qa.md), [`10-04`](docs/10-audit/10-04-release-fix-record.md).
 
 ---
@@ -142,7 +142,7 @@ Every action is declared once in a Rust manifest and generated into the renderer
 
 ### Build, Test and Release
 
-- **`npm run verify`**: a **26-step** chain that runs the frontend gate, the Rust tests, the production build and a bundle proof, in that order.
+- **`npm run verify`**: a **27-step** chain that runs the frontend gate, the Rust tests, the production build and a bundle proof, in that order.
 - **`cargo test --workspace`**: 306 tests across the core and the shell.
 - **`npm run test`**: 166 Vitest tests across 12 files.
 - **GitHub Actions**: CI on `main` and `development`, running the same gate the release depends on.
@@ -153,7 +153,7 @@ Every action is declared once in a Rust manifest and generated into the renderer
 
 ```tree
 Zenith/
-├── .github/workflows/            # CI: the same 26-step gate, on Windows
+├── .github/workflows/            # CI: the same 27-step gate, on Windows
 ├── crates/zenith-core/           # The engine: measurement, planning, execution, snapshots
 │   ├── src/adapters/             # OS seams: probes, cleanup, child processes, DPAPI, privilege
 │   ├── src/engine/               # executor, pipeline, db, purge, recovery, health, support
@@ -260,7 +260,7 @@ node resources/fetch.mjs     # fetch and hash-verify the pinned build assets
 npm run dev                  # Vite on 1420, Tauri dev window
 npm run tauri dev
 
-# The release gate: 26 steps, stops at the first failure
+# The release gate: 27 steps, stops at the first failure
 npm run verify
 
 # Desktop end-to-end (needs tauri-driver and msedgedriver)
@@ -287,7 +287,7 @@ The full set is indexed in [`docs/README.md`](docs/README.md). The documents a r
 | [`03-05` Actions Manifest](docs/03-architecture/03-05-actions-manifest.md) | The contract behind every one of the 22 actions |
 | [`03-06` Win32 FFI Safety](docs/03-architecture/03-06-win32-ffi-safety.md) | The rule every `unsafe` block obeys |
 | [`04-01` Threat Model](docs/04-security/04-01-threat-model.md) | Assets, adversaries, and what fails closed |
-| [`07-01` Test Plan](docs/07-quality/07-01-test-plan.md) | Seams, matrix, and the 26-step gate |
+| [`07-01` Test Plan](docs/07-quality/07-01-test-plan.md) | Seams, matrix, and the 27-step gate |
 | [`10-02` Deficiency Register](docs/10-audit/10-02-deficiency-register.md) | Every defect, its owner and its closure evidence |
 | [`10-03` Pre-Deployment QA](docs/10-audit/10-03-pre-deployment-qa.md) | A verdict for every production source file |
 

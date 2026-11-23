@@ -132,6 +132,7 @@ if (docText) {
     24: "twenty-four",
     25: "twenty-five",
     26: "twenty-six",
+    27: "twenty-seven",
   };
   const word = words[stepCount];
   if (!word) {
