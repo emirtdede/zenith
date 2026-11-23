@@ -20,7 +20,7 @@ hmac = "0.12.1"
 hex = "0.4.3"
 rusqlite = { version = "0.43.0", features = ["bundled"] }
 walkdir = "2.5.0"
-parking_lot = "0.12.5"
+parking_lot = "0.13.0"
 zip = { version = "9.7.0", default-features = false, features = ["deflate"] }
 
 # Optimise dependencies even in dev profile: the DB and crypto crates are
