@@ -26,7 +26,7 @@ import type { Action } from "./state/store";
 
 const PREFS: Preferences = {
   locale: "en",
-  theme: "off-white",
+  theme: "obsidian",
   reduceMotion: false,
   telemetryEnabled: false,
 };
@@ -36,7 +36,7 @@ function snapshot(preferences: Partial<Preferences> = {}): AppStateSnapshot {
     version: "1.0.0",
     isElevated: false,
     locale: "en",
-    theme: "off-white",
+    theme: "obsidian",
     reduceMotion: false,
     telemetryEnabled: false,
     preferences: { ...PREFS, ...preferences },
@@ -108,11 +108,11 @@ describe("useActions.savePreferences (T-FE-15)", () => {
     const captured = harness(bridge);
 
     await act(async () => {
-      await captured.api?.savePreferences({ theme: "true-black" });
+      await captured.api?.savePreferences({ theme: "slate" });
     });
 
     await waitFor(() => expect(bridge.savePreferences).toHaveBeenCalled());
-    expect(bridge.savePreferences).toHaveBeenCalledWith({ theme: "true-black" });
+    expect(bridge.savePreferences).toHaveBeenCalledWith({ theme: "slate" });
 
     const calls = (bridge.savePreferences as unknown as { mock: { calls: unknown[][] } }).mock
       .calls;

@@ -1,22 +1,24 @@
 /*
- * Design tokens. Three themes, one shared geometry.
+ * Design tokens.
  *
- * Every colour pair here is held to WCAG 2.2 by `scripts/check-contrast.mjs`:
- * 4.5:1 for text, 3:1 for interactive boundaries and focus rings. The script
- * parses this file, so a change that breaks a ratio fails CI instead of shipping.
+ * One token vocabulary, fourteen palettes, two modes. The palette values are
+ * painted at runtime from `src/settings/themes.ts` (which reads
+ * `palettes.json`), so this file defines geometry, typography, motion and the
+ * semantic layer, and carries the default palette as a first-paint fallback.
  *
- * Naming follows intent, not appearance: `--danger` stays the same role whether
- * it is a deep red on off-white or a pale red on true black. Components never
- * name a raw colour.
+ * Every text pair is held to WCAG 2.2 by `scripts/check-contrast.mjs`, which
+ * parses the same JSON this module paints. A palette that fails 4.5:1 for text
+ * or 3:1 for a boundary fails CI rather than shipping.
  */
 
 :root {
   /* ------------------------------------------------------------ geometry */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
   --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
   --radius-pill: 999px;
 
   --space-1: 4px;
@@ -28,17 +30,36 @@
   --space-8: 32px;
   --space-10: 40px;
 
-  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  /*
+   * Typography. Display is Plus Jakarta Sans, body is DM Sans, code is JetBrains
+   * Mono - all three shipped locally, because a CDN font is both a privacy leak
+   * and a first-paint delay on a machine that may be offline when the app is
+   * needed most.
+   *
+   * The fallback stack after the bundled face is not decoration: Windows ships
+   * Nirmala UI (Devanagari), Leelawadee UI (Thai), Myanmar Text, Ebrima
+   * (Ethiopic), Malgun Gothic (Korean), Yu Gothic UI (Japanese) and the two
+   * Microsoft CJK UI faces. Naming them keeps a Hindi or Burmese label from
+   * falling through to a tofu box when the browser cannot synthesise a glyph.
+   */
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", "Nirmala UI",
+    "Leelawadee UI", "Myanmar Text", "Ebrima", "Malgun Gothic", "Yu Gothic UI",
+    "Microsoft YaHei UI", "Microsoft JhengHei UI", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Leelawadee UI",
+    "Myanmar Text", "Ebrima", "Malgun Gothic", "Yu Gothic UI", "Microsoft YaHei UI",
+    "Microsoft JhengHei UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  /* Legacy name kept so older rules keep one source for the body face. */
+  --font-ui: var(--font-body);
 
   --text-xs: 11.5px;
   --text-sm: 12.5px;
-  --text-base: 14px;
-  --text-md: 15.5px;
+  --text-base: 13.5px;
+  --text-md: 15px;
   --text-lg: 18px;
   --text-xl: 22px;
-  --text-2xl: 28px;
-  --text-3xl: 34px;
+  --text-2xl: 26px;
+  --text-3xl: 32px;
 
   --leading-tight: 1.2;
   --leading-snug: 1.35;
@@ -52,239 +73,143 @@
   --ring-width: 2px;
   --ring-offset: 2px;
 
-  /* Motion is a preference, not a style. `reduce` collapses every duration. */
-  --duration-instant: 80ms;
+  /* Motion. Durations and easings are the design system's, not per-component. */
+  --duration-instant: 90ms;
   --duration-fast: 140ms;
-  --duration-base: 220ms;
-  --duration-slow: 380ms;
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-base: 200ms;
+  --duration-slow: 340ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* --------------------------------------------------- default palette ---
+   * Obsidian, light. Painted over by themes.ts before the first interaction;
+   * present so the very first frame is the real palette and not a white flash.
+   */
+  --canvas: #fafafa;
+  --surface: #ffffff;
+  --surface-subtle: #f4f4f5;
+  --surface-hover: #ededf0;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text-primary: #111113;
+  --text-secondary: #4b4b53;
+  --text-muted: #6e6e77;
+  --accent: #18181b;
+  --accent-hover: #2c2c31;
+  --accent-soft: rgba(24, 24, 27, 0.08);
+  --accent-ring: rgba(24, 24, 27, 0.24);
+  --accent-fg: #ffffff;
+  --accent-text: #18181b;
+
+  /* --------------------------------------------------- semantic layer ---
+   * Status colours are mode-derived, not palette-derived: a "danger" red must
+   * stay red in every palette or the meaning of a failure badge changes with a
+   * cosmetic choice.
+   */
+  --danger: #b91c1c;
+  --danger-soft: rgba(185, 28, 28, 0.1);
+  --ok: #15803d;
+  --ok-soft: rgba(21, 128, 61, 0.1);
+  --warn: #92400e;
+  --warn-soft: rgba(146, 64, 14, 0.12);
+  --info: #1d4ed8;
+  --info-soft: rgba(29, 78, 216, 0.1);
+
+  --overlay: rgba(9, 9, 11, 0.42);
   --shadow-1: 0 1px 2px rgba(9, 12, 18, 0.06), 0 1px 1px rgba(9, 12, 18, 0.04);
   --shadow-2: 0 4px 12px rgba(9, 12, 18, 0.08), 0 1px 3px rgba(9, 12, 18, 0.05);
   --shadow-3: 0 16px 40px rgba(9, 12, 18, 0.16), 0 4px 12px rgba(9, 12, 18, 0.08);
   --shadow-drawer: 0 -12px 40px rgba(9, 12, 18, 0.18);
 }
 
-/* ==========================================================================
-   Off-white - the default. Warm paper, near-black ink, deep green accent.
-   Chosen over pure white because a full-screen utility at #FFFFFF at night is
-   uncomfortable, and over a grey because screenshots of this app end up in
-   tickets printed on white paper.
-   ========================================================================== */
-[data-theme="off-white"] {
-  color-scheme: light;
-
-  --bg: #fbfbf9;
-  --bg-elevated: #ffffff;
-  --surface: #ffffff;
-  --surface-hover: #f6f6f2;
-  --surface-active: #efefe9;
-  --sunken: #f2f2ee;
-
-  --text: #14161a;
-  --text-inverse: #ffffff;
-  --muted: #5a6068;
-  --faint: #7c7c72;
-
-  --line: #84847a;
-  --line-soft: #e2e2dc;
-
-  --accent: #1f5e4e;
-  --accent-hover: #174a3d;
-  --accent-soft: #e6f0ec;
-  --accent-text: #ffffff;
-
-  --ok: #166534;
-  --ok-soft: #e8f4ec;
-  --warn: #8a5300;
-  --warn-soft: #fdf1de;
-  --bad: #a51d2d;
-  --bad-soft: #fbe9eb;
-  --info: #1d4ed8;
-  --info-soft: #e8eefc;
-
-  --focus: #1f5e4e;
-  --overlay: rgba(18, 20, 24, 0.42);
-  --glass: rgba(255, 255, 255, 0.72);
-
-  --shadow-1: 0 1px 2px rgba(20, 22, 26, 0.06);
-  --shadow-2: 0 4px 12px rgba(20, 22, 26, 0.08);
-  --shadow-3: 0 16px 40px rgba(20, 22, 26, 0.14);
-}
-
-/* ==========================================================================
-   True black - for OLED panels and dark rooms. Background is #07080A rather
-   than #000000: an absolute black background with light text produces visible
-   smearing on OLED during scroll, and removes all depth cues.
-   ========================================================================== */
-[data-theme="true-black"] {
-  color-scheme: dark;
-
-  --bg: #07080a;
-  --bg-elevated: #16181c;
-  --surface: #111316;
-  --surface-hover: #191c21;
-  --surface-active: #20242a;
-  --sunken: #0b0c0e;
-
-  --text: #f2f4f7;
-  --text-inverse: #0a0b0d;
-  --muted: #a7aeb8;
-  --faint: #8b939e;
-
-  --line: #666e7b;
-  --line-soft: #24272c;
-
-  --accent: #5fd3b4;
-  --accent-hover: #86e3ca;
-  --accent-soft: #10241f;
-  --accent-text: #06120f;
-
-  --ok: #6ee7a8;
-  --ok-soft: #0d2016;
-  --warn: #f0c063;
-  --warn-soft: #241c0c;
-  --bad: #ff8a8a;
-  --bad-soft: #2a1214;
+html[data-mode="dark"] {
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --ok: #4ade80;
+  --ok-soft: rgba(74, 222, 128, 0.14);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.14);
   --info: #93b4ff;
-  --info-soft: #101a33;
+  --info-soft: rgba(147, 180, 255, 0.14);
 
-  --focus: #5fd3b4;
   --overlay: rgba(0, 0, 0, 0.62);
-  --glass: rgba(17, 19, 22, 0.72);
-
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.55);
   --shadow-3: 0 18px 44px rgba(0, 0, 0, 0.65);
+  --shadow-drawer: 0 -12px 44px rgba(0, 0, 0, 0.6);
 }
 
-/* ==========================================================================
-   Spatial glass - a cool, layered theme for the "premium" impression without
-   the frosted-blur accessibility trap. Blur is applied only to the two overlay
-   surfaces, never to body text, so no label is ever rendered on a moving
-   background.
-   ========================================================================== */
-[data-theme="spatial-glass"] {
-  color-scheme: dark;
-
-  --bg: #0d1220;
-  --bg-elevated: #1a2237;
-  --surface: #141a2b;
-  --surface-hover: #1c2438;
-  --surface-active: #243049;
-  --sunken: #0a0f1a;
-
-  --text: #edf1fa;
-  --text-inverse: #0b1020;
-  --muted: #a6b0c6;
-  --faint: #8c98b2;
-
-  --line: #5c6a8e;
-  --line-soft: #26304a;
-
-  --accent: #8fb8ff;
-  --accent-hover: #b0ccff;
-  --accent-soft: #162338;
-  --accent-text: #08111f;
-
-  --ok: #7ee2b8;
-  --ok-soft: #10241d;
-  --warn: #ffd08a;
-  --warn-soft: #241d0f;
-  --bad: #ff9ba8;
-  --bad-soft: #271419;
-  --info: #9ec3ff;
-  --info-soft: #131d33;
-
-  --focus: #8fb8ff;
-  --overlay: rgba(6, 9, 16, 0.66);
-  --glass: rgba(20, 26, 43, 0.68);
-
-  --shadow-1: 0 1px 2px rgba(3, 6, 14, 0.5);
-  --shadow-2: 0 6px 18px rgba(3, 6, 14, 0.55);
-  --shadow-3: 0 20px 48px rgba(3, 6, 14, 0.7);
+/*
+ * Legacy aliases.
+ *
+ * The components written against the first token set used `--bg`, `--text`,
+ * `--line` and friends. Rather than rewrite 33 KB of working layout rules for a
+ * rename, each old name points at one new token. One direction only: new work
+ * uses the design-system names, and no rule may introduce a second alias of an
+ * alias.
+ */
+:root {
+  --bg: var(--canvas);
+  --bg-elevated: var(--surface);
+  --sunken: var(--surface-subtle);
+  --surface-active: var(--surface-hover);
+  --text: var(--text-primary);
+  --text-inverse: var(--accent-fg);
+  --muted: var(--text-muted);
+  --faint: var(--text-muted);
+  --line: var(--border-strong);
+  --line-soft: var(--border);
+  --focus: var(--accent-text);
+  --bad: var(--danger);
+  --bad-soft: var(--danger-soft);
+  --glass: var(--surface);
 }
 
-/* ==========================================================================
-   Reduced motion. Honour the OS setting *and* the in-app toggle: `main.tsx`
-   sets `data-reduce-motion` from both, and the media query catches the case
-   where the user changed it mid-session.
-   ========================================================================== */
-[data-reduce-motion="true"],
-[data-reduce-motion="true"] * {
-  animation-duration: 1ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 1ms !important;
-  scroll-behavior: auto !important;
-}
+/* ------------------------------------------------------------- fonts --- */
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --duration-instant: 1ms;
-    --duration-fast: 1ms;
-    --duration-base: 1ms;
-    --duration-slow: 1ms;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Windows high-contrast mode overrides every colour with system values. The
-   only thing this app must do is stop painting its own backgrounds. */
-@media (forced-colors: active) {
-  * {
-    box-shadow: none !important;
-  }
-
-  .card,
-  .panel,
-  .dialog,
-  .drawer {
-    border: 1px solid CanvasText;
-    background: Canvas;
-  }
-}
-
-/* Font faces. Local files only: the app must render correctly with no network,
-   and a CDN font is both a privacy leak and a first-paint delay. */
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Regular.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "DM Sans";
+  src: url("/fonts/DMSans.woff2") format("woff2");
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Medium.woff2") format("woff2");
-  font-weight: 500;
+  font-family: "DM Sans";
+  src: url("/fonts/DMSans-ext.woff2") format("woff2");
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-SemiBold.woff2") format("woff2");
-  font-weight: 600;
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 500 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Bold.woff2") format("woff2");
-  font-weight: 700;
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/PlusJakartaSans-ext.woff2") format("woff2");
+  font-weight: 500 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
@@ -293,4 +218,407 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* --------------------------------------------------------- base shell --- */
+
+html,
+body {
+  background-color: var(--canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+
+html {
+  color-scheme: light;
+}
+
+html[data-mode="dark"] {
+  color-scheme: dark;
+}
+
+html[data-mode="dark"] body {
+  letter-spacing: 0.008em;
+}
+
+/*
+ * Cursive and complex-shaping scripts must never receive artificial
+ * letter-spacing: it cracks Arabic joins, separates Devanagari matras from their
+ * base and breaks Thai vowel placement. The dark-mode tracking above is for
+ * Latin text only.
+ */
+html[dir="rtl"] body,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html:is(:lang(ar), :lang(fa), :lang(ur), :lang(hi), :lang(mr), :lang(ne), :lang(bn),
+    :lang(pa), :lang(gu), :lang(ta), :lang(te), :lang(kn), :lang(ml), :lang(si),
+    :lang(th), :lang(lo), :lang(km), :lang(my))
+  body {
+  letter-spacing: 0 !important;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+:focus-visible {
+  outline: var(--ring-width) solid var(--accent-text);
+  outline-offset: var(--ring-offset);
+}
+
+/* ------------------------------------------------------- drag regions --- */
+
+.app-drag-region,
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.app-no-drag,
+[data-tauri-drag-region] button,
+[data-tauri-drag-region] input,
+[data-tauri-drag-region] a {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* ---------------------------------------------------------- scrollbars --- */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* -------------------------------------------------------- accessibility --- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.high-contrast {
+  --border: #52525b !important;
+  --border-strong: #18181b !important;
+  --text-primary: #000000 !important;
+  --text-secondary: #18181b !important;
+  --text-muted: #27272a !important;
+}
+
+html.high-contrast[data-mode="dark"] {
+  --border: #a1a1aa !important;
+  --border-strong: #f4f4f5 !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: #f4f4f5 !important;
+  --text-muted: #d4d4d8 !important;
+}
+
+html.high-contrast button:focus-visible,
+html.high-contrast a:focus-visible,
+html.high-contrast input:focus-visible,
+html.high-contrast select:focus-visible,
+html.high-contrast [role="menuitem"]:focus-visible {
+  outline-width: 3px;
+  outline-color: var(--accent-text);
+}
+
+@media (forced-colors: active) {
+  * {
+    box-shadow: none !important;
+  }
+
+  .card,
+  .panel,
+  .dialog,
+  .drawer,
+  .modal-card {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+}
+
+/* ----------------------------------------------------------- animation --- */
+
+@keyframes agFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes agTabEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes agModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.975) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes agSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes agSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes agToastUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes agCheckPop {
+  0% {
+    transform: scale(0.82);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes agIndeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+@keyframes agContextMenuPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes agAccordionOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes agShimmer {
+  from {
+    background-position: -160% 0;
+  }
+  to {
+    background-position: 260% 0;
+  }
+}
+
+@keyframes agSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-in {
+  animation: agFadeIn var(--duration-fast) var(--ease-out) both;
+}
+
+.animate-tab-enter {
+  animation: agTabEnter 190ms var(--ease-out) both;
+}
+
+.animate-modal-pop {
+  animation: agModalPop var(--duration-base) var(--ease-out) both;
+}
+
+.animate-slide-in-right {
+  animation: agSlideInRight 210ms var(--ease-out) both;
+}
+
+.animate-slide-in-left {
+  animation: agSlideInLeft 210ms var(--ease-out) both;
+}
+
+.animate-context-menu {
+  animation: agContextMenuPop 130ms var(--ease-out) both;
+  transform-origin: top left;
+}
+
+html[dir="rtl"] .animate-context-menu {
+  transform-origin: top right;
+}
+
+.animate-accordion {
+  animation: agAccordionOpen var(--duration-fast) var(--ease-out) both;
+}
+
+.animate-toast-up {
+  animation: agToastUp 190ms var(--ease-out) both;
+}
+
+.animate-check-pop {
+  animation: agCheckPop 220ms var(--ease-spring) both;
+}
+
+.animate-indeterminate {
+  animation: agIndeterminate 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-spin {
+  animation: agSpin 900ms linear infinite;
+}
+
+/*
+ * Skeletons.
+ *
+ * The shimmer is a background-position animation on a gradient, which runs on
+ * the compositor and costs no layout. Shape is not defined here: a skeleton
+ * copies the real row's box from the same class, so the two are pixel-equal by
+ * construction rather than by two sets of numbers that drift.
+ */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-subtle);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--surface-hover) 82%, var(--text-muted) 18%) 50%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: agShimmer 1.5s var(--ease-in-out) infinite;
+  color: transparent !important;
+  user-select: none;
+}
+
+.skeleton-line {
+  height: 0.75em;
+  margin-block: 0.35em;
+}
+
+.skeleton-line.is-title {
+  height: 1em;
+  width: 42%;
+}
+
+.skeleton-line.is-short {
+  width: 60%;
+}
+
+.skeleton-block {
+  min-height: 72px;
+}
+
+.skeleton-circle {
+  border-radius: var(--radius-pill);
+  aspect-ratio: 1;
+}
+
+/* Respect the preference even when a component forgets: a shimmering skeleton
+   is exactly the kind of animation that triggers motion sensitivity. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-image: none;
+  }
+}
+
+html.reduce-motion .skeleton {
+  animation: none;
+  background-image: none;
 }

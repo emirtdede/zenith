@@ -51,6 +51,14 @@ export function AppBar({
       <div className="appbar-drag" data-tauri-drag-region aria-hidden="true" />
 
       <div className="appbar-actions">
+        <span
+          className={`pill ${state.online ? "" : "pill-warn"}`}
+          role="status"
+          title={state.online ? undefined : t("offline.offlineHint")}
+        >
+          {state.online ? t("offline.online") : t("offline.offline")}
+        </span>
+
         <span className={`pill ${state.info?.isElevated ? "pill-ok" : ""}`}>
           {state.info?.isElevated ? t("mode.admin") : t("mode.standard")}
         </span>

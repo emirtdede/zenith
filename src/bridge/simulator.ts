@@ -17,6 +17,7 @@
  */
 
 import { ACTIONS, SAFE_PRESET, type ActionDef } from "../catalog.generated";
+import { THEME_IDS } from "../settings/themes";
 
 import type {
   Bridge,
@@ -370,7 +371,7 @@ export function createSimulator(options: SimulatorOptions = {}): Bridge {
 
   const preferences: Preferences = {
     locale: "tr",
-    theme: "off-white",
+    theme: "obsidian",
     reduceMotion: false,
     telemetryEnabled: false,
   };
@@ -844,4 +845,4 @@ export function createSimulator(options: SimulatorOptions = {}): Bridge {
 export const SIMULATED_SAFE_PRESET = SAFE_PRESET;
 
 /** The theme list the simulator accepts, kept next to the type it must match. */
-export const SIMULATED_THEMES: ThemeId[] = ["off-white", "true-black", "spatial-glass"];
+export const SIMULATED_THEMES: ThemeId[] = THEME_IDS.filter((id) => id !== "custom");

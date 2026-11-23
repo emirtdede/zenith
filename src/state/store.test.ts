@@ -106,11 +106,11 @@ describe("boot", () => {
         storeMode: "machine",
         simulator: false,
       },
-      snapshot: snapshot({ theme: "true-black", reduceMotion: true }),
+      snapshot: snapshot({ theme: "obsidian", reduceMotion: true }),
       snapshots: [],
     });
     expect(state.boot).toBe("ready");
-    expect(state.theme).toBe("true-black");
+    expect(state.theme).toBe("obsidian");
     expect(state.reduceMotion).toBe(true);
     expect(state.phases).toEqual({});
   });
@@ -254,9 +254,9 @@ describe("notices", () => {
 });
 
 describe("preferences", () => {
-  it("refuses a locale with no catalogue", () => {
-    const state = reducer(initialState, { type: "prefs/locale", locale: "de" });
-    expect(state.locale).toBe("en");
+  it("refuses a locale the registry does not offer", () => {
+    const state = reducer(initialState, { type: "prefs/locale", locale: "xx" });
+    expect(state.locale).toBe(initialState.locale);
   });
 
   it("accepts a locale that ships", () => {
@@ -266,12 +266,12 @@ describe("preferences", () => {
 
   it("derives the preferences payload without extra fields", () => {
     const state = apply([
-      { type: "prefs/theme", theme: "spatial-glass" },
+      { type: "prefs/theme", theme: "slate" },
       { type: "prefs/motion", reduceMotion: true },
     ]);
     expect(preferencesOf(state)).toEqual({
-      locale: "en",
-      theme: "spatial-glass",
+      locale: initialState.locale,
+      theme: "slate",
       reduceMotion: true,
       telemetryEnabled: false,
     });

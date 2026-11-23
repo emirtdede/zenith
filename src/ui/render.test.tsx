@@ -28,6 +28,8 @@ import { initialState } from "../state/store";
 import type { Action, State } from "../state/store";
 import licenseManifest from "../../resources/licenses/manifest.json";
 import { ActionGrid } from "./ActionGrid";
+import { ContextMenuHost } from "./controls";
+import { BootSkeleton } from "./BootSkeleton";
 import { CmdPalette } from "./CmdPalette";
 import { ConfirmDialog } from "./Dialogs";
 import { Console } from "./Console";
@@ -55,6 +57,20 @@ function stubActions(): ActionsApi {
     execute: vi.fn(() => Promise.resolve(null)),
     rollback: noop(),
     savePreferences: noop(),
+    updateSettings: vi.fn(() => Promise.resolve()),
+    replaceSettings: vi.fn(() => Promise.resolve()),
+    setSettingsTab: noop(),
+    setSidebarMinimal: noop(),
+    finishOnboarding: vi.fn(() => Promise.resolve()),
+    lock: noop(),
+    unlock: noop(),
+    toast: noop(),
+    dismissToast: noop(),
+    setOnline: noop(),
+    moveToTrash: vi.fn(() => Promise.resolve()),
+    restoreFromTrash: vi.fn(() => Promise.resolve()),
+    deleteFromTrash: vi.fn(() => Promise.resolve()),
+    emptyTrash: vi.fn(() => Promise.resolve()),
     setActionPrefs: noop(),
     togglePin: noop(),
     toggleHidden: noop(),
@@ -405,27 +421,27 @@ describe("Sidebar (DEF-145: one navigation model)", () => {
     const actions = stubActions();
     renderWith(
       <Sidebar
-        state={makeState({ theme: "off-white" })}
+        state={makeState({ theme: "obsidian" })}
         dispatch={dispatch}
         actions={actions}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: en["titlebar.theme.offWhite"] }));
-    expect(dispatch).toHaveBeenCalledWith({ type: "prefs/theme", theme: "true-black" });
+    fireEvent.click(screen.getByRole("button", { name: en["theme.obsidian"] }));
+    expect(dispatch).toHaveBeenCalledWith({ type: "prefs/theme", theme: "slate" });
     // Paint and persistence are two calls: the first is optimistic, the second
     // is what survives a restart. A control that only does the first looks
     // correct until the next boot.
-    expect(actions.savePreferences).toHaveBeenCalledWith({ theme: "true-black" });
+    expect(actions.updateSettings).toHaveBeenCalledWith("appearance", { themeId: "slate" });
   });
 
   it("keeps the theme label translated in Turkish", () => {
     renderWith(
-      <Sidebar state={makeState({ theme: "true-black" })} dispatch={vi.fn()} actions={stubActions()} />,
+      <Sidebar state={makeState({ theme: "slate" })} dispatch={vi.fn()} actions={stubActions()} />,
       { locale: "tr" },
     );
-    expect(screen.getByRole("button", { name: tr["titlebar.theme.trueBlack"] })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: en["titlebar.theme.trueBlack"] })).toBeNull();
+    expect(screen.getByRole("button", { name: tr["theme.slate"] })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: en["theme.slate"] })).toBeNull();
   });
 });
 
@@ -875,7 +891,12 @@ describe("settings persistence (T-FE-15)", () => {
     const actions = stubActions();
     renderWith(
       <SettingsScreen
-        state={makeState({ locale: "en", theme: "true-black", telemetryEnabled: false })}
+        state={makeState({
+          locale: "en",
+          theme: "slate",
+          telemetryEnabled: false,
+          settingsTab: "language",
+        })}
         dispatch={vi.fn()}
         actions={actions}
       />,
@@ -883,36 +904,38 @@ describe("settings persistence (T-FE-15)", () => {
 
     // Pick the control by its accessible name, not by DOM position, so a markup
     // reshuffle cannot silently turn this into a test of something else.
-    fireEvent.change(screen.getByLabelText(en["palette.locale"]), {
-      target: { value: "tr" },
-    });
+    fireEvent.click(
+      screen.getByRole("option", {
+        name: en["language.select"].replace("{name}", "T\u00fcrk\u00e7e"),
+      }),
+    );
 
-    expect(actions.savePreferences).toHaveBeenCalledWith({ locale: "tr" });
-    // A full-object save would also carry `telemetryEnabled: false` and the
-    // theme as read at mount, which is how an out-of-date screen reverts a
-    // setting the user changed elsewhere.
-    const calls = (actions.savePreferences as unknown as { mock: { calls: unknown[][] } }).mock
+    // One section, one field. A full-document save would also carry the theme
+    // and telemetry value as read at mount, which is how an out-of-date screen
+    // reverts a setting the user changed elsewhere.
+    expect(actions.updateSettings).toHaveBeenCalledWith("general", { locale: "tr" });
+    const calls = (actions.updateSettings as unknown as { mock: { calls: unknown[][] } }).mock
       .calls;
-    const sent = calls[0]?.[0];
-    expect(Object.keys(sent as Record<string, unknown>)).toEqual(["locale"]);
+    const sent = calls[0]?.[1] as Record<string, unknown>;
+    expect(Object.keys(sent)).toEqual(["locale"]);
   });
 
   it("persists a theme change as a one-field patch", () => {
     const actions = stubActions();
     renderWith(
       <SettingsScreen
-        state={makeState({ locale: "en", theme: "off-white" })}
+        state={makeState({ locale: "en", theme: "obsidian", settingsTab: "appearance" })}
         dispatch={vi.fn()}
         actions={actions}
       />,
     );
 
-    const radios = screen.getAllByRole("radio") as HTMLInputElement[];
-    const next = radios.find((input) => input.value === "true-black");
-    expect(next).toBeTruthy();
-    fireEvent.click(next as HTMLInputElement);
+    const next = screen.getByRole("button", {
+      name: en["theme.swatch"].replace("{name}", en["theme.slate"]),
+    });
+    fireEvent.click(next);
 
-    expect(actions.savePreferences).toHaveBeenCalledWith({ theme: "true-black" });
+    expect(actions.updateSettings).toHaveBeenCalledWith("appearance", { themeId: "slate" });
   });
 
   it("moves the telemetry checkbox on click, not only after a round-trip (DEF-117)", () => {
@@ -920,7 +943,7 @@ describe("settings persistence (T-FE-15)", () => {
     const dispatch = vi.fn<(action: Action) => void>();
     renderWith(
       <SettingsScreen
-        state={makeState({ telemetryEnabled: false })}
+        state={makeState({ telemetryEnabled: false, settingsTab: "data" })}
         dispatch={dispatch}
         actions={actions}
       />,
@@ -939,6 +962,37 @@ describe("settings persistence (T-FE-15)", () => {
     const sent = (actions.savePreferences as unknown as { mock: { calls: unknown[][] } }).mock
       .calls[0]?.[0];
     expect(Object.keys(sent as Record<string, unknown>)).toEqual(["telemetryEnabled"]);
+  });
+
+  it("shows a real verification command instead of a not-implemented note (DEF-168)", () => {
+    renderWith(
+      <SettingsScreen
+        state={makeState({
+          locale: "en",
+          settingsTab: "webhook",
+          settings: {
+            ...makeState().settings,
+            integrations: {
+              cliInstalled: false,
+              mcpEnabled: false,
+              webhookEnabled: true,
+              webhookUrl: "https://hooks.example.com/zenith",
+              webhookEvents: ["completed"],
+            },
+          },
+        })}
+        dispatch={vi.fn()}
+        actions={stubActions()}
+      />,
+    );
+
+    // The panel used to advertise the header, the payload and then admit that
+    // signing was not implemented. A user who read that had no way to test a
+    // receiver, so the claim and the product disagreed. The panel now prints
+    // the CLI invocation the renderer cannot perform itself: the signing secret
+    // is DPAPI-bound and never enters the webview.
+    expect(screen.getByText(/zenith webhook --url https:\/\/hooks\.example\.com\/zenith/)).toBeTruthy();
+    expect(screen.queryByText(en["errors.notImplemented"])).toBeNull();
   });
 });
 
@@ -1084,8 +1138,140 @@ describe("locale switching (T-FE-14)", () => {
     expect(document.documentElement.lang).toBe("tr");
   });
 
-  it("falls back to English for a locale with no catalogue", () => {
-    renderWith(<Tabs state={makeState()} dispatch={vi.fn()} />, { locale: "de-DE" });
+  it("falls back to English for a locale the registry does not offer", () => {
+    renderWith(<Tabs state={makeState()} dispatch={vi.fn()} />, { locale: "xx-YY" });
     expect(document.documentElement.lang).toBe("en");
+  });
+});
+
+describe("boot skeleton (DEF-169)", () => {
+  it("draws the shell's boxes rather than a centred word", () => {
+    const { container } = renderWith(<BootSkeleton />);
+
+    // The rail, the KPI strip and the grid are the three regions a user is
+    // waiting for; showing their shape means boot ends without a layout jump.
+    expect(container.querySelector(".app-sidebar")).toBeTruthy();
+    expect(container.querySelector(".health-metrics")).toBeTruthy();
+    expect(container.querySelectorAll(".grid .card")).toHaveLength(6);
+    expect(container.querySelectorAll(".skeleton").length).toBeGreaterThan(10);
+  });
+
+  it("announces the wait once, not once per rectangle", () => {
+    renderWith(<BootSkeleton />);
+
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
+    expect(screen.getAllByRole("status")).toHaveLength(1);
+  });
+});
+
+describe("context menu (DEF-170)", () => {
+  function openOn(element: HTMLElement) {
+    fireEvent.contextMenu(element, { clientX: 40, clientY: 40 });
+  }
+
+  it("offers the four text commands before the surface's own", () => {
+    const { container } = renderWith(
+      <ContextMenuHost items={[{ id: "refresh", label: "Refresh", onSelect: vi.fn() }]} />,
+    );
+    openOn(container.ownerDocument.body);
+
+    const menu = screen.getByRole("menu");
+    const labels = Array.from(menu.querySelectorAll(".context-menu-item")).map(
+      (item) => item.textContent,
+    );
+    expect(labels).toEqual(["Cut", "Copy", "Paste", "Select all", "Refresh"]);
+    // The rule is visual grouping, and it must not be announced as a command.
+    expect(menu.querySelectorAll(".context-menu-rule")).toHaveLength(1);
+    expect(within(menu).getAllByRole("menuitem")).toHaveLength(5);
+  });
+
+  it("disables copy without a selection and enables it with one", () => {
+    const { container } = renderWith(<ContextMenuHost items={[]} />);
+
+    openOn(container.ownerDocument.body);
+    expect((screen.getByRole("menuitem", { name: "Copy" }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    const spy = vi.spyOn(window, "getSelection").mockReturnValue({
+      toString: () => "diagnostic finding",
+    } as unknown as Selection);
+    openOn(container.ownerDocument.body);
+    expect((screen.getByRole("menuitem", { name: "Copy" }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+    spy.mockRestore();
+  });
+
+  it("only offers cut and paste where the pointer is inside a text field", () => {
+    const { container } = renderWith(<ContextMenuHost items={[]} />);
+    const field = document.createElement("input");
+    field.value = "C:\\Temp";
+    container.appendChild(field);
+    field.focus();
+    // jsdom does not implement a real selection range, so the fixture answers
+    // with text: the predicate under test is "is this an editable target".
+    const spy = vi.spyOn(window, "getSelection").mockReturnValue({
+      toString: () => "C:\\Temp",
+    } as unknown as Selection);
+
+    openOn(field);
+    expect((screen.getByRole("menuitem", { name: "Cut" }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+    expect((screen.getByRole("menuitem", { name: "Paste" }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    openOn(container.ownerDocument.body);
+    expect((screen.getByRole("menuitem", { name: "Cut" }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    expect((screen.getByRole("menuitem", { name: "Paste" }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    spy.mockRestore();
+  });
+
+  it("lets a surface add a command for the element it was opened on", () => {
+    const onToggle = vi.fn();
+    const { container } = renderWith(
+      <ContextMenuHost
+        items={[]}
+        itemsFor={(target) => {
+          const id = target?.closest<HTMLElement>("[data-action-id]")?.dataset.actionId;
+          return id ? [{ id: "pin", label: "Pin this action", onSelect: () => onToggle(id) }] : [];
+        }}
+      />,
+    );
+    const card = document.createElement("article");
+    card.dataset.actionId = "clean-temp-cache";
+    container.appendChild(card);
+
+    openOn(card);
+    fireEvent.click(screen.getByRole("menuitem", { name: "Pin this action" }));
+
+    expect(onToggle).toHaveBeenCalledWith("clean-temp-cache");
+    // Selecting a command closes the menu.
+    expect(screen.queryByRole("menu")).toBeNull();
+
+    openOn(container.ownerDocument.body);
+    expect(screen.queryByRole("menuitem", { name: "Pin this action" })).toBeNull();
+  });
+
+  it("opens from the keyboard and closes on Escape", () => {
+    const { container } = renderWith(<ContextMenuHost items={[]} />);
+    const card = document.createElement("article");
+    card.tabIndex = 0;
+    container.appendChild(card);
+    card.focus();
+
+    fireEvent.keyDown(card, { key: "F10", shiftKey: true });
+    expect(screen.getByRole("menu")).toBeTruthy();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("menu")).toBeNull();
   });
 });

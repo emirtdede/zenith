@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Zenith">
+  <title>Zenith</title>
+  <defs>
+    <linearGradient id="z-accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fe3c0" />
+      <stop offset="1" stop-color="#4f9cff" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1024" height="1024" rx="220" fill="#0b0f14" />
+  <rect x="40" y="40" width="944" height="944" rx="186" fill="none" stroke="#1d2733" stroke-width="16" />
+  <path d="M512 132 L598 426 L892 512 L598 598 L512 892 L426 598 L132 512 L426 426 Z" fill="url(#z-accent)" />
+  <path d="M512 300 L556 468 L724 512 L556 556 L512 724 L468 556 L300 512 L468 468 Z" fill="#0b0f14" />
+  <circle cx="512" cy="512" r="42" fill="url(#z-accent)" />
+</svg>

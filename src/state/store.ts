@@ -25,11 +25,18 @@ import type {
   SnapshotRecord,
   StartupNotice,
   SystemTelemetry,
-  ThemeId,
   ExecutionPhase,
 } from "../bridge/types";
 import type { Preferences } from "../bridge/adapter";
-import { SUPPORTED_LOCALES, negotiateLocale } from "../i18n";
+import { isSupportedLanguage } from "../i18n";
+import { parseSettings } from "../settings/model";
+import { isValidThemeId } from "../settings/themes";
+import type { ThemeId } from "../settings/themes";
+import type {
+  AppSettings,
+  SettingsTabId,
+  TrashEntry,
+} from "../settings/types";
 
 /** Lines kept in the drawer. Matches the documented 5,000-line ring. */
 export const LOG_LIMIT = 5_000;
@@ -51,6 +58,16 @@ export interface ScriptState {
   format: "ps1" | "bat";
 }
 
+export interface ToastMessage {
+  id: string;
+  tone: "info" | "success" | "warning" | "error";
+  titleKey: string;
+  bodyKey?: string;
+  params?: Record<string, string | number>;
+  /** Screen a click on the toast should open, when it has one. */
+  screen?: string;
+}
+
 export interface State {
   boot: "loading" | "ready" | "failed";
   bootError: IpcError | null;
@@ -63,6 +80,23 @@ export interface State {
   actionPrefs: ActionPrefs;
   /** When true, hidden cards are shown again (session-only, per 05-02 §6). */
   showHidden: boolean;
+
+  /**
+   * Everything the user can change. The core persists this document verbatim;
+   * the four boot-critical prefs above mirror the fields the core also reads on
+   * start, and both directions are written by `actions.updateSettings`.
+   */
+  settings: AppSettings;
+  trash: TrashEntry[];
+  settingsTab: SettingsTabId;
+  /** True when a stored settings document had to be repaired. */
+  settingsRepaired: boolean;
+  /** Compact rail: icons only, with the labels kept in `aria-label`. */
+  sidebarMinimal: boolean;
+  locked: boolean;
+  showOnboarding: boolean;
+  online: boolean;
+  toasts: ToastMessage[];
 
   telemetry: SystemTelemetry | null;
   reports: Partial<Record<ActionId, DiagnosticReport>>;
@@ -101,16 +135,98 @@ export interface State {
   focusedIndex: number;
 }
 
+/**
+ * Older builds stored one of three theme ids. They are not deleted on upgrade:
+ * a user who chose `true-black` gets the dark obsidian palette, which is the
+ * nearest thing the fourteen-palette system has to it, and `spatial-glass`
+ * gets slate. Reading an unknown id falls back to the first palette rather than
+ * leaving the window unpainted.
+ */
+export function resolveThemeId(value: unknown): ThemeId {
+  if (typeof value !== "string") {
+    return "obsidian";
+  }
+  if (isValidThemeId(value)) {
+    return value;
+  }
+  if (value === "true-black") {
+    return "obsidian";
+  }
+  if (value === "spatial-glass") {
+    return "slate";
+  }
+  if (value === "off-white") {
+    return "obsidian";
+  }
+  return "obsidian";
+}
+
+function legacyMode(value: unknown): "light" | "dark" | null {
+  return value === "true-black" ? "dark" : value === "off-white" ? "light" : null;
+}
+
+/**
+ * Merge the core's four preferences into the stored document.
+ *
+ * The document is the newer source for everything it covers, but the core also
+ * validates these four on write and may hold a value the renderer has not saved
+ * yet. Core wins only when the document has no opinion (first run after the
+ * fourteen-palette migration), which is exactly when its value is the user's
+ * previous choice.
+ */
+function settingsFromSnapshot(
+  snapshot: AppStateSnapshot,
+  fallback: AppSettings,
+): { settings: AppSettings; trash: TrashEntry[]; repaired: boolean } {
+  const parsed = parseSettings(snapshot.settings ?? null);
+  const legacy = legacyMode(snapshot.theme);
+  const themeId = legacy ? resolveThemeId(snapshot.theme) : parsed.settings.appearance.themeId;
+  const settings: AppSettings = {
+    ...parsed.settings,
+    appearance: {
+      ...parsed.settings.appearance,
+      themeId,
+      mode: legacy ?? parsed.settings.appearance.mode,
+      reducedMotion: snapshot.reduceMotion || parsed.settings.appearance.reducedMotion,
+    },
+    general: {
+      ...parsed.settings.general,
+      locale: isSupportedLanguage(snapshot.locale)
+        ? snapshot.locale
+        : parsed.settings.general.locale,
+    },
+  };
+  void fallback;
+  return { settings, trash: parsed.trash, repaired: parsed.repaired };
+}
+
+/**
+ * The document a first run starts from. One call site so `locale`, `theme` and
+ * the document itself cannot disagree: detection reads the real `navigator`,
+ * which means the operating system language is honoured on first launch instead
+ * of a hard-coded "en" that would be overwritten on the next settings write.
+ */
+export const BOOT_DEFAULTS = parseSettings(null).settings;
+
 export const initialState: State = {
   boot: "loading",
   bootError: null,
   info: null,
-  locale: "en",
-  theme: "off-white",
-  reduceMotion: false,
+  locale: BOOT_DEFAULTS.general.locale,
+  theme: BOOT_DEFAULTS.appearance.themeId,
+  reduceMotion: BOOT_DEFAULTS.appearance.reducedMotion,
   telemetryEnabled: false,
   actionPrefs: { pinned: [], hidden: [] },
   showHidden: false,
+  settings: BOOT_DEFAULTS,
+  trash: [],
+  settingsTab: "appearance",
+  settingsRepaired: false,
+  sidebarMinimal: BOOT_DEFAULTS.general.sidebarMinimal,
+  locked: false,
+  showOnboarding: false,
+  online: true,
+  toasts: [],
   telemetry: null,
   reports: {},
   phases: {},
@@ -135,6 +251,13 @@ export const initialState: State = {
   search: "",
   focusedIndex: 0,
 };
+
+let toastSeq = 0;
+
+function nextToastId(): string {
+  toastSeq += 1;
+  return `toast-${toastSeq}`;
+}
 
 export type Action =
   | { type: "boot/failed"; error: IpcError }
@@ -166,6 +289,21 @@ export type Action =
   | { type: "prefs/telemetry"; telemetryEnabled: boolean }
   | { type: "prefs/actionPrefs"; actionPrefs: ActionPrefs }
   | { type: "prefs/showHidden"; showHidden: boolean }
+  | { type: "settings/replaced"; settings: AppSettings; trash: TrashEntry[]; repaired?: boolean }
+  | { type: "settings/set"; settings: AppSettings }
+  | { type: "settings/section"; section: keyof AppSettings; patch: Record<string, unknown> }
+  | { type: "trash/replaced"; trash: TrashEntry[] }
+  | { type: "settings/tab"; tab: SettingsTabId }
+  | { type: "sidebar/minimal"; minimal: boolean }
+  | { type: "lock/set"; locked: boolean }
+  | { type: "onboarding/open" }
+  | { type: "onboarding/close" }
+  | { type: "online/set"; online: boolean }
+  | {
+      type: "toast/push";
+      toast: Omit<ToastMessage, "id">;
+    }
+  | { type: "toast/dismiss"; id: string }
   | { type: "screen/set"; screen: ScreenId }
   | { type: "console/toggle"; open?: boolean }
   | { type: "overlay/open"; overlay: OverlayId }
@@ -194,6 +332,17 @@ function appendLogs(existing: LogLine[], incoming: LogLine[]): {
   return { logs: combined.slice(overflow), dropped: overflow };
 }
 
+/** Project the settings document onto the fields the shell reads directly. */
+function withSettings(state: State, settings: AppSettings): State {
+  return {
+    ...state,
+    settings,
+    locale: settings.general.locale,
+    theme: settings.appearance.themeId,
+    reduceMotion: settings.appearance.reducedMotion,
+  };
+}
+
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "boot/failed":
@@ -204,13 +353,12 @@ export function reducer(state: State, action: Action): State {
 
     case "boot/ready": {
       const { snapshot } = action;
+      const derived = settingsFromSnapshot(snapshot, state.settings);
+      const base = withSettings(state, derived.settings);
       return {
-        ...state,
+        ...base,
         boot: "ready",
         info: action.info,
-        locale: negotiateLocale(snapshot.locale),
-        theme: snapshot.theme,
-        reduceMotion: snapshot.reduceMotion,
         telemetryEnabled: snapshot.telemetryEnabled,
         actionPrefs: snapshot.actionPrefs,
         telemetry: snapshot.telemetry,
@@ -220,15 +368,18 @@ export function reducer(state: State, action: Action): State {
         retention: snapshot.retention,
         notices: snapshot.notices,
         sessionUptimeMs: snapshot.sessionUptimeMs,
+        trash: derived.trash,
+        settingsRepaired: derived.repaired,
+        showOnboarding: !derived.settings.onboarding.completed,
+        sidebarMinimal: derived.settings.general.sidebarMinimal,
+        locked: derived.settings.security.pin !== null,
       };
     }
 
-    case "state/replaced":
+    case "state/replaced": {
+      const derived = settingsFromSnapshot(action.snapshot, state.settings);
       return {
-        ...state,
-        locale: negotiateLocale(action.snapshot.locale),
-        theme: action.snapshot.theme,
-        reduceMotion: action.snapshot.reduceMotion,
+        ...withSettings(state, derived.settings),
         telemetryEnabled: action.snapshot.telemetryEnabled,
         actionPrefs: action.snapshot.actionPrefs,
         telemetry: action.snapshot.telemetry ?? state.telemetry,
@@ -237,7 +388,9 @@ export function reducer(state: State, action: Action): State {
         retention: action.snapshot.retention,
         sessionUptimeMs: action.snapshot.sessionUptimeMs,
         notices: action.snapshot.notices,
+        trash: derived.trash,
       };
+    }
 
     case "diagnose/started":
       return {
@@ -311,19 +464,32 @@ export function reducer(state: State, action: Action): State {
       return { ...state, error: null };
 
     case "prefs/locale": {
-      // Only a locale with a catalogue may become active; otherwise the UI
+      // Only a locale the registry offers may become active; otherwise the UI
       // would switch `document.lang` to a language it cannot render.
-      if (!SUPPORTED_LOCALES.includes(action.locale)) {
+      if (!isSupportedLanguage(action.locale)) {
         return state;
       }
-      return { ...state, locale: action.locale };
+      return withSettings(state, {
+        ...state.settings,
+        general: { ...state.settings.general, locale: action.locale },
+      });
     }
 
     case "prefs/theme":
-      return { ...state, theme: action.theme };
+      return withSettings(state, {
+        ...state.settings,
+        appearance: { ...state.settings.appearance, themeId: action.theme },
+      });
 
     case "prefs/motion":
-      return { ...state, reduceMotion: action.reduceMotion };
+      return {
+        ...state,
+        reduceMotion: action.reduceMotion,
+        settings: {
+          ...state.settings,
+          appearance: { ...state.settings.appearance, reducedMotion: action.reduceMotion },
+        },
+      };
 
     case "prefs/telemetry":
       return { ...state, telemetryEnabled: action.telemetryEnabled };
@@ -333,6 +499,75 @@ export function reducer(state: State, action: Action): State {
 
     case "prefs/showHidden":
       return { ...state, showHidden: action.showHidden };
+
+    case "settings/replaced":
+      return {
+        ...withSettings(state, action.settings),
+        trash: action.trash,
+        settingsRepaired: action.repaired ?? state.settingsRepaired,
+      };
+
+    case "settings/set":
+      return withSettings(state, action.settings);
+
+    case "settings/section": {
+      const current = state.settings[action.section];
+      const merged = {
+        ...state.settings,
+        [action.section]: { ...(current as Record<string, unknown>), ...action.patch },
+      } as AppSettings;
+      return withSettings(state, merged);
+    }
+
+    case "trash/replaced":
+      return { ...state, trash: action.trash };
+
+    case "settings/tab":
+      return { ...state, settingsTab: action.tab };
+
+    case "sidebar/minimal":
+      return {
+        ...state,
+        sidebarMinimal: action.minimal,
+        settings: {
+          ...state.settings,
+          general: { ...state.settings.general, sidebarMinimal: action.minimal },
+        },
+      };
+
+    case "lock/set":
+      return { ...state, locked: action.locked };
+
+    case "onboarding/open":
+      return { ...state, showOnboarding: true };
+
+    case "onboarding/close":
+      return {
+        ...state,
+        showOnboarding: false,
+        settings: {
+          ...state.settings,
+          onboarding: {
+            completed: true,
+            completedAtUtc: new Date().toISOString(),
+            stepsDone: 6,
+          },
+        },
+      };
+
+    case "online/set":
+      return { ...state, online: action.online };
+
+    case "toast/push": {
+      const toast: ToastMessage = { ...action.toast, id: nextToastId() };
+      // Five is the most that fits above the status bar without covering the
+      // content it is reporting on.
+      const toasts = [...state.toasts, toast].slice(-5);
+      return { ...state, toasts };
+    }
+
+    case "toast/dismiss":
+      return { ...state, toasts: state.toasts.filter((toast) => toast.id !== action.id) };
 
     case "screen/set":
       return { ...state, screen: action.screen, overlay: null };

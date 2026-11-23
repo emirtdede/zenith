@@ -20,6 +20,15 @@ export type Risk = "safe" | "moderate" | "destructive";
 
 export type Category = "cleanup" | "network" | "recovery" | "dev_office";
 
+/**
+ * The colour id the core stores as a boot hint. The palette table lives in
+ * `src/settings/themes.ts`; this re-export keeps the wire type and the painter
+ * naming the same fourteen ids instead of a second three-value union that
+ * silently rejects a theme the UI offers.
+ */
+export type ThemeId = import("../settings/themes").ThemeId;
+
+
 export type ExecutionPhase =
   | "idle"
   | "diagnosing"
@@ -31,8 +40,6 @@ export type ExecutionPhase =
   | "skipped_dependency"
   | "cancelled"
   | "rolled_back";
-
-export type ThemeId = "off-white" | "true-black" | "spatial-glass";
 
 export interface IpcError {
   code: string;
@@ -169,10 +176,18 @@ export interface ActionPrefs {
 
 export interface AppStateSnapshot {
   locale: string;
-  theme: ThemeId;
+  /** A stored theme id, including ids from builds before the fourteen-palette
+   *  system. The renderer maps an unknown id to the nearest palette. */
+  theme: string;
   reduceMotion: boolean;
   telemetryEnabled: boolean;
   actionPrefs: ActionPrefs;
+  /**
+   * The extended settings document, as JSON, exactly as the core stored it.
+   * Optional at the type level because older fixtures predate it; absent means
+   * "first run", which `parseSettings` turns into defaults.
+   */
+  settings?: string;
   phases: Partial<Record<ActionId, ExecutionPhase>>;
   activeActionId: ActionId | null;
   lastScanAtUtc: string | null;

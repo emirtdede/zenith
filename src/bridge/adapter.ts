@@ -155,6 +155,14 @@ export interface Preferences {
   theme: ThemeId;
   reduceMotion: boolean;
   telemetryEnabled: boolean;
+  /**
+   * The extended settings document as JSON. The core stores it verbatim and
+   * returns it through `state_get`; it never parses it, because the renderer
+   * owns the shape and the core only owns the file. A separate field rather
+   * than a new command keeps the contract table unchanged and the write atomic
+   * with the four values that must be read during boot.
+   */
+  settings?: string;
 }
 
 /**

@@ -5,6 +5,7 @@ import type { ActionsApi } from "../actions";
 import { ACTIONS } from "../catalog.generated";
 import { useT } from "../i18n";
 import type { Action, State } from "../state/store";
+import { nextTheme } from "./theme";
 import { useFocusTrap } from "./useFocusTrap";
 
 interface Command {
@@ -65,10 +66,9 @@ export function CmdPalette({
         group: "palette.group.settings",
         label: t("palette.theme"),
         run: () => {
-          const order = ["off-white", "true-black", "spatial-glass"] as const;
-          const next = order[(order.indexOf(state.theme) + 1) % order.length] ?? order[0];
+          const next = nextTheme(state.theme);
           dispatch({ type: "prefs/theme", theme: next });
-          void actions.savePreferences({ theme: next });
+          void actions.updateSettings("appearance", { themeId: next });
           close();
         },
       },

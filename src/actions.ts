@@ -24,7 +24,9 @@ import type {
 import { ACTIONS, FAST_DIAGNOSE_BUDGET_MS, type ActionDef } from "./catalog.generated";
 import { auditRows, toCsv, toJson } from "./export";
 import { buildTranslator } from "./i18n";
-import type { Action, State } from "./state/store";
+import { patchSection, pruneTrash, serializeSettings, trashEntry, type SectionKey } from "./settings/model";
+import type { AppSettings, SettingsTabId, TrashEntry } from "./settings/types";
+import type { Action, State, ToastMessage } from "./state/store";
 
 export interface ActionsApi {
   boot(): Promise<void>;
@@ -44,6 +46,26 @@ export interface ActionsApi {
   saveScript(name: string, content: string, format: "ps1" | "bat" | "csv" | "json"): Promise<void>;
   exportAudit(format: "csv" | "json"): Promise<void>;
   scan(kind: CandidateKind): Promise<void>;
+
+  /** Persist one settings section, optimistically painted first. */
+  updateSettings<T extends SectionKey>(
+    section: T,
+    patch: Partial<AppSettings[T]>,
+  ): Promise<void>;
+  /** Replace the whole document, e.g. after an import or a reset. */
+  replaceSettings(next: AppSettings): Promise<void>;
+  setSettingsTab(tab: SettingsTabId): void;
+  setSidebarMinimal(minimal: boolean): void;
+  finishOnboarding(show: boolean): Promise<void>;
+  lock(): void;
+  unlock(): void;
+  toast(toast: Omit<ToastMessage, "id">): void;
+  dismissToast(id: string): void;
+  setOnline(online: boolean): void;
+  moveToTrash(entry: Omit<TrashEntry, "id" | "deletedAtUtc" | "expiresAtUtc">): Promise<void>;
+  restoreFromTrash(id: string): Promise<void>;
+  deleteFromTrash(id: string): Promise<void>;
+  emptyTrash(): Promise<void>;
 }
 
 /**
@@ -409,6 +431,147 @@ export function useActions(state: State, dispatch: (action: Action) => void): Ac
       async scan(kind) {
         try {
           dispatch({ type: "candidates/open", kind });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      async updateSettings(section, patch) {
+        const next = patchSection(state.settings, section, patch);
+        // Paint first: a switch that waits for a round trip looks broken even
+        // when the write succeeds.
+        dispatch({ type: "settings/section", section, patch: patch as Record<string, unknown> });
+        try {
+          const mirror: Partial<Preferences> = { settings: serializeSettings(next, state.trash) };
+          if (section === "appearance") {
+            mirror.theme = next.appearance.themeId;
+            mirror.reduceMotion = next.appearance.reducedMotion;
+          }
+          if (section === "general") {
+            mirror.locale = next.general.locale;
+          }
+          await bridge.savePreferences(mirror);
+          dispatch({ type: "settings/set", settings: next });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      async replaceSettings(next) {
+        dispatch({ type: "settings/set", settings: next });
+        try {
+          await bridge.savePreferences({
+            settings: serializeSettings(next, state.trash),
+            locale: next.general.locale,
+            theme: next.appearance.themeId,
+            reduceMotion: next.appearance.reducedMotion,
+          });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      setSettingsTab(tab) {
+        dispatch({ type: "settings/tab", tab });
+      },
+
+      setSidebarMinimal(minimal) {
+        dispatch({ type: "sidebar/minimal", minimal });
+        const next = {
+          ...state.settings,
+          general: { ...state.settings.general, sidebarMinimal: minimal },
+        };
+        void bridge
+          .savePreferences({ settings: serializeSettings(next, state.trash) })
+          .catch(fail);
+      },
+
+      async finishOnboarding(show) {
+        const previous = state.settings.onboarding;
+        const onboarding = show
+          ? { completed: false, completedAtUtc: null, stepsDone: 0 }
+          : { completed: true, completedAtUtc: new Date().toISOString(), stepsDone: 6 };
+        const next = { ...state.settings, onboarding };
+        dispatch({ type: "settings/set", settings: next });
+        dispatch({ type: show ? "onboarding/open" : "onboarding/close" });
+        try {
+          await bridge.savePreferences({ settings: serializeSettings(next, state.trash) });
+        } catch (error) {
+          dispatch({ type: "settings/set", settings: { ...state.settings, onboarding: previous } });
+          fail(error);
+        }
+      },
+
+      lock() {
+        dispatch({ type: "lock/set", locked: true });
+      },
+
+      unlock() {
+        dispatch({ type: "lock/set", locked: false });
+      },
+
+      toast(toast) {
+        dispatch({ type: "toast/push", toast });
+      },
+
+      dismissToast(id) {
+        dispatch({ type: "toast/dismiss", id });
+      },
+
+      setOnline(online) {
+        dispatch({ type: "online/set", online });
+      },
+
+      async moveToTrash(entry) {
+        const pruned = pruneTrash(state.trash);
+        const next = [
+          trashEntry(entry, state.settings.data.trashRetentionDays),
+          ...pruned.kept,
+        ].slice(0, 200);
+        dispatch({ type: "trash/replaced", trash: next });
+        try {
+          await bridge.savePreferences({ settings: serializeSettings(state.settings, next) });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      async restoreFromTrash(id) {
+        const next = state.trash.filter((entry) => entry.id !== id);
+        dispatch({ type: "trash/replaced", trash: next });
+        try {
+          await bridge.savePreferences({ settings: serializeSettings(state.settings, next) });
+          dispatch({
+            type: "toast/push",
+            toast: { tone: "success", titleKey: "trash.restored" },
+          });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      async deleteFromTrash(id) {
+        const next = state.trash.filter((entry) => entry.id !== id);
+        dispatch({ type: "trash/replaced", trash: next });
+        try {
+          await bridge.savePreferences({ settings: serializeSettings(state.settings, next) });
+          dispatch({
+            type: "toast/push",
+            toast: { tone: "success", titleKey: "trash.deleted" },
+          });
+        } catch (error) {
+          fail(error);
+        }
+      },
+
+      async emptyTrash() {
+        dispatch({ type: "trash/replaced", trash: [] });
+        try {
+          await bridge.savePreferences({ settings: serializeSettings(state.settings, []) });
+          dispatch({
+            type: "toast/push",
+            toast: { tone: "success", titleKey: "trash.cleared" },
+          });
         } catch (error) {
           fail(error);
         }

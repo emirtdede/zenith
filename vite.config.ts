@@ -23,5 +23,13 @@ export default defineConfig({
     target: "chrome110",
     sourcemap: false,
     chunkSizeWarningLimit: 900,
+    // Two pages, one build. `setup.html` is the 640x420 installer window; it is
+    // its own document so the wizard never boots the application shell.
+    rollupOptions: {
+      input: {
+        main: "index.html",
+        setup: "setup.html",
+      },
+    },
   },
 });
