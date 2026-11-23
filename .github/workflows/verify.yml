@@ -86,6 +86,17 @@ jobs:
       - name: Fetch crates
         run: cargo fetch --locked
 
+      # `tauri::generate_context!()` embeds `frontendDist` at compile time, and
+      # `dist/` is generated, so **every** compiling step needs it first. This
+      # step used to be missing here: the early lint copy below compiled before
+      # anything produced the renderer and failed with `proc macro panicked`,
+      # `The frontendDist configuration is set to "../dist" but this path doesn't
+      # exist`. The chain has the same ordering (DEF-167); this is the workflow's
+      # own copy of the precondition, and `check:workflows` now enforces that no
+      # compiling step precedes it.
+      - name: Build the renderer
+        run: npm run build
+
       # The vendored `cargo-deny` binary is committed under `tools/`, and
       # `check:deny` prefers it over PATH for exactly this reason: the runner's
       # rustup component catalogue is not a dependency policy.

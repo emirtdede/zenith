@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def167-workflow.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T09:09:54.891Z
+# exit: 0
+baseline                          exit 0  green
+build step removed                exit 1  caught
+build moved after lint            exit 1  caught
+cargo step added before build     exit 1  caught
+restored                          exit 0  green
+restore byte-identical: yes
+
+All 3 workflow ordering mistakes caught; baseline and restored workflow both green.

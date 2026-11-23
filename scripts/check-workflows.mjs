@@ -92,6 +92,61 @@ function stripComments(text) {
     .join("\n");
 }
 
+/**
+ * A step's command compiles Rust when it invokes a compiling cargo subcommand,
+ * or names a `node <script>.mjs` gate that does.
+ *
+ * Two details matter here, both learned by running the gate:
+ *
+ * 1. `clippy` **alone is not the signal**. `rustup toolchain install 1.90.0
+ *    --component rustfmt,clippy` installs the component and compiles nothing;
+ *    a pattern matching the bare word flagged that step as a compiler and made
+ *    the gate report the setup step as an ordering violation. The signal is the
+ *    subcommand, so the alternative is `cargo clippy`, `cargo-clippy`, or the
+ *    quoted argument a gate passes to cargo (`["clippy", ...]`).
+ * 2. Reading the gate's source is what makes `npm run check:lint` visible: its
+ *    command line says only `node scripts/check-lint.mjs`, and the compiling
+ *    happens inside it. Matching commands alone would have declared the
+ *    workflow valid while the step that failed was invisible to the check.
+ */
+const COMPILES_RUST =
+  /\bcargo\s+(?:test|build|run|check|clippy|rustc)\b|\bcargo-clippy\b|["'](?:clippy|test|build)["']/;
+
+/**
+ * Split a workflow into steps, keeping each step's name and the executable body
+ * of its `run:` block (multi-line blocks included) or `uses:` reference.
+ *
+ * The ordering rule needs step granularity: "no compiling step before build"
+ * cannot be answered by scanning the whole file, because the file contains both
+ * kinds of step and only their order matters. Indentation is the YAML boundary:
+ * list items sit at six spaces in this repository's workflow, and a `run: |`
+ * block's payload is indented deeper than its key.
+ */
+function splitSteps(code) {
+  const lines = code.split(/\r?\n/);
+  const steps = [];
+  let current = null;
+  for (const line of lines) {
+    const head = /^\s{6}- (?:name|uses|run):(?!\|)/.exec(line);
+    const blockHead = /^\s{6}- (?:name|uses):/.exec(line);
+    if (/^\s{6}- /.test(line)) {
+      if (current) steps.push(current);
+      const name = /^\s{6}- name:\s*(.+)$/.exec(line)?.[1] ?? "";
+      current = { name: name.trim() || "(unnamed step)", body: "" };
+      if (head) current.body += `${line}\n`;
+      continue;
+    }
+    if (!current) continue;
+    // A `run:` key at any deeper indentation belongs to this step's body.
+    if (/^\s{8,}run:\s*\|/.test(line)) continue;
+    if (/^\s{8,}\S/.test(line) && !/^\s{8,}- /.test(line)) {
+      current.body += `${line}\n`;
+    }
+  }
+  if (current) steps.push(current);
+  return steps;
+}
+
 let totalSteps = 0;
 
 for (const name of files) {
@@ -186,6 +241,67 @@ for (const name of files) {
           `${label}: prose says "${word} steps" but \`npm run verify\` has ${chainSteps} steps`,
         );
       }
+    }
+  }
+
+  // --- 7. the renderer is built before anything compiles Rust ------------
+  //
+  // `tauri::generate_context!()` embeds `frontendDist` **at compile time**, and
+  // `dist/` is generated (`.gitignore`). A compiling step that runs before a
+  // step producing `dist/` therefore fails on a clean checkout with:
+  //
+  //     error: proc macro panicked
+  //     help: The `frontendDist` configuration is set to `"../dist"` but this
+  //           path doesn't exist
+  //
+  // That is what turned the CI run red even after the chain itself was ordered
+  // correctly: the workflow keeps an early `check:lint` copy to fail before a
+  // cold `cargo test`, and that copy compiled with no bundle present. The chain
+  // has the same invariant (`check:verify-chain`, DEF-167); this is the second
+  // copy of the procedure, so it needs its own copy of the rule.
+  const stepList = splitSteps(code);
+  /*
+   * Resolve what a step actually runs, not what its command line names.
+   *
+   * `npm run check:lint` is the whole reason this function exists. The workflow
+   * step says four words; the command it stands for is `node
+   * scripts/check-lint.mjs`, and the compiling happens inside *that* through
+   * clippy. Matching the step's own text found no compiler, so moving `build`
+   * after the lint step went undetected - the negative proof SURVIVED until this
+   * was fixed. Each `npm run <script>` is replaced by the script's own command,
+   * and each `node <file>.mjs` by that file's source, which is the same
+   * expansion `check:verify-chain` performs for the chain.
+   */
+  function expandsToCompile(body) {
+    if (COMPILES_RUST.test(body)) return true;
+    for (const match of body.matchAll(/npm run ([a-zA-Z0-9:_-]+)/g)) {
+      const script = scripts[match[1]];
+      if (typeof script === "string" && expandsToCompile(script)) return true;
+    }
+    for (const match of body.matchAll(/\bnode ([a-zA-Z0-9_./-]+\.mjs)\b/g)) {
+      try {
+        if (COMPILES_RUST.test(readFileSync(join(ROOT, match[1]), "utf8"))) return true;
+      } catch {
+        /* a missing file is reported by check 2 above */
+      }
+    }
+    return false;
+  }
+
+  const buildStep = stepList.findIndex((step) => /\bnpm run build\b/.test(step.body));
+  if (buildStep === -1) {
+    problems.push(
+      `${label}: has no \`npm run build\` step, so a clean checkout has no renderer bundle for the ` +
+        `Rust steps to embed (DEF-167)`,
+    );
+  } else {
+    for (const [index, step] of stepList.entries()) {
+      if (index >= buildStep) continue;
+      if (!expandsToCompile(step.body)) continue;
+      problems.push(
+        `${label}: step "${step.name}" compiles Rust before the \`npm run build\` step ("${stepList[buildStep].name}"): ` +
+          `\`tauri::generate_context!\` needs the renderer bundle, which a clean checkout does not have (DEF-167)`,
+      );
     }
   }
 
