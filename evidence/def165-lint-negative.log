@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def165.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T07:15:42.558Z
+# exit: 0
+baseline                             exit 0  green
+unformatted line in process.rs       exit 1  caught
+unnecessary cast in process.rs       exit 1  caught
+SAFETY comment deleted (child.rs)    exit 1  caught
+restored                             exit 0  green
+restore byte-identical: yes (process.rs ok, child.rs ok)
+
+All 3 mutations caught; baseline and restored tree both green.

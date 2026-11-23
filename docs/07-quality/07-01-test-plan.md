@@ -42,8 +42,8 @@ npm run verify
 npm run e2e -- --app target/release/zenith.exe --driver "$env:TEMP\zenith-e2e\msedgedriver.exe"
 ```
 
-`npm run verify` is `check:locales && check:unused-keys && check:step-keys && check:step-keys-negative && check:contract && check:dashes && check:contrast && check:simulator && check:nonwindows && check:docs && check:fe && check:doc-counts && check:evidence-ledger && check:scorecard && check:ffi && check:licenses && check:deny && check:sbom && check:stubs && check:mutate-restore && check:verify-chain && check:resources && check:workflows && check:msrv && check:rust-tests && build && check:bundle`
-The chain is twenty-seven steps, each exits non-zero on failure, so it stops at the first broken gate.
+`npm run verify` is `check:locales && check:unused-keys && check:step-keys && check:step-keys-negative && check:contract && check:dashes && check:contrast && check:simulator && check:nonwindows && check:docs && check:fe && check:doc-counts && check:evidence-ledger && check:scorecard && check:ffi && check:licenses && check:deny && check:sbom && check:stubs && check:mutate-restore && check:verify-chain && check:resources && check:workflows && check:msrv && check:lint && check:rust-tests && build && check:bundle`
+The chain is twenty-eight steps, each exits non-zero on failure, so it stops at the first broken gate.
 `check:resources` verifies `resources/manifest.json` is still a real contract: every asset carries an
 id, a path, a byte count, a SHA-256, a source and a licence; ids and paths are unique; no path escapes
 the directory; and every asset that happens to be present on the machine hashes to its pin. The
@@ -97,7 +97,7 @@ excluded - so `--port` is only needed to pin a known pair.
 | `check-docs` | 118 F / 86 N traced, 93 test ids, 134 DEF ids | pass |
 | `check-doc-counts` | every "<n> tests/keys/rows" claim in the docs matched against the measured tree (161 rows / 152 closed / 166 vitest / 533 keys / 306 Rust); historical closure rows pass only when marked "at the time" | pass |
 | `check-evidence-ledger` | every artefact under `evidence/` has a ledger row, every row names a file that exists, no artefact is 0 bytes, and every `evidence/…` path a document cites resolves (DEF-132) | pass |
-| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 164 ids, 1..164, 155+9 | pass |
+| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 166 ids, 1..166, 157+9 | pass |
 | `check-unused-keys` | every one of the 455 catalogue keys is referenced by `src/` (DEF-089 found 52 that were not) | 0 of 455 unreachable, pass |
 | `check-step-keys` | every `steps.*`/`error.*`/`remedy.*` key the core emits exists in both catalogues, and no `steps.*` key is emitted-less (DEF-088, DEF-090) | 39 catalogue keys, 0 missing, 0 orphaned, pass |
 | `check-scorecard-mutation` | 3 rubric mutations of `10-01` each rejected, file restored byte-identical | pass (exit 0, `evidence/scorecard-mutation.log`) |

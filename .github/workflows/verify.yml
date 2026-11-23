@@ -1,6 +1,6 @@
 name: verify
 
-# The same gate a release depends on: `npm run verify`, twenty-seven steps,
+# The same gate a release depends on: `npm run verify`, twenty-eight steps,
 # stopping at the first failure. A green run here is the only claim this
 # workflow makes; it does not build an installer or publish anything.
 #
@@ -89,18 +89,20 @@ jobs:
       # The vendored `cargo-deny` binary is committed under `tools/`, and
       # `check:deny` prefers it over PATH for exactly this reason: the runner's
       # rustup component catalogue is not a dependency policy.
-      - name: Lint (format and clippy)
-        shell: pwsh
-        run: |
-          cargo fmt --all -- --check
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-          cargo clippy --workspace --all-targets -- -D warnings
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+      #
+      # `check:lint` rather than raw `cargo fmt` / `cargo clippy`: the gate
+      # resolves the declared toolchain itself and verifies that the clippy which
+      # answers was built from the same commit as the pinned rustc. Running the
+      # bare commands here made CI stricter than the local chain, which is how
+      # three lint errors reached a red `main` (DEF-165, DEF-166). It is also
+      # step 25 of the chain; this early copy fails before a cold `cargo test`.
+      - name: Lint (format and clippy, pinned toolchain)
+        run: npm run check:lint
 
-      # Twenty-seven steps. Each one is a named gate in `package.json`, and
+      # Twenty-eight steps. Each one is a named gate in `package.json`, and
       # `check:verify-chain` fails if the chain gains or loses a step without the
       # test plan being updated to say so.
-      - name: Release gate (27 steps)
+      - name: Release gate (28 steps)
         run: npm run verify
 
       # A failed run is only useful if the output survives. The gate writes

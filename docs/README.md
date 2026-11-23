@@ -14,8 +14,8 @@ This is the complete, enterprise-grade document set for Zenith. It replaces the 
 v1.0.0 master specification, which scored **51 raw points across bands weighted to 110 (46.4/100)** under
 the owner's original eight-band assessment, and **45/100** when re-scored under the ten-criterion rubric in
 [`10-audit/10-01-scorecard.md`](10-audit/10-01-scorecard.md). The register
-([`10-audit/10-02-deficiency-register.md`](10-audit/10-02-deficiency-register.md)) tracks **164 rows:
-155 closed with a named owner document and closure evidence, 9 open with a named owner and an honest
+([`10-audit/10-02-deficiency-register.md`](10-audit/10-02-deficiency-register.md)) tracks **166 rows:
+157 closed with a named owner document and closure evidence, 9 open with a named owner and an honest
 reason**. The open nine are not hidden in this library: three are release blockers (DEF-028 EV
 certificate, DEF-047 VM suite, DEF-050 CI pipeline), which is why the scorecard reports 98 rather than
 100 and states plainly that it is not a shipping clearance. The release pass itself is recorded twice:

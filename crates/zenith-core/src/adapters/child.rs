@@ -291,21 +291,26 @@ struct JobGuard {
     handle: Option<windows_sys::Win32::Foundation::HANDLE>,
 }
 
+#[cfg(windows)]
 // SAFETY: a job-object handle is a process-wide kernel value, not a pointer into
 // thread-local state, and every operation used here - `TerminateJobObject` and
 // `CloseHandle` - is documented as callable from any thread. The field is
 // immutable after construction and is closed exactly once, in `Drop`, which runs
 // only when the last `Arc` reference is gone; a concurrent `cancel()` therefore
 // terminates a handle that is still open.
-#[cfg(windows)]
+//
+// The `#[cfg]` sits *above* this comment, not below it: `clippy`'s
+// `undocumented_unsafe_blocks` wants the comment adjacent to the item, and an
+// attribute between the two makes the comment invisible to it. That is exactly
+// how DEF-158's first fix passed review and failed CI (DEF-165).
 unsafe impl Send for JobGuard {}
 
+#[cfg(windows)]
 // SAFETY: the same argument as the `Send` impl above, and the reason it holds for
 // `Sync` too. Sharing `&JobGuard` across threads exposes only the handle value,
 // which is a plain kernel handle, never a Rust reference into mutable memory.
 // The two `unsafe impl`s are separate items because `cfg` cannot decorate a pair,
 // so each carries its own comment rather than one comment covering both.
-#[cfg(windows)]
 unsafe impl Sync for JobGuard {}
 
 #[cfg(windows)]

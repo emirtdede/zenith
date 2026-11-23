@@ -230,7 +230,7 @@ and the verdict says so.
 
 | Claim | Evidence | Where |
 | :--- | :--- | :--- |
-| The release gate passes end to end | 27-step chain, exit 0 | `evidence/verify-final.log` |
+| The release gate passes end to end | 28-step chain, exit 0 | `evidence/verify-final.log` |
 | The release binary renders its own UI | `location.href` is `http://tauri.localhost/`, 22 action cards, 5 tabs, 6 nav destinations | WebDriver probe; sweep journal |
 | Every screen renders without overflow, blank paint or console error | 10 of 10 states pass | `evidence/screens/*.png` |
 | Card footers share a baseline | `footBottom` equal across each grid row; footer spread 0 | `measure-cards.mjs` |

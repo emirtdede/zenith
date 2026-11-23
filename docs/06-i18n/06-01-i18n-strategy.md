@@ -21,8 +21,8 @@ the gate.
 
 | Locale | Tier | Status | Keys | Evidence |
 | :--- | :--- | :--- | ---: | :--- |
-| `en` | A | Source of truth | 445 | `src/i18n/en.ts` |
-| `tr` | A | Translated + reviewed, full parity | 451 | `src/i18n/tr.ts` |
+| `en` | A | Source of truth | 533 | `src/i18n/en.ts` |
+| `tr` | A | Translated + reviewed, full parity | 533 | `src/i18n/tr.ts` |
 
 ```text
 $ node scripts/check-locales.mjs
@@ -32,15 +32,19 @@ All 2 locales agree with English on 533 keys.
 Parity is necessary but not sufficient, and DEF-089 is the reason this document says so: the gate was
 green at 471 keys at the time, while **52 of those keys could not be reached by any code path**.
 `check-locales` compares the two catalogues to each other; it cannot see whether a string is ever
-rendered. Two further gates now ask that question, and both run before this one in `npm run verify`:
+rendered. Two further gates now ask that question; they are steps 2 and 3 of `npm run verify`, running
+immediately after `check:locales` at step 1:
 
 | Gate | Question | Found |
 | :--- | :--- | :--- |
 | `scripts/check-unused-keys.mjs` | Is every catalogue key referenced by `src/`? | 52 unreachable keys: 30 described behaviour that did not exist (deleted) and 22 described measured data the UI never showed (wired) |
 | `scripts/check-step-keys.mjs` | Does every `steps.*` / `error.*` / `remedy.*` key the core can emit exist in **both** catalogues - and does every `steps.*` key have an emitter? | DEF-088's missing `steps.processSelfRefused`, and any dead `steps.*` key |
 
-The shipped total is **442** because 30 dead keys were deleted and one live key (`steps.processSelfRefused`,
-DEF-090) was added. A catalogue's size is not a quality measure; its reachability is.
+The shipped total is **533** keys in each catalogue, 39 of them `steps.*` and 20 `remedy.*` (59
+core-owned). The 442 figure this paragraph used to carry described an intermediate tree: 30 dead keys
+were deleted and one live key (`steps.processSelfRefused`, DEF-090) was added, and the renderer work
+afterwards grew the catalogue to its measured size. A catalogue's size is not a quality measure; its
+reachability is.
 
 Two locales, not seventy-three. The reason is in §7: a locale is shipped only when a native speaker
 has reviewed it and the gate proves structural parity. Shipping machine output as "supported" is the

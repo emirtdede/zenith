@@ -43,11 +43,44 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolvePinnedToolchain, runCargo, rustcHost } from "./lib/rust-toolchain.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const problems = [];
 const notes = [];
+
+/**
+ * Choose the cargo that reads the dependency graph.
+ *
+ * The comparison this gate performs is over **data** - each crate's declared
+ * `rust.version` in `cargo metadata` - so the toolchain that reads it does not
+ * have to be the declared one; any cargo that understands the manifest and the
+ * lockfile gives the same answer. What must *not* happen is the gate refusing to
+ * answer because the declared toolchain is absent: then "declare 1.85 while the
+ * lock needs 1.90" would report "1.85 is not installed" and never mention the
+ * lockfile, which is the fact the gate exists to surface.
+ *
+ * Preference order:
+ *   1. the declared toolchain, when installed - the most faithful reader;
+ *   2. whatever `cargo` is on PATH - it can still read the graph, and the gate
+ *      says so in its output so the measurement is not mistaken for a
+ *      pinned-toolchain run.
+ */
+let pinned = null;
+let readerBinDir = null;
+try {
+  pinned = resolvePinnedToolchain(ROOT);
+  readerBinDir = pinned.binDir;
+  notes.push(`pinned toolchain: ${pinned.binDir}`);
+  notes.push(`pinned rustc: ${pinned.release}`);
+} catch (error) {
+  // Not fatal here: the graph comparison is data. `check:lint` is the gate that
+  // must run the compiler and therefore fails when it is missing.
+  const firstLine = String(error?.message ?? error).split("\n")[0];
+  notes.push(`declared toolchain not installed: ${firstLine}`);
+  notes.push("reading the graph with the cargo on PATH instead (the comparison is data)");
+}
 
 /** "1.90" -> [1, 90, 0]; unknown shapes are rejected rather than guessed. */
 function parseVersion(text) {
@@ -64,7 +97,22 @@ function compareVersions(a, b) {
   return 0;
 }
 
+/**
+ * Read the dependency graph. Uses the declared toolchain when it is installed,
+ * otherwise the cargo on PATH; either way the answer is the graph in
+ * `Cargo.lock` and the `rust.version` fields in `cargo metadata`, which do not
+ * depend on which compiler reads them.
+ */
 function cargo(args, label) {
+  if (readerBinDir) {
+    const result = runCargo(readerBinDir, args, { cwd: ROOT });
+    if (result.code !== 0) {
+      const detail = result.output.trim().split(/\r?\n/)[0];
+      problems.push(`could not read ${label}: ${detail || "cargo exited non-zero"}`);
+      return null;
+    }
+    return result.output;
+  }
   try {
     return execFileSync("cargo", args, {
       cwd: ROOT,
@@ -98,16 +146,27 @@ if (!declaredText) {
 // --------------------------------------------------- 2. the compiled set -----
 // Which crates this build actually compiles. `--target <host>` is the whole
 // point: it drops the platform crates that a Windows build never sees.
-const rustcReport = (() => {
-  try {
-    return execFileSync("rustc", ["-vV"], { cwd: ROOT, encoding: "utf8" });
-  } catch (error) {
-    problems.push(`could not run \`rustc -vV\`: ${String(error).slice(0, 200)}`);
-    return "";
-  }
-})();
-const host = /^host: (\S+)$/m.exec(rustcReport)?.[1];
-if (!host) problems.push("could not read the host target triple from `rustc -vV`");
+//
+// The host comes from the pinned toolchain when it is installed, and from the
+// toolchain on PATH otherwise. It must never be `null` merely because the
+// declared toolchain is missing: when a mutation declares 1.85 and no 1.85 is
+// installed, skipping the comparison made the gate exit 0 on exactly the drift
+// it exists to catch (the negative proof SURVIVED until this was fixed).
+const host = pinned
+  ? rustcHost(pinned.binDir, ROOT)
+  : (() => {
+      try {
+        const report = execFileSync("rustc", ["-vV"], {
+          cwd: ROOT,
+          encoding: "utf8",
+          stdio: "pipe",
+        });
+        return /^host: (\S+)$/m.exec(report)?.[1] ?? null;
+      } catch {
+        return null;
+      }
+    })();
+if (!host) problems.push("could not read the host target triple; the comparison cannot be scoped");
 
 let packages = [];
 if (host) {

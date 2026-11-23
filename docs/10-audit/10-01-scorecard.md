@@ -86,9 +86,9 @@ was "the sum with C10 capped at its weight". Both statements could not be true -
 | C5 | FFI | 4 | **9** | 106 `unsafe` blocks plus 2 `unsafe impl`s, each with its own `// SAFETY:` comment (110 comments in total). Two independent proofs: `cargo clippy -D warnings` compiles the real `#[cfg(windows)]` surface on this `x86_64-pc-windows-msvc` host and `clippy::undocumented_unsafe_blocks` is `deny`-level, so a missing comment is a build error (verified with a throwaway crate: the lint fires, exit 101); `check:ffi` independently re-reads the 45 source files and pairs every block with its comment without trusting the compiler. `win32_code` on every HRESULT; `03-06` standard |
 | C6 | Data & privacy | 3 | **9** | `03-03` migrations + recovery; `04-02` D1-D11 inventory; consent-before-prune tested; purge with token |
 | C7 | Interface & a11y | 5 | **9** | `05-02` 6 screens/5 overlays/key map; `check-contrast` 75×3 all pass; `05-03` assesses **31 criteria, all verified** (1.2.x is N/A - no media) with the live screen-reader session still open as DEF-043, which is the −1 on this row; zoom reflow 1.4.4/1.4.10 measured at 320 px / 200 % / 400 % across 54 cells (DEF-044 closed) |
-| C8 | Localization | 4 | **6** | ICU subset; `check-locales` 451×2 exact parity, `check-unused-keys` 0 of 451 unreachable, `check-step-keys` 39 emitted keys present; ADR-023 tiers honest about 2 shipped locales |
+| C8 | Localization | 4 | **6** | ICU subset; `check-locales` 533×2 exact parity, `check-unused-keys` 0 of 533 unreachable, `check-step-keys` 328 emitted keys present, 0 missing from either catalogue; ADR-023 tiers honest about 2 shipped locales |
 | C9 | Tests & automation | 4 | **8** | 306 Rust tests + 166 vitest tests (reducer, ICU formatter, 47 render, 2 render-boundary, 9 focus-trap, 8 controller, 1 diagnose-budget, 11 audit-export, 4 boot-timing, 13 log-text, 17 candidate-wiring); 22-step `npm run verify` (17 node script gates + `check:fe` + `zenith-audit --all` + `cargo test --workspace` + build, the last three being the only steps that execute code rather than read it); contract 15/15/15/15; 3-journey/11-step WebDriver E2E (`scripts/e2e-journeys.mjs`, exit 0, re-run after every UI change) |
-| C10 | Delivery & truth | 6 | **6** | `08-02`/`08-03`/`08-04`; 164-row register with 9 admitted-open rows; installer built, hashed, install→uninstall tested (`08-02` §8.1), and the uninstaller now offers data deletion |
+| C10 | Delivery & truth | 6 | **6** | `08-02`/`08-03`/`08-04`; 166-row register with 9 admitted-open rows; installer built, hashed, install→uninstall tested (`08-02` §8.1), and the uninstaller now offers data deletion |
 | **Total** | | **45** | **98** | |
 
 ### 3.1 What running the packaged binary found that the tests did not
@@ -192,7 +192,7 @@ will not recur:
 | DEF-086 | T-FE-21 drives Tab and Shift+Tab through a real dialog; the attribute and its promise are now checked together |
 | DEF-087 | `probe-focus-trap.mjs` measures focus in the **packaged** binary (inside-on-open, wrap at both edges, restore to trigger), and `check-focus-trap-mutation.mjs` proves the `autoFocus` regression case fails when the fix is removed |
 | DEF-088 | `check-step-keys.mjs` proves every `steps.*`/`error.*`/`remedy.*` key the core can emit exists in both catalogues and no `steps.*` key is emitted-less; `logText.test.ts` (6 cases) pins the one function that turns a line into words |
-| DEF-089 | `check-unused-keys.mjs` reports 0 of 445 unreachable and runs as step 3 of `npm run verify`; `wiring089.test.tsx` (14 cases) asserts the *value* each key names reaches the screen |
+| DEF-089 | `check-unused-keys.mjs` reports 0 of 533 unreachable and runs as step 2 of `npm run verify`; `wiring089.test.tsx` (14 cases) asserts the *value* each key names reaches the screen |
 | DEF-090 | `our_own_process_is_refused_not_terminated` asserts the core returns `RefusedSelf` for its own pid, and `wiring089.test.tsx` asserts the dialog offers no checkbox for the self row |
 | DEF-091 | `wiring089.test.tsx` asserts the hung-family heading and cell are distinct strings, so a sentence used as a label fails loudly |
 | DEF-092 | `check-build-identity.mjs` reads the embedded `release-YYYYMMDD` out of the binary and requires it to equal the artefact's own date and that no shipped source is newer; `build.rs` also emits `rerun-if-changed=src`, so the stamp cannot survive a source edit |
@@ -239,7 +239,7 @@ will not recur:
 
 `scripts/check-scorecard.mjs` recomputes
 the rubric weights, both totals, the withheld-versus-shortfall equality and the register's row and id
-totals, and runs as step 14 of the 27-step `npm run verify` chain; it now also parses the owner's eight bands, requires the
+totals, and runs as step 14 of the 28-step `npm run verify` chain; it now also parses the owner's eight bands, requires the
 real denominator (110) and the 1.4-point agreement to be the ones written. Two mutation scripts prove the
 gates still catch the original errors by reintroducing them and asserting a non-zero exit:
 `check-scorecard-mutation.mjs` (three rubric mutations) and `check-bands-mutation.mjs` (four band
@@ -308,7 +308,7 @@ Every number in §3 comes from one of these. Re-run them to reproduce the score.
 | Dependency policy holds | `npm run check:deny` | advisories, bans, licences and sources clean |
 | Installer | `npm run tauri build` | 2.77 MiB NSIS, SHA-256 recorded in `08-02` §3 |
 | Uninstall leaves no orphan | `scripts/verify-uninstall.ps1 -Mode verify` + `-Mode diff` | 7/7 checks pass; zero drift vs pre-install baseline |
-| The scorecard's own arithmetic is correct | `node scripts/check-scorecard.mjs` | rubric weights sum to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld points = 2 points of shortfall; register 164 ids, contiguous, 155 closed + 9 open (DEF-080…DEF-164) |
+| The scorecard's own arithmetic is correct | `node scripts/check-scorecard.mjs` | rubric weights sum to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld points = 2 points of shortfall; register 166 ids, contiguous, 157 closed + 9 open (DEF-080…DEF-166) |
 | Docs are internally consistent | `node scripts/check-docs.mjs` | 28 files, 45 links resolve, 108 DEF ids defined, 118/118 F + 86/86 N traced, 93 test ids closed, 4-key headers, no U+FFFD |
 | Every `unsafe` block and `unsafe impl` is documented | `node scripts/check-ffi.mjs` | 106 blocks + 2 impls, 108 documented, 110 `// SAFETY:` comments |
 | Real desktop binary completes diagnose → run → rollback | `node scripts/e2e-journeys.mjs --app target/release/zenith.exe` | 3 journeys, 11 steps, 0 failures, exit 0 (log in `evidence/e2e-final.log`) |
@@ -334,7 +334,7 @@ notice freshness gate as `check:licenses`, and the dependency policy as `check:d
 | ADRs | 24 (ADR-001 … ADR-024) |
 | Requirements | 118 functional · 86 non-functional |
 | Traceability | 118/118 functional mapped to a design section, a test id, and a WP |
-| Deficiencies | 164 rows: 155 closed, 9 open (3 blocker-class) |
+| Deficiencies | 166 rows: 157 closed, 9 open (3 blocker-class) |
 | Risks | 24 scored delivery risks + 12 security risks |
 
 ---

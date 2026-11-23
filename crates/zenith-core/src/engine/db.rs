@@ -1220,7 +1220,10 @@ mod tests {
         let key = SnapshotKey::from_bytes([4u8; 32]);
         let id = {
             let (store, _) = Store::open(&paths, key).expect("open");
-            let id = store
+            // Simulate a crash: leave it PENDING and drop the store. The tail
+            // expression is the id, so the block needs no `let` binding of its
+            // own (clippy::let_and_return, found only on the pinned toolchain).
+            store
                 .begin_snapshot(
                     ActionId::CleanTempCache,
                     "filesystem_archive",
@@ -1228,9 +1231,7 @@ mod tests {
                     &new_correlation_id(),
                     1,
                 )
-                .expect("begin");
-            // Simulate a crash: leave it PENDING and drop the store.
-            id
+                .expect("begin")
         };
 
         let (store, report) =

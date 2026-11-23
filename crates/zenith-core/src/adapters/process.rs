@@ -132,7 +132,7 @@ pub fn list_listeners(min_port: u16, max_port: u16) -> ZenithResult<Vec<PortList
     }
 
     // Recompute the real capacity and clamp the entry count to it.
-    let capacity_bytes = (buffer.len() * std::mem::size_of::<u64>()) as usize;
+    let capacity_bytes = buffer.len() * std::mem::size_of::<u64>();
     if capacity_bytes < std::mem::size_of::<u32>() {
         return Ok(Vec::new());
     }
