@@ -1,0 +1,299 @@
+{
+  "note": "One row per UI locale. nsis is the installer translation that covers it, or null when NSIS ships none for that language.",
+  "languages": [
+    {
+      "code": "tr",
+      "nsis": "Turkish"
+    },
+    {
+      "code": "en",
+      "nsis": "English"
+    },
+    {
+      "code": "de",
+      "nsis": "German"
+    },
+    {
+      "code": "fr",
+      "nsis": "French"
+    },
+    {
+      "code": "es",
+      "nsis": "Spanish"
+    },
+    {
+      "code": "it",
+      "nsis": "Italian"
+    },
+    {
+      "code": "pt",
+      "nsis": "Portuguese"
+    },
+    {
+      "code": "pt-BR",
+      "nsis": "PortugueseBR"
+    },
+    {
+      "code": "ru",
+      "nsis": "Russian"
+    },
+    {
+      "code": "ja",
+      "nsis": "Japanese"
+    },
+    {
+      "code": "ko",
+      "nsis": "Korean"
+    },
+    {
+      "code": "zh-CN",
+      "nsis": "SimpChinese"
+    },
+    {
+      "code": "zh-TW",
+      "nsis": "TradChinese"
+    },
+    {
+      "code": "ar",
+      "nsis": "Arabic"
+    },
+    {
+      "code": "hi",
+      "nsis": "Hindi"
+    },
+    {
+      "code": "bn",
+      "nsis": "Bengali"
+    },
+    {
+      "code": "pa",
+      "nsis": "Punjabi"
+    },
+    {
+      "code": "ur",
+      "nsis": "Urdu"
+    },
+    {
+      "code": "fa",
+      "nsis": "Farsi"
+    },
+    {
+      "code": "he",
+      "nsis": "Hebrew"
+    },
+    {
+      "code": "nl",
+      "nsis": "Dutch"
+    },
+    {
+      "code": "pl",
+      "nsis": "Polish"
+    },
+    {
+      "code": "uk",
+      "nsis": "Ukrainian"
+    },
+    {
+      "code": "cs",
+      "nsis": "Czech"
+    },
+    {
+      "code": "sk",
+      "nsis": "Slovak"
+    },
+    {
+      "code": "hu",
+      "nsis": "Hungarian"
+    },
+    {
+      "code": "ro",
+      "nsis": "Romanian"
+    },
+    {
+      "code": "bg",
+      "nsis": "Bulgarian"
+    },
+    {
+      "code": "el",
+      "nsis": "Greek"
+    },
+    {
+      "code": "sv",
+      "nsis": "Swedish"
+    },
+    {
+      "code": "da",
+      "nsis": "Danish"
+    },
+    {
+      "code": "no",
+      "nsis": "Norwegian"
+    },
+    {
+      "code": "fi",
+      "nsis": "Finnish"
+    },
+    {
+      "code": "is",
+      "nsis": "Icelandic"
+    },
+    {
+      "code": "et",
+      "nsis": "Estonian"
+    },
+    {
+      "code": "lv",
+      "nsis": "Latvian"
+    },
+    {
+      "code": "lt",
+      "nsis": "Lithuanian"
+    },
+    {
+      "code": "hr",
+      "nsis": "Croatian"
+    },
+    {
+      "code": "sr",
+      "nsis": "Serbian"
+    },
+    {
+      "code": "sl",
+      "nsis": "Slovenian"
+    },
+    {
+      "code": "bs",
+      "nsis": "Bosnian"
+    },
+    {
+      "code": "mk",
+      "nsis": "Macedonian"
+    },
+    {
+      "code": "sq",
+      "nsis": "Albanian"
+    },
+    {
+      "code": "az",
+      "nsis": "Azerbaijani"
+    },
+    {
+      "code": "kk",
+      "nsis": "Kazakh"
+    },
+    {
+      "code": "uz",
+      "nsis": "Uzbek"
+    },
+    {
+      "code": "ky",
+      "nsis": "Kyrgyz"
+    },
+    {
+      "code": "tk",
+      "nsis": "Turkmen"
+    },
+    {
+      "code": "ka",
+      "nsis": "Georgian"
+    },
+    {
+      "code": "hy",
+      "nsis": "Armenian"
+    },
+    {
+      "code": "id",
+      "nsis": "Indonesian"
+    },
+    {
+      "code": "ms",
+      "nsis": "Malay"
+    },
+    {
+      "code": "vi",
+      "nsis": "Vietnamese"
+    },
+    {
+      "code": "th",
+      "nsis": "Thai"
+    },
+    {
+      "code": "tl",
+      "nsis": "Filipino"
+    },
+    {
+      "code": "km",
+      "nsis": "Khmer"
+    },
+    {
+      "code": "lo",
+      "nsis": null,
+      "fallback": "en"
+    },
+    {
+      "code": "my",
+      "nsis": "Burmese"
+    },
+    {
+      "code": "ta",
+      "nsis": "Tamil"
+    },
+    {
+      "code": "te",
+      "nsis": "Telugu"
+    },
+    {
+      "code": "mr",
+      "nsis": "Marathi"
+    },
+    {
+      "code": "gu",
+      "nsis": "Gujarati"
+    },
+    {
+      "code": "kn",
+      "nsis": "Kannada"
+    },
+    {
+      "code": "ml",
+      "nsis": "Malayalam"
+    },
+    {
+      "code": "si",
+      "nsis": "Sinhala"
+    },
+    {
+      "code": "ne",
+      "nsis": null,
+      "fallback": "en"
+    },
+    {
+      "code": "sw",
+      "nsis": "Swahili"
+    },
+    {
+      "code": "am",
+      "nsis": "Amharic"
+    },
+    {
+      "code": "af",
+      "nsis": "Afrikaans"
+    },
+    {
+      "code": "ca",
+      "nsis": "Catalan"
+    },
+    {
+      "code": "eu",
+      "nsis": "Basque"
+    },
+    {
+      "code": "gl",
+      "nsis": "Galician"
+    },
+    {
+      "code": "cy",
+      "nsis": "Welsh"
+    }
+  ]
+}

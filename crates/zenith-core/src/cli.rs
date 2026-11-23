@@ -45,6 +45,16 @@ pub enum Command {
     Rollback { snapshot_id: String, json: bool },
     /// `--support-bundle [--out <path>]`
     SupportBundle { out: Option<PathBuf>, json: bool },
+    /// `mcp --stdio` - Model Context Protocol server, line-delimited JSON-RPC.
+    Mcp { stdio: bool },
+    /// `api --port <port>` - loopback-only read-only HTTP API.
+    Api { port: u16 },
+    /// `webhook --url <url> [--dry-run]` - send one signed test event.
+    Webhook {
+        url: String,
+        dry_run: bool,
+        json: bool,
+    },
 }
 
 /// What the process should do.
@@ -88,6 +98,11 @@ pub fn is_cli(args: &[String]) -> bool {
     if args.iter().any(|arg| arg == "--elevate") {
         return false;
     }
+    if let Some(first) = args.first()
+        && matches!(first.as_str(), "mcp" | "api" | "webhook")
+    {
+        return true;
+    }
     args.iter().any(|arg| {
         matches!(
             arg.as_str(),
@@ -119,6 +134,15 @@ pub fn parse(args: &[String]) -> Result<Invocation, UsageError> {
     }
     if args.iter().any(|arg| arg == "--version" || arg == "-V") {
         return Ok(Invocation::Version);
+    }
+
+    if let Some(first) = args.first() {
+        match first.as_str() {
+            "mcp" => return parse_mcp(&args[1..]),
+            "api" => return parse_api(&args[1..]),
+            "webhook" => return parse_webhook(&args[1..]),
+            _ => {}
+        }
     }
 
     let json = has(args, "--json");
@@ -203,6 +227,82 @@ pub fn parse(args: &[String]) -> Result<Invocation, UsageError> {
     Ok(Invocation::Run(Command::Rollback { snapshot_id, json }))
 }
 
+/// `mcp --stdio`. No other flag is accepted: a mode flag that is silently
+/// ignored is a mode flag a user believes was honoured.
+fn parse_mcp(args: &[String]) -> Result<Invocation, UsageError> {
+    if args.iter().any(|arg| arg == "--help" || arg == "-h") {
+        return Ok(Invocation::Help);
+    }
+    if !has(args, "--stdio") {
+        return Err(UsageError::new("USAGE", "mcp requires --stdio"));
+    }
+    if let Some(unknown) = args.iter().find(|arg| arg.as_str() != "--stdio") {
+        return Err(UsageError::new(
+            "USAGE",
+            format!("mcp does not accept {unknown}"),
+        ));
+    }
+    Ok(Invocation::Run(Command::Mcp { stdio: true }))
+}
+
+/// `api --port <port>`. Loopback only; a port below 1024 is refused because a
+/// low port either needs elevation or collides with a system service.
+fn parse_api(args: &[String]) -> Result<Invocation, UsageError> {
+    if args.iter().any(|arg| arg == "--help" || arg == "-h") {
+        return Ok(Invocation::Help);
+    }
+    let raw =
+        value(args, "--port")?.ok_or_else(|| UsageError::new("USAGE", "api requires --port"))?;
+    let port = raw
+        .parse::<u16>()
+        .map_err(|_| UsageError::new("USAGE", "--port must be a number"))?;
+    if port < 1024 {
+        return Err(UsageError::new("USAGE", "--port must be 1024 or higher"));
+    }
+    if let Some(unknown) = args
+        .iter()
+        .enumerate()
+        .find(|(index, arg)| {
+            arg.as_str() != "--port" && !(*index > 0 && args[index - 1] == "--port")
+        })
+        .map(|(_, arg)| arg)
+    {
+        return Err(UsageError::new(
+            "USAGE",
+            format!("api does not accept {unknown}"),
+        ));
+    }
+    Ok(Invocation::Run(Command::Api { port }))
+}
+
+/// `webhook --url <url> [--dry-run] [--json]`.
+fn parse_webhook(args: &[String]) -> Result<Invocation, UsageError> {
+    if args.iter().any(|arg| arg == "--help" || arg == "-h") {
+        return Ok(Invocation::Help);
+    }
+    let url =
+        value(args, "--url")?.ok_or_else(|| UsageError::new("USAGE", "webhook requires --url"))?;
+    if let Err(error) = crate::webhook::validate_url(&url) {
+        return Err(UsageError::new(
+            "USAGE",
+            format!("--url is not acceptable: {error}"),
+        ));
+    }
+    if let Some(unknown) = args.iter().find(|arg| {
+        !matches!(arg.as_str(), "--url" | "--dry-run" | "--json") && !arg.contains("://")
+    }) {
+        return Err(UsageError::new(
+            "USAGE",
+            format!("webhook does not accept {unknown}"),
+        ));
+    }
+    Ok(Invocation::Run(Command::Webhook {
+        url,
+        dry_run: has(args, "--dry-run"),
+        json: has(args, "--json"),
+    }))
+}
+
 /// `--flag` presence, exact match (no `--flag=value` alias to keep the surface
 /// small and unambiguous).
 fn has(args: &[String], flag: &str) -> bool {
@@ -274,6 +374,10 @@ USAGE:
   zenith.exe --headless --actions <csv> [--dry-run] [--json] [--yes] [--timeout-secs N]
   zenith.exe --headless --rollback <snapshotId> [--json]
   zenith.exe --support-bundle [--out <path>] [--json]
+  zenith.exe mcp --stdio                        Model Context Protocol, JSON-RPC 2.0 over stdio
+  zenith.exe api --port <port>                  read-only HTTP API on 127.0.0.1
+  zenith.exe webhook --url <url> [--dry-run] [--json]
+                                                send one HMAC-SHA256 signed test event
 
 EXIT CODES:
   0  all requested steps succeeded
@@ -432,5 +536,63 @@ mod tests {
         for line in ["  0  ", "  1  ", "  2  ", "  3  ", "  4  ", "  5  "] {
             assert!(HELP.contains(line), "help is missing {line:?}");
         }
+    }
+}
+
+#[cfg(test)]
+mod subcommand_tests {
+    use super::*;
+
+    fn args(list: &[&str]) -> Vec<String> {
+        list.iter().map(|item| item.to_string()).collect()
+    }
+
+    #[test]
+    fn mcp_requires_stdio_and_nothing_else() {
+        assert_eq!(
+            parse(&args(&["mcp", "--stdio"])),
+            Ok(Invocation::Run(Command::Mcp { stdio: true }))
+        );
+        assert!(parse(&args(&["mcp"])).is_err());
+        assert!(parse(&args(&["mcp", "--stdio", "--json"])).is_err());
+        assert!(is_cli(&args(&["mcp", "--stdio"])));
+    }
+
+    #[test]
+    fn api_takes_a_high_port_only() {
+        assert_eq!(
+            parse(&args(&["api", "--port", "8787"])),
+            Ok(Invocation::Run(Command::Api { port: 8787 }))
+        );
+        assert!(parse(&args(&["api", "--port", "80"])).is_err());
+        assert!(parse(&args(&["api"])).is_err());
+        assert!(parse(&args(&["api", "--port", "not-a-port"])).is_err());
+        assert!(is_cli(&args(&["api", "--port", "8787"])));
+    }
+
+    #[test]
+    fn webhook_refuses_a_url_that_would_put_the_secret_on_the_wire() {
+        let https = parse(&args(&["webhook", "--url", "https://example.com/hook"]));
+        assert_eq!(
+            https,
+            Ok(Invocation::Run(Command::Webhook {
+                url: "https://example.com/hook".to_string(),
+                dry_run: false,
+                json: false,
+            }))
+        );
+        assert!(parse(&args(&["webhook", "--url", "http://example.com/hook"])).is_err());
+        assert!(parse(&args(&["webhook"])).is_err());
+        assert!(is_cli(&args(&[
+            "webhook",
+            "--url",
+            "https://example.com/hook"
+        ])));
+    }
+
+    #[test]
+    fn a_gui_launch_and_a_handover_stay_out_of_the_cli() {
+        assert!(!is_cli(&[]));
+        assert!(!is_cli(&args(&["--elevate", "--stdin"])));
     }
 }

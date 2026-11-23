@@ -46,6 +46,7 @@
 // above this line is safe Rust by construction (U1 in `03-06`).
 #[allow(unsafe_code)]
 pub mod adapters;
+pub mod api;
 
 pub mod catalog_ts;
 pub mod cli;
@@ -54,7 +55,9 @@ pub mod engine;
 pub mod error;
 pub mod i18n;
 pub mod manifest;
+pub mod mcp;
 pub mod models;
+pub mod webhook;
 
 pub use error::{ErrorCode, ZenithError, ZenithResult};
 pub use manifest::{ACTIONS, ActionDef, ActionScope, Category, CommandSpec, action_by_id};

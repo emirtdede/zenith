@@ -68,12 +68,12 @@ Additional validation already performed on these files (recorded in `manifest.js
 
 | File | Check | Result |
 | :--- | :--- | :--- |
-| `rustup-init.exe` | First two bytes | `4D 5A` (PE `MZ`) ✅ |
-| WebView2 installer | First two bytes | `4D 5A` (PE `MZ`) ✅ |
-| `node-v24.22.3-win-x64.zip` | Open archive, count entries | 2,459 entries ✅ |
-| `nsis-3.11.zip` | Open archive, count entries | 441 entries ✅ |
-| `Inter-4.1.zip` | Open archive, count entries | 157 entries ✅ |
-| `JetBrainsMono-2.304.zip` | Open archive, count entries | 55 entries ✅ |
+| `rustup-init.exe` | First two bytes | `4D 5A` (PE `MZ`) PASS |
+| WebView2 installer | First two bytes | `4D 5A` (PE `MZ`) PASS |
+| `node-v24.22.3-win-x64.zip` | Open archive, count entries | 2,459 entries PASS |
+| `nsis-3.11.zip` | Open archive, count entries | 441 entries PASS |
+| `Inter-4.1.zip` | Open archive, count entries | 157 entries PASS |
+| `JetBrainsMono-2.304.zip` | Open archive, count entries | 55 entries PASS |
 
 > An earlier attempt to fetch NSIS from SourceForge returned an HTML error page named
 > `nsis-3.11.zip` (2 KB, not a ZIP). It was detected by opening the archive, discarded, and
@@ -109,12 +109,12 @@ fully traceable.
 
 | Component | Licence | Redistribution in this repo |
 | :--- | :--- | :--- |
-| Rust toolchain installer | MIT OR Apache-2.0 | ✅ permitted |
-| Node.js | MIT + bundled third-party notices | ✅ permitted |
-| NSIS | zlib/libpng | ✅ permitted |
-| Inter | SIL OFL 1.1 | ✅ permitted with licence text |
-| JetBrains Mono | SIL OFL 1.1 | ✅ permitted with licence text |
-| WebView2 Runtime | Microsoft proprietary redistributable | ✅ permitted as an unmodified installer, **not** as extracted binaries |
+| Rust toolchain installer | MIT OR Apache-2.0 | PASS permitted |
+| Node.js | MIT + bundled third-party notices | PASS permitted |
+| NSIS | zlib/libpng | PASS permitted |
+| Inter | SIL OFL 1.1 | PASS permitted with licence text |
+| JetBrains Mono | SIL OFL 1.1 | PASS permitted with licence text |
+| WebView2 Runtime | Microsoft proprietary redistributable | PASS permitted as an unmodified installer, **not** as extracted binaries |
 
 Files are stored unmodified. No licence text has been altered. If a component's licence is found
 to forbid redistribution in a future version, remove it from `resources/` and replace it with a

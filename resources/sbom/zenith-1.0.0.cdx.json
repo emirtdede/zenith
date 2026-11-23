@@ -1,7 +1,7 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:17b8b82b-3d61-52d1-b775-610cf60d2c2e",
+  "serialNumber": "urn:uuid:575da031-d1b3-5cbe-b424-8ee1d29120c0",
   "version": 1,
   "metadata": {
     "tools": [
@@ -785,10 +785,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/cookie@0.18.2",
+      "bom-ref": "pkg:cargo/cookie@0.18.3",
       "name": "cookie",
-      "version": "0.18.2",
-      "purl": "pkg:cargo/cookie@0.18.2",
+      "version": "0.18.3",
+      "purl": "pkg:cargo/cookie@0.18.3",
       "description": "HTTP cookie parsing and cookie jar management. Supports signed and private\n(encrypted, authenticated) jars.\n",
       "licenses": [
         {
@@ -800,7 +800,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1a373e3602691c3cdea496d2f0ee5935151e6168fe87739483c463db1b2f2f87"
+          "content": "d55f2d6c30eeec7d5c6f98bd4395d4abb1895629eab97ee6522d340623615f8a"
         }
       ],
       "externalReferences": [
@@ -7430,7 +7430,7 @@
         "pkg:cargo/chrono@0.4.45",
         "pkg:cargo/const-oid@0.10.3",
         "pkg:cargo/constant_time_eq@0.6.1",
-        "pkg:cargo/cookie@0.18.2",
+        "pkg:cargo/cookie@0.18.3",
         "pkg:cargo/cpufeatures@0.2.17",
         "pkg:cargo/cpufeatures@0.3.1",
         "pkg:cargo/crc32fast@1.5.5",

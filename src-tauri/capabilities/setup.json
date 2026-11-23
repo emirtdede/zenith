@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "setup",
+  "description": "The 640x420 frameless installer window. It gets window control and drag permissions only: the wizard talks to the installer process, not to the machine, so it holds no command, filesystem or dialog permission beyond the title bar buttons it draws itself.",
+  "windows": ["setup"],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-close"
+  ]
+}

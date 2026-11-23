@@ -184,6 +184,8 @@ pub struct StateSnapshot {
     pub theme: String,
     pub reduce_motion: bool,
     pub telemetry_enabled: bool,
+    /// The extended settings document, JSON, exactly as stored.
+    pub settings: Option<String>,
     pub phases: BTreeMap<String, ExecutionPhase>,
     pub active_action_id: Option<ActionId>,
     pub last_scan_at_utc: Option<String>,
@@ -281,6 +283,7 @@ pub fn state_get(state: State<'_, AppState>) -> IpcResult<StateSnapshot> {
         theme: prefs.theme,
         reduce_motion: prefs.reduce_motion,
         telemetry_enabled: prefs.telemetry_enabled,
+        settings: prefs.settings,
         phases,
         active_action_id: state.registry.active(),
         last_scan_at_utc,
@@ -306,9 +309,18 @@ pub struct PreferencesPatch {
     pub theme: Option<String>,
     pub reduce_motion: Option<bool>,
     pub telemetry_enabled: Option<bool>,
+    /// The extended settings document as JSON. The core stores it verbatim and
+    /// never parses it: the renderer owns the shape, the core owns the file.
+    pub settings: Option<String>,
 }
 
-const THEMES: [&str; 3] = ["off-white", "true-black", "spatial-glass"];
+/// Every palette the settings gallery offers, plus the spectrum picker. The
+/// list is the Rust mirror of `src/settings/themes.ts`; a theme the UI shows and
+/// the core rejects is a choice that fails on save.
+const THEMES: [&str; 15] = [
+    "obsidian", "slate", "navy", "blue", "cyan", "indigo", "purple", "pink", "red", "orange",
+    "yellow", "emerald", "grass", "lime", "custom",
+];
 
 #[tauri::command]
 pub fn preferences_set(
@@ -337,6 +349,17 @@ pub fn preferences_set(
     }
     if let Some(telemetry_enabled) = patch.telemetry_enabled {
         next.telemetry_enabled = telemetry_enabled;
+    }
+    if let Some(settings) = patch.settings {
+        // A settings document is text the renderer authored. A cap is still
+        // enforced: an accidental memcpy of a log file into this field must
+        // not fill the profile directory.
+        if settings.len() > 512 * 1024 {
+            return Err(
+                IpcError::new(ErrorCode::InvalidArgument).with_field("settings", "too large")
+            );
+        }
+        next.settings = Some(settings);
     }
 
     state.save_preferences(next)?;
@@ -717,6 +740,21 @@ pub async fn action_execute(
                     crate::logging::Level::Error,
                     &format!("action {} failed: {}", action.as_str(), err.code.as_str()),
                 );
+                // A failure is the event a receiver most wants, so it is sent
+                // here rather than only from the success path. A user cancel is
+                // deliberately excluded: it is not a failure, and paging an
+                // on-call channel because someone pressed Stop is noise.
+                notify_webhook(
+                    &state,
+                    crate::integrations::Event {
+                        kind: zenith_core::webhook::EventKind::ActionFailed,
+                        action_id: action.as_str().to_string(),
+                        snapshot_id: None,
+                        outcome: Some("failed".to_string()),
+                        duration_ms: None,
+                        error_code: Some(err.code.as_str().to_string()),
+                    },
+                );
             }
             return Err(IpcError::from(err));
         }
@@ -788,6 +826,21 @@ pub async fn action_execute(
     crate::logging::append_steps(&state.paths, action.as_str(), &step_lines, 20);
 
     apply_phase(&app, &state.registry, &state.paths, action, outcome.phase);
+    // A webhook subscription is a promise that a receiver hears about the run.
+    // It is dispatched here, after the phase is durable and before the command
+    // returns, but on its own thread: the user's button is not held hostage by
+    // a receiver's TLS handshake.
+    notify_webhook(
+        &state,
+        crate::integrations::Event {
+            kind: zenith_core::webhook::EventKind::ActionCompleted,
+            action_id: action.as_str().to_string(),
+            snapshot_id: outcome.snapshot_id.clone(),
+            outcome: Some("success".to_string()),
+            duration_ms: Some(outcome.duration_ms),
+            error_code: None,
+        },
+    );
     if outcome.snapshot_id.is_some() {
         emit(
             &app,
@@ -991,6 +1044,17 @@ pub async fn snapshot_rollback(
             &state.paths,
             owner,
             ExecutionPhase::RolledBack,
+        );
+        notify_webhook(
+            &state,
+            crate::integrations::Event {
+                kind: zenith_core::webhook::EventKind::RolledBack,
+                action_id: owner.as_str().to_string(),
+                snapshot_id: Some(outcome.snapshot_id.clone()),
+                outcome: Some("rolled_back".to_string()),
+                duration_ms: None,
+                error_code: None,
+            },
         );
     } else {
         apply_phase(
@@ -1310,6 +1374,19 @@ fn emit(app: &AppHandle, event: &str, payload: serde_json::Value) {
     let _ = app.emit(event, payload);
 }
 
+/// Hand one run event to the webhook, if the user configured it.
+///
+/// The configuration is read from the persisted settings document at send time
+/// rather than cached at startup: a user who enables the webhook in Settings
+/// expects the next run to be delivered, not the next launch. The read is a
+/// small JSON parse on the command thread; the network work is on its own.
+fn notify_webhook(state: &AppState, event: crate::integrations::Event) {
+    let preferences = state.preferences();
+    if let Some(settings) = crate::integrations::configured(preferences.settings.as_deref()) {
+        crate::integrations::spawn(state.paths.clone(), settings, event);
+    }
+}
+
 /// Record a phase in the registry, then tell the renderer.
 ///
 /// The registry is what `state_get` answers from, so emitting without recording
@@ -1614,6 +1691,7 @@ mod retention_tests {
             theme: "midnight".into(),
             reduce_motion: false,
             telemetry_enabled: true,
+            settings: None,
             phases: BTreeMap::new(),
             active_action_id: None,
             last_scan_at_utc: None,

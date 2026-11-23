@@ -3,7 +3,7 @@
   "generator": "scripts/generate-licenses.mjs",
   "target": "x86_64-pc-windows-msvc",
   "sources": {
-    "Cargo.lock": "efa20e7d13a2ad43e9e31e63008fc9d2744bf86dab483c0b62fb4af4ff11bc3f",
+    "Cargo.lock": "d23b88d21b66a82a4e1e961eacd1fc565c0dc9dc8ecc615c500f236eec8e2d2c",
     "package-lock.json": "fae219ea544abc5ae14b71b922f75340f8e7ce61c70daa3f019e1cb6e07a213f"
   },
   "counts": {
@@ -965,7 +965,7 @@
     {
       "ecosystem": "cargo",
       "name": "cookie",
-      "version": "0.18.2",
+      "version": "0.18.3",
       "license": "MIT OR Apache-2.0",
       "repository": "https://github.com/SergioBenitez/cookie-rs",
       "authors": [
@@ -5256,5 +5256,5 @@
     }
   ],
   "notices": "THIRD-PARTY-NOTICES.txt",
-  "noticesSha256": "f3abd3c1a98ad875272dd10f4a1baa0134c64d7e6c7ee8720f781308ad7f76b6"
+  "noticesSha256": "bf63787ca73312244c5a33e9c18431074ad2f3343f3272502e3963598b2e2893"
 }

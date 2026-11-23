@@ -88,6 +88,10 @@ pub struct Preferences {
     /// Off unless the user opts in. Enforced in the UI *and* here, because a
     /// preference that only the renderer respects is not a preference.
     pub telemetry_enabled: bool,
+    /// The extended settings document (JSON). The core stores and returns it
+    /// verbatim and never interprets it; absent means first run.
+    #[serde(default)]
+    pub settings: Option<String>,
     pub action_prefs: ActionPrefs,
 }
 
@@ -99,9 +103,10 @@ impl Default for Preferences {
             // machine that cannot report its locale gets `en`, which is the same
             // fallback `negotiateLocale` applies - never a fabricated locale.
             locale: zenith_core::adapters::system::ui_locale().unwrap_or_else(|_| "en".to_string()),
-            theme: "off-white".to_string(),
+            theme: "obsidian".to_string(),
             reduce_motion: false,
             telemetry_enabled: false,
+            settings: None,
             action_prefs: ActionPrefs::default(),
         }
     }

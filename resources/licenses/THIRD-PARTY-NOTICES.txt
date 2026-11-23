@@ -176,7 +176,7 @@ constant_time_eq 0.6.1
   Source: https://codeberg.org/cesarb/constant_time_eq
   Authors: Cesar Eduardo Barros <cesarb@cesarb.eti.br>
 
-cookie 0.18.2
+cookie 0.18.3
   Licence: MIT OR Apache-2.0
   Source: https://github.com/SergioBenitez/cookie-rs
   Authors: Sergio Benitez <sb@sergio.bz>, Alex Crichton <alex@alexcrichton.com>

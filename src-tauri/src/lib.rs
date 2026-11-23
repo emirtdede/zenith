@@ -14,6 +14,7 @@
 mod commands;
 mod error;
 mod handover;
+mod integrations;
 mod logging;
 mod maintenance;
 mod state;
@@ -21,9 +22,38 @@ mod telemetry;
 
 use std::collections::BTreeMap;
 
-use tauri::Manager;
+use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 use state::{AppState, NoticeSeverity, StartupNotice};
+
+/// Which window the process opens, and whether the application shell runs at all.
+///
+/// The installer context is a *launch mode*, not a CLI command: `--setup` opens
+/// the 640x420 wizard and never touches the operation database, so an install,
+/// a repair install and an uninstall cannot fail because a previous version left
+/// a corrupt ledger behind. A headless invocation still wins over both, because
+/// a script that asked for `--json` must get JSON rather than a window.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LaunchMode {
+    App,
+    Setup,
+    Uninstall,
+}
+
+/// `--setup` / `?setup=1` opens the wizard; `--uninstall` / `?uninstall=1` opens
+/// it in removal mode. Any other argument leaves the normal application launch.
+pub fn launch_mode(args: &[String]) -> LaunchMode {
+    if args
+        .iter()
+        .any(|arg| arg == "--uninstall" || arg == "?uninstall=1")
+    {
+        return LaunchMode::Uninstall;
+    }
+    if args.iter().any(|arg| arg == "--setup" || arg == "?setup=1") {
+        return LaunchMode::Setup;
+    }
+    LaunchMode::App
+}
 
 /// Process entry point: decide between the headless CLI and the desktop app.
 ///
@@ -40,7 +70,59 @@ pub fn entry() -> i32 {
     // fail in a way the GUI can act on: the window opens either way, so the
     // `NotImplemented` on non-Windows is recorded, not fatal.
     let _ = zenith_core::adapters::console::detach_for_gui();
-    run()
+    match launch_mode(&args) {
+        LaunchMode::App => run(),
+        mode => run_wizard(mode),
+    }
+}
+
+/// Open the 640x420 setup or uninstall window and nothing else.
+///
+/// This path deliberately runs before `Paths::resolve`, the handover ticket and
+/// `AppState::bootstrap`: an installer must be able to repair or remove a build
+/// whose ledger cannot be opened, and a wizard that needs a working database to
+/// uninstall the database is a deadlock.
+fn run_wizard(mode: LaunchMode) -> i32 {
+    let result = tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+            if let Some(window) = app.get_webview_window("setup") {
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
+        .setup(move |app| {
+            let query = match mode {
+                LaunchMode::Uninstall => "?uninstall=1",
+                _ => "?setup=1",
+            };
+            let url = WebviewUrl::App(format!("setup.html{query}").into());
+            let window = WebviewWindowBuilder::new(app, "setup", url)
+                .title("Zenith Setup")
+                .inner_size(640.0, 420.0)
+                .resizable(false)
+                .maximizable(false)
+                .minimizable(true)
+                .decorations(false)
+                .center()
+                .theme(Some(tauri::Theme::Dark))
+                .build()?;
+            // Closing the wizard ends the process: there is no tray icon here,
+            // and a hidden installer window with no window left is a stuck entry
+            // in Task Manager.
+            let handle = app.handle().clone();
+            window.on_window_event(move |event| {
+                if matches!(event, tauri::WindowEvent::Destroyed) {
+                    handle.exit(0);
+                }
+            });
+            Ok(())
+        })
+        .run(tauri::generate_context!());
+
+    match result {
+        Ok(()) => 0,
+        Err(_) => 4,
+    }
 }
 
 /// Parse and dispatch a headless invocation (`03-04` §8).
@@ -132,6 +214,20 @@ pub fn run() -> i32 {
         .plugin(tauri_plugin_dialog::init())
         .manage(app_state)
         .setup(move |app| {
+            // `tauri.conf.json` sets `"create": false` on the main window so the
+            // same compiled binary can open the 640x420 wizard instead. This is
+            // the application path, so the window is built from its config here,
+            // before any event is emitted: a notice delivered to a window that
+            // does not exist yet is silently lost.
+            let config = app
+                .config()
+                .app
+                .windows
+                .first()
+                .cloned()
+                .ok_or_else(|| tauri::Error::WindowNotFound)?;
+            WebviewWindowBuilder::from_config(app.handle(), &config)?.build()?;
+
             // Notices are emitted after the window exists so the listener is
             // already registered. `state_get` returns the same list, so a
             // missed event loses nothing.
@@ -389,6 +485,46 @@ mod single_instance_tests {
         assert!(
             source.contains("\"diagnosis failed: {}\""),
             "a failed diagnosis must be an error line, not a silence"
+        );
+    }
+}
+
+/// Guards the installer launch contract.
+///
+/// The wizard is reached by process arguments, not by a CLI subcommand: a
+/// double-click of `Zenith_1.0.0_x64-setup.exe` ends in an NSIS script that
+/// starts the installed binary, and a removal from Apps features starts the same
+/// binary with `--uninstall`. These tests pin the three-way split so a later
+/// refactor cannot make `--setup` fall through into the application shell (which
+/// would open the main window behind the wizard) or make `--uninstall` open a
+/// setup screen that only offers to install.
+#[cfg(test)]
+mod launch_mode_tests {
+    use super::{LaunchMode, launch_mode};
+
+    fn args(list: &[&str]) -> Vec<String> {
+        list.iter().map(|value| value.to_string()).collect()
+    }
+
+    #[test]
+    fn a_bare_launch_opens_the_application() {
+        assert_eq!(launch_mode(&args(&[])), LaunchMode::App);
+        assert_eq!(launch_mode(&args(&["--elevate"])), LaunchMode::App);
+    }
+
+    #[test]
+    fn setup_flags_open_the_wizard() {
+        assert_eq!(launch_mode(&args(&["--setup"])), LaunchMode::Setup);
+        assert_eq!(launch_mode(&args(&["?setup=1"])), LaunchMode::Setup);
+    }
+
+    #[test]
+    fn uninstall_wins_over_setup() {
+        assert_eq!(launch_mode(&args(&["--uninstall"])), LaunchMode::Uninstall);
+        assert_eq!(
+            launch_mode(&args(&["?setup=1", "?uninstall=1"])),
+            LaunchMode::Uninstall,
+            "a removal that also carries a setup token must never reinstall"
         );
     }
 }

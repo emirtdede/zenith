@@ -32,6 +32,7 @@ pub mod probes;
 pub mod process;
 pub mod services;
 pub mod system;
+pub mod webhook_http;
 
 /// Capability probe result, used by the UI to disable what cannot work on this
 /// machine instead of failing at click time.

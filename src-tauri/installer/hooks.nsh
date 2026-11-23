@@ -1,34 +1,34 @@
-; Zenith NSIS hooks (DEF-064 / REQ-F-134).
+; Zenith installer hooks.
 ;
-; Tauri's uninstaller already offers a "delete app data" checkbox on the confirm
-; page (`installer.nsi` -> un.ConfirmShow). The problem it had was the *path*: the
-; stock template removes `%APPDATA%\com.vellium.zenith` and
-; `%LOCALAPPDATA%\com.vellium.zenith`, but Zenith keeps nothing there. Its real
-; roots are `...\Vellium\Zenith` (see `Paths::resolve` in
-; `crates/zenith-core/src/config.rs`), so checking the box deleted an empty,
-; unrelated folder and left snapshots, logs and preferences behind.
+; Tauri's NSIS template shows a "delete application data" checkbox on uninstall
+; and exposes its state as `$DeleteAppDataCheckboxState`. The template's own
+; deletion targets `%APPDATA%\<bundle id>` and `%LOCALAPPDATA%\<bundle id>`,
+; which for Zenith (identifier `com.vellium.zenith`) are paths the application
+; never writes. The hook below rebinds the checkbox to the two roots
+; `Paths::resolve` actually builds, and nothing else.
 ;
-; This hook re-uses that checkbox instead of adding a second prompt: one question,
-; one decision, and the answer is honoured against the directories that exist.
+; Two rules hold here:
 ;
-; Silent uninstall (`/S`) never deletes data: the confirm page is skipped in
-; passive mode (`un.SkipIfPassive`), so `$DeleteAppDataCheckboxState` stays empty
-; and this block is inert. `scripts/verify-uninstall.ps1` asserts the store is
-; byte-identical after `/S`, and that guarantee is deliberate.
+; 1. The deletion runs only when the user checked the box. A silent uninstall
+;    (`/S`) leaves the audit and snapshot directories in place.
+; 2. `%ProgramData%\Vellium\Zenith` is machine-wide. The uninstaller is elevated
+;    for a per-machine install, so the removal is permitted; a standard user
+;    never reaches this hook because they cannot uninstall the machine copy.
+
+!macro NSIS_HOOK_POSTINSTALL
+  ; The application registers its own PATH entry on first launch, after the user
+  ; has seen what the CLI does. The installer only records where it went, so a
+  ; later repair or uninstall can find the same directory.
+  WriteRegStr SHCTX "Software\Vellium\Zenith" "InstallDir" "$INSTDIR"
+!macroend
+
+!macro NSIS_HOOK_PREUNINSTALL
+  ${If} $DeleteAppDataCheckboxState = 1
+    RMDir /r "$LOCALAPPDATA\Vellium\Zenith"
+    RMDir /r "$APPDATA\Vellium\Zenith"
+  ${EndIf}
+!macroend
 
 !macro NSIS_HOOK_POSTUNINSTALL
-  ${If} $DeleteAppDataCheckboxState = 1
-    ; Machine store (D1..D7): state.db, hmac key, backups, hives, logs,
-    ; quarantine. Under SetShellVarContext "all", $APPDATA is %ProgramData%.
-    SetShellVarContext all
-    RMDir /r "$APPDATA\Vellium\Zenith"
-    RMDir "$APPDATA\Vellium"
-
-    ; Per-user store (D8 prefs, D9 support bundles) for the user running the
-    ; uninstaller. Other user profiles keep their own copy, which is correct:
-    ; this process has no mandate to enumerate them.
-    SetShellVarContext current
-    RMDir /r "$LOCALAPPDATA\Vellium\Zenith"
-    RMDir "$LOCALAPPDATA\Vellium"
-  ${EndIf}
+  DeleteRegKey SHCTX "Software\Vellium\Zenith"
 !macroend
