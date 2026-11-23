@@ -1,10 +1,10 @@
 # command: npm.cmd run verify
 # cwd: C:/Users/emir/Desktop/Zenith
-# started: 2026-11-23T07:44:08.375Z
+# started: 2026-11-23T08:34:37.250Z
 # exit: 0
 
 > zenith@1.0.0 verify
-> npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:step-keys-negative && npm run check:contract && npm run check:dashes && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run check:fe && npm run check:doc-counts && npm run check:evidence-ledger && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run check:mutate-restore && npm run check:verify-chain && npm run check:resources && npm run check:workflows && npm run check:msrv && npm run check:lint && npm run check:rust-tests && npm run build && npm run check:bundle
+> npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:step-keys-negative && npm run check:contract && npm run check:dashes && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run build && npm run check:fe && npm run check:doc-counts && npm run check:evidence-ledger && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run check:mutate-restore && npm run check:verify-chain && npm run check:resources && npm run check:workflows && npm run check:msrv && npm run check:lint && npm run check:rust-tests && npm run check:bundle
 
 
 > zenith@1.0.0 check:locales
@@ -170,8 +170,21 @@ Rule 0 holds: every guarded fn is fallible or documented-pessimistic.
 > zenith@1.0.0 check:docs
 > node scripts/check-docs.mjs
 
-docs 30 | lines 10006 | words 115202 | links 53 | DEF 166/166 | REQ-F 118/118 | REQ-N 86/86 | tests 93
+docs 30 | lines 10007 | words 115511 | links 53 | DEF 167/167 | REQ-F 118/118 | REQ-N 86/86 | tests 93
 problems: none
+
+> zenith@1.0.0 build
+> tsc --noEmit && vite build
+
+[36mvite v7.3.8 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 74 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.47 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[35massets/index-BZiZWSpJ.css  [39m[1m[2m 23.61 kB[22m[1m[22m[2m │ gzip:   5.05 kB[22m
+[2mdist/[22m[36massets/index-BFiC5LtM.js   [39m[1m[2m739.51 kB[22m[1m[22m[2m │ gzip: 175.10 kB[22m
+[32m✓ built in 4.98s[39m
 
 > zenith@1.0.0 check:fe
 > vitest run --reporter=default --reporter=json --outputFile=evidence/vitest-counts.json
@@ -179,24 +192,25 @@ problems: none
 
 [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/emir/Desktop/Zenith[39m
 
- [32m✓[39m src/i18n/format.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 31[2mms[22m[39m
- [32m✓[39m src/perf.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
- [32m✓[39m src/export.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m src/ui/logText.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m src/state/store.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m src/actions.budget.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 26[2mms[22m[39m
- [32m✓[39m src/ui/useFocusTrap.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 214[2mms[22m[39m
- [32m✓[39m src/actions.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 104[2mms[22m[39m
- [32m✓[39m src/ui/errorBoundary.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 225[2mms[22m[39m
- [32m✓[39m src/ui/errorBoundary.wiring.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 486[2mms[22m[39m
-   [33m[2m✓[22m[39m the boundary is mounted around the screens (T-FE-20)[2m > [22mcontains a screen throw inside #main and leaves the shell rendered [33m 372[2mms[22m[39m
- [32m✓[39m src/ui/wiring089.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 856[2mms[22m[39m
- [32m✓[39m src/ui/render.test.tsx [2m([22m[2m57 tests[22m[2m)[22m[33m 1992[2mms[22m[39m
+ [32m✓[39m src/perf.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/i18n/format.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/ui/logText.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/export.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/state/store.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/ui/useFocusTrap.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 297[2mms[22m[39m
+ [32m✓[39m src/actions.budget.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/ui/errorBoundary.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 292[2mms[22m[39m
+ [32m✓[39m src/actions.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 247[2mms[22m[39m
+ [32m✓[39m src/ui/errorBoundary.wiring.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 637[2mms[22m[39m
+   [33m[2m✓[22m[39m the boundary is mounted around the screens (T-FE-20)[2m > [22mcontains a screen throw inside #main and leaves the shell rendered [33m 572[2mms[22m[39m
+ [32m✓[39m src/ui/wiring089.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 1237[2mms[22m[39m
+ [32m✓[39m src/ui/render.test.tsx [2m([22m[2m57 tests[22m[2m)[22m[33m 2890[2mms[22m[39m
+   [33m[2m✓[22m[39m CmdPalette (T-FE-10)[2m > [22mmoves the selection with ArrowDown and runs it with Enter [33m 301[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
 [2m      Tests [22m [1m[32m166 passed[39m[22m[90m (166)[39m
-[2m   Start at [22m 10:44:20
-[2m   Duration [22m 6.74s[2m (transform 2.89s, setup 0ms, collect 9.89s, tests 3.98s, environment 17.26s, prepare 5.38s)[22m
+[2m   Start at [22m 11:35:30
+[2m   Duration [22m 13.01s[2m (transform 4.16s, setup 0ms, collect 22.27s, tests 5.72s, environment 37.96s, prepare 3.45s)[22m
 
 JSON report written to C:/Users/emir/Desktop/Zenith/evidence/vitest-counts.json
 
@@ -287,16 +301,16 @@ evidence/README.md:43  keys: 443 - historical, marked as such (ok)
 evidence/README.md:43  chain steps: 17 - historical, marked as such (ok)
 evidence/README.md:47  chain steps: 15 - historical, marked as such (ok)
 
-measured: {"rust":306,"vitest":166,"files":12,"keys":533,"commands":15,"defs":166,"closed":157,"open":9,"unsafe":106,"steps":28}
+measured: {"rust":306,"vitest":166,"files":12,"keys":533,"commands":15,"defs":167,"closed":158,"open":9,"unsafe":106,"steps":28}
 numeric drift: 0 mismatch(es)
 table totals: 0 problem(s)
 
 > zenith@1.0.0 check:evidence-ledger
 > node scripts/check-evidence-ledger.mjs
 
-ledger rows: 81 described, 6 recorded as removed
-artefacts on disk: 81
-evidence paths cited by docs: 29
+ledger rows: 83 described, 6 recorded as removed
+artefacts on disk: 83
+evidence paths cited by docs: 30
 
 Evidence ledger holds: every artefact is described, every citation resolves, nothing is empty.
 
@@ -307,7 +321,7 @@ rubric:   C1/12 C2/12 C3/14 C4/13 C5/10 C6/9 C7/10 C8/6 C9/8 C10/6
 weights:  100
 v1 total: 45  v2 total: 98
 shortfall: 2 (C5-1, C7-1) | withheld: 2 (C5-1, C7-1)
-register: 166 ids, 1..166
+register: 167 ids, 1..167
 
 Scorecard arithmetic holds: rows sum to the stated totals, every withheld point maps
 to a real shortfall, and the register totals match its own rows.
@@ -446,26 +460,26 @@ Lint holds: formatting and lints are clean on the declared 1.90 toolchain.
 
 running 50 tests
 test commands::retention_tests::a_negative_audit_count_is_clamped_rather_than_underflowed ... ok
-test commands::retention_tests::a_failed_snapshot_read_is_unknown_not_zero ... ok
-test commands::retention_tests::a_failed_audit_read_is_unknown_not_zero ... ok
 test commands::retention_tests::a_readable_store_reports_its_real_figures ... ok
-test commands::app_info_tests::display_facts_are_optional_on_the_wire ... ok
-test commands::app_info_tests::app_info_get_never_falls_back_to_a_literal ... ok
 test commands::scan_registry_tests::a_running_scan_is_stoppable_and_an_idle_one_is_not ... ok
-test commands::retention_tests::an_unknown_retention_serialises_as_null ... ok
 test commands::scan_registry_tests::a_stop_reaches_every_scan_that_is_actually_running ... ok
 test commands::scan_registry_tests::a_second_scan_cannot_clear_or_strand_the_first ... ok
+test commands::retention_tests::a_failed_audit_read_is_unknown_not_zero ... ok
+test commands::retention_tests::a_failed_snapshot_read_is_unknown_not_zero ... ok
+test commands::scan_registry_tests::concurrent_scans_get_distinct_tokens ... ok
+test commands::retention_tests::an_unknown_retention_serialises_as_null ... ok
+test commands::app_info_tests::app_info_get_never_falls_back_to_a_literal ... ok
+test commands::app_info_tests::display_facts_are_optional_on_the_wire ... ok
 test commands::scan_registry_tests::candidates_scan_does_not_borrow_the_diagnosis_token ... ok
 test handover::tests::random_nonces_are_32_bytes_and_unique ... ok
 test handover::tests::flags_are_read_positionally ... ok
-test commands::scan_registry_tests::concurrent_scans_get_distinct_tokens ... ok
+test handover::tests::a_non_handover_process_is_not_an_error ... ok
 test maintenance::retention_failure_tests::a_failed_snapshot_read_is_reported_not_silent ... ok
 test maintenance::retention_failure_tests::a_healthy_store_produces_an_empty_report ... ok
-test maintenance::retention_failure_tests::a_failed_audit_read_is_reported_and_prunes_no_audit_rows ... ok
 test maintenance::retention_failure_tests::a_clean_pass_reports_no_failure_reason ... ok
-test maintenance::retention_failure_tests::a_failed_prune_is_reported_not_zeroed ... ok
 test maintenance::tests::a_summary_names_each_change_by_key_not_prose ... ok
-test handover::tests::a_non_handover_process_is_not_an_error ... ok
+test maintenance::retention_failure_tests::a_failed_audit_read_is_reported_and_prunes_no_audit_rows ... ok
+test maintenance::retention_failure_tests::a_failed_prune_is_reported_not_zeroed ... ok
 test maintenance::tests::published_caps_match_the_documented_values ... ok
 test single_instance_tests::a_cancelled_action_is_recorded_with_its_measured_latency ... ok
 test single_instance_tests::a_diagnosis_is_recorded_in_the_durable_log_on_every_terminal_path ... ok
@@ -480,23 +494,23 @@ test telemetry::tests::a_visible_window_with_a_measurement_is_refreshed ... ok
 test telemetry::tests::a_visible_window_with_no_measurement_is_not_refreshed ... ok
 test telemetry::tests::no_diagnosis_means_no_score_rather_than_a_perfect_one ... ok
 test telemetry::tests::the_interval_is_the_published_thirty_seconds ... ok
-test logging::tests::an_unwritable_directory_is_reported_not_panicked ... ok
 test state::tests::write_atomic_reports_a_missing_parent_directory ... ok
-test state::tests::write_atomic_replaces_the_whole_file_and_leaves_no_temp ... ok
+test logging::tests::an_unwritable_directory_is_reported_not_panicked ... ok
 test maintenance::tests::a_recent_quarantined_zip_survives ... ok
+test state::tests::write_atomic_replaces_the_whole_file_and_leaves_no_temp ... ok
 test maintenance::tests::a_tmp_file_in_quarantine_is_removed_immediately ... ok
-test logging::tests::rotation_moves_the_active_file_and_bounds_the_ring ... ok
-test logging::tests::a_line_is_written_and_redacted ... ok
-test logging::tests::a_failed_step_is_logged_at_error_level ... ok
-test logging::tests::a_rotation_that_succeeds_reports_no_failure ... ok
-test maintenance::tests::a_fresh_store_needs_no_maintenance ... ok
 test logging::tests::a_step_trace_does_not_escape_the_size_cap ... ok
-test logging::tests::rotation_reports_a_failure_instead_of_silently_missing_the_cap ... ok
-test maintenance::tests::an_empty_retention_plan_deletes_nothing ... ok
+test logging::tests::a_rotation_that_succeeds_reports_no_failure ... ok
+test logging::tests::a_failed_step_is_logged_at_error_level ... ok
+test logging::tests::a_line_is_written_and_redacted ... ok
 test logging::tests::a_successful_action_leaves_its_steps_on_disk ... ok
+test logging::tests::rotation_moves_the_active_file_and_bounds_the_ring ... ok
+test logging::tests::rotation_reports_a_failure_instead_of_silently_missing_the_cap ... ok
+test maintenance::tests::a_fresh_store_needs_no_maintenance ... ok
+test maintenance::tests::an_empty_retention_plan_deletes_nothing ... ok
 test logging::tests::the_step_trace_is_capped_so_a_chatty_action_cannot_flood_the_log ... ok
 
-test result: ok. 50 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+test result: ok. 50 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
 
 
 running 0 tests
@@ -506,35 +520,35 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 running 254 tests
 test adapters::actions::tests::a_drive_that_could_not_be_measured_contributes_nothing ... ok
-test adapters::actions::tests::every_action_has_an_execution_path ... ok
 test adapters::actions::tests::a_failed_execution_carries_the_error_code_not_prose ... ok
-test adapters::actions::tests::no_drive_emptied_releases_zero ... ok
+test adapters::actions::tests::every_action_has_an_execution_path ... ok
 test adapters::actions::tests::a_failed_step_marks_the_whole_execution_unsuccessful ... ok
 test adapters::actions::tests::file_stamp_is_fourteen_digits_or_fewer ... ok
 test adapters::actions::tests::fixed_drives_are_reported_as_root_paths ... ok
+test adapters::actions::tests::no_drive_emptied_releases_zero ... ok
 test adapters::actions::tests::only_drives_that_were_emptied_count_as_released ... ok
-test adapters::actions::tests::summing_measured_drives_saturates_instead_of_wrapping ... ok
 test adapters::actions::tests::service_mapping_matches_the_manifest_scopes ... ok
+test adapters::actions::tests::summing_measured_drives_saturates_instead_of_wrapping ... ok
 test adapters::actions::tests::reading_the_proxy_switch_never_panics ... ok
-test adapters::candidates::tests::candidate_kinds_round_trip ... ok
 test adapters::candidates::tests::a_cancelled_scan_is_an_error_not_an_empty_list ... ok
-test adapters::candidates::tests::every_family_honours_a_stop_requested_before_the_scan ... ok
 test adapters::actions::tests::temp_roots_never_contain_duplicates ... ok
+test adapters::candidates::tests::candidate_kinds_round_trip ... ok
+test adapters::candidates::tests::every_family_honours_a_stop_requested_before_the_scan ... ok
 test adapters::candidates::tests::the_port_and_office_sweeps_take_the_token ... ok
 test adapters::candidates::tests::the_producer_names_the_window_it_measured ... ok
-test adapters::child::tests::an_already_cancelled_token_never_spawns ... ok
 test adapters::actions::tests::empty_target_list_is_refused_rather_than_inferred ... ok
+test adapters::child::tests::an_already_cancelled_token_never_spawns ... ok
 test adapters::child::tests::a_missing_tool_is_tool_missing ... ok
 test adapters::cleanup::tests::a_missing_root_is_ignored_not_an_error ... ok
+test adapters::cleanup::tests::deleting_a_file_that_vanished_is_skipped_not_an_error ... ok
 test adapters::cleanup::tests::a_fresh_file_is_not_selected ... ok
 test adapters::cleanup::tests::an_old_file_is_selected_with_its_real_size ... ok
 test adapters::cleanup::tests::megabytes_are_computed_for_display ... ok
-test adapters::cleanup::tests::deleting_a_file_that_vanished_is_skipped_not_an_error ... ok
 test adapters::cleanup::tests::skip_reason_strings_match_the_contract ... ok
-test adapters::child::tests::a_token_remembers_when_the_request_arrived_and_forgets_it_on_reset ... ok
 test adapters::console::tests::a_writer_is_always_returned ... ok
-test adapters::console::tests::attach_reports_platform_support_honestly ... ok
+test adapters::child::tests::a_token_remembers_when_the_request_arrived_and_forgets_it_on_reset ... ok
 test adapters::cleanup::tests::delete_reports_bytes_actually_freed ... ok
+test adapters::console::tests::attach_reports_platform_support_honestly ... ok
 test adapters::dpapi::tests::empty_input_is_refused ... ok
 test adapters::privilege::tests::capability_reflects_elevation_honestly ... ok
 test adapters::privilege::tests::elevation_detection_returns_a_bool_without_panicking ... ok
@@ -546,221 +560,221 @@ test adapters::process::tests::filetime_conversion_advances_one_second_per_ten_m
 test adapters::process::tests::filetime_conversion_clamps_a_pre_epoch_value ... ok
 test adapters::process::tests::filetime_conversion_is_correct_at_the_epoch ... ok
 test adapters::process::tests::identifying_our_own_process_succeeds ... ok
-test adapters::process::tests::listeners_are_returned_in_ascending_port_order ... ok
 test adapters::cleanup::tests::cancellation_stops_a_delete_pass ... ok
 test adapters::process::tests::our_own_process_is_refused_not_terminated ... ok
 test adapters::process::tests::outcome_strings_match_the_ipc_contract ... ok
 test adapters::process::tests::summary_counts_only_real_terminations ... ok
 test adapters::services::tests::alternative_states_are_classified_correctly ... ok
-test adapters::services::tests::poll_until_propagates_an_observation_error ... ok
 test adapters::services::tests::poll_until_fails_fast_on_a_wrong_terminal_state ... ok
+test adapters::services::tests::poll_until_propagates_an_observation_error ... ok
+test adapters::process::tests::listeners_are_returned_in_ascending_port_order ... ok
+test adapters::cleanup::tests::recycle_bin_query_never_fails_on_a_real_drive ... ok
 test adapters::child::tests::a_non_zero_exit_is_reported_not_hidden ... ok
 test adapters::services::tests::querying_a_bogus_service_is_service_unavailable ... ok
 test adapters::services::tests::querying_the_spooler_succeeds ... ok
-test adapters::child::tests::a_successful_command_reports_stdout_and_zero ... ok
 test adapters::services::tests::state_strings_are_stable ... ok
 test adapters::services::tests::starting_an_already_running_service_is_idempotent ... ok
 test adapters::services::tests::the_snapshot_payload_is_name_and_state_only ... ok
-test adapters::system::tests::available_greater_than_total_does_not_underflow ... ok
 test adapters::system::tests::build_classification_matches_the_supported_matrix ... ok
-test adapters::system::tests::memory_arithmetic_is_defensive ... ok
+test adapters::system::tests::available_greater_than_total_does_not_underflow ... ok
 test adapters::system::tests::real_disk_has_space ... ok
+test adapters::system::tests::memory_arithmetic_is_defensive ... ok
 test adapters::system::tests::real_machine_reports_an_os_build ... ok
+test adapters::child::tests::a_successful_command_reports_stdout_and_zero ... ok
 test adapters::system::tests::real_machine_reports_plausible_memory ... ok
 test adapters::system::tests::uptime_is_non_zero_on_a_running_machine ... ok
 test cli::tests::a_flag_swallowing_the_next_flag_is_a_usage_error ... ok
 test cli::tests::a_handover_launch_is_never_treated_as_cli ... ok
-test cli::tests::a_timeout_of_zero_is_rejected_and_a_real_one_is_kept ... ok
 test cli::tests::a_mode_flag_without_headless_still_reaches_the_parser ... ok
+test cli::tests::a_timeout_of_zero_is_rejected_and_a_real_one_is_kept ... ok
 test cli::tests::actions_parse_order_preserved_and_deduplicated ... ok
 test cli::tests::actions_without_headless_is_refused ... ok
-test cli::tests::an_unknown_action_is_a_usage_error_that_names_it ... ok
-test cli::tests::diagnose_parses_with_json ... ok
 test cli::tests::exit_codes_match_the_documented_table ... ok
 test cli::tests::help_and_version_short_circuit ... ok
 test cli::tests::mutually_exclusive_modes_are_rejected ... ok
 test cli::tests::rollback_requires_an_id ... ok
-test cli::tests::the_gui_is_the_default ... ok
 test cli::tests::support_bundle_accepts_an_output_path ... ok
-test adapters::cleanup::tests::recycle_bin_query_never_fails_on_a_real_drive ... ok
-test config::tests::a_writable_root_is_not_reported_as_degraded ... ok
-test config::tests::disk_headroom_is_enforced ... ok
+test cli::tests::the_gui_is_the_default ... ok
 test cli::tests::the_help_text_names_every_exit_code ... ok
+test cli::tests::an_unknown_action_is_a_usage_error_that_names_it ... ok
+test cli::tests::diagnose_parses_with_json ... ok
+test config::tests::disk_headroom_is_enforced ... ok
+test config::tests::a_writable_root_is_not_reported_as_degraded ... ok
+test config::tests::ensure_layout_creates_every_directory ... ok
 test config::tests::headroom_has_a_floor_for_tiny_archives ... ok
 test config::tests::layout_is_under_declared_roots ... ok
-test config::tests::ensure_layout_creates_every_directory ... ok
-test config::tests::a_root_that_cannot_be_created_is_reported_as_degraded ... ok
 test config::tests::no_path_escapes_the_root ... ok
-test engine::audit::tests::a_parsed_offset_is_normalised_to_utc ... ok
-test engine::audit::tests::a_finished_entry_carries_the_error_code_and_counts ... ok
+test adapters::child::tests::cancellation_lands_within_the_500ms_budget_on_a_silent_child ... ok
 test engine::audit::tests::audit_rows_close_with_a_non_negative_duration ... ok
 test engine::audit::tests::correlation_ids_are_unique_and_url_safe ... ok
 test engine::audit::tests::the_compact_stamp_drops_separators_but_not_meaning ... ok
 test engine::audit::tests::timestamps_are_fixed_width_milliseconds ... ok
 test engine::audit::tests::timestamps_round_trip ... ok
 test engine::dag::tests::an_empty_selection_sorts_to_empty ... ok
-test engine::dag::tests::dism_runs_before_sfc ... ok
-test engine::dag::tests::dependencies_outside_the_selection_are_ignored ... ok
-test engine::dag::tests::dependency_satisfaction_is_explicit ... ok
-test engine::dag::tests::dns_flush_runs_before_winsock_reset ... ok
-test engine::dag::tests::duplicate_entries_are_deduplicated ... ok
-test engine::dag::tests::full_manifest_sorts_without_cycles ... ok
-test engine::dag::tests::ordering_is_stable_across_input_permutations ... ok
-test engine::dag::tests::transitive_dependents_are_found ... ok
-test adapters::child::tests::cancellation_lands_within_the_500ms_budget_on_a_silent_child ... ok
-test adapters::child::tests::run_checked_returns_output_on_success ... ok
+test config::tests::a_root_that_cannot_be_created_is_reported_as_degraded ... ok
+test engine::audit::tests::a_finished_entry_carries_the_error_code_and_counts ... ok
+test engine::audit::tests::a_parsed_offset_is_normalised_to_utc ... ok
+test adapters::process::tests::a_terminated_child_is_confirmed_gone ... ok
 test adapters::services::tests::poll_until_returns_as_soon_as_the_target_is_reached ... ok
 test adapters::services::tests::poll_until_times_out_instead_of_spinning_forever ... ok
-test adapters::child::tests::run_checked_maps_timeout_to_the_timeout_code ... ok
-test engine::db::tests::a_fresh_store_has_schema_version_one ... ok
-test adapters::process::tests::a_terminated_child_is_confirmed_gone ... ok
-test engine::db::tests::a_healthy_layout_reports_no_unreadable_directories ... ok
-test adapters::child::tests::secrets_in_tool_output_are_redacted ... ok
-test adapters::process::tests::a_recycled_pid_never_matches ... ok
+test engine::dag::tests::dependencies_outside_the_selection_are_ignored ... ok
+test engine::dag::tests::dism_runs_before_sfc ... ok
+test engine::dag::tests::dns_flush_runs_before_winsock_reset ... ok
+test engine::dag::tests::duplicate_entries_are_deduplicated ... ok
+test engine::dag::tests::ordering_is_stable_across_input_permutations ... ok
+test engine::dag::tests::dependency_satisfaction_is_explicit ... ok
+test engine::dag::tests::full_manifest_sorts_without_cycles ... ok
+test engine::dag::tests::transitive_dependents_are_found ... ok
 test adapters::child::tests::cancellation_stops_a_running_child ... ok
+test adapters::child::tests::run_checked_maps_timeout_to_the_timeout_code ... ok
+test adapters::child::tests::secrets_in_tool_output_are_redacted ... ok
 test adapters::process::tests::a_wrong_name_never_matches ... ok
-test engine::db::tests::a_purge_reports_a_directory_it_could_not_clear ... ok
+test adapters::process::tests::a_recycled_pid_never_matches ... ok
+test engine::db::tests::a_healthy_layout_reports_no_unreadable_directories ... ok
 test engine::db::tests::a_tampered_payload_is_rejected_at_verify ... ok
-test adapters::child::tests::a_timeout_kills_the_child_and_reports_it ... ok
-test engine::db::tests::a_corrupt_database_is_quarantined_not_deleted ... ok
-test engine::db::tests::aborted_snapshots_never_appear_in_history ... ok
-test engine::executor::tests::a_batch_is_ordered_by_dependency ... ok
-test engine::executor::tests::a_batch_never_contains_a_destructive_action ... ok
-test engine::executor::tests::a_batch_reports_ineligible_repairs_instead_of_dropping_them ... ok
-test engine::executor::tests::a_failed_dependency_skips_its_dependents ... ok
-test engine::executor::tests::a_dropped_hook_is_never_called_but_the_request_is_still_recorded ... ok
-test engine::executor::tests::a_batch_skips_admin_steps_without_elevation ... ok
-test engine::executor::tests::a_registered_hook_runs_inside_cancel_on_the_calling_thread ... ok
-test engine::executor::tests::a_successful_step_is_recorded ... ok
-test engine::executor::tests::an_empty_batch_is_valid_and_empty ... ok
-test engine::executor::tests::admin_actions_require_elevation ... ok
-test engine::db::tests::an_unreadable_backups_directory_crosses_the_open_boundary ... ok
-test engine::executor::tests::cancel_token_reports_and_resets ... ok
 test engine::db::tests::audit_rows_are_written_and_listed ... ok
+test adapters::child::tests::run_checked_returns_output_on_success ... ok
+test engine::db::tests::an_unreadable_backups_directory_crosses_the_open_boundary ... ok
+test engine::db::tests::aborted_snapshots_never_appear_in_history ... ok
+test engine::db::tests::a_purge_reports_a_directory_it_could_not_clear ... ok
+test engine::executor::tests::a_batch_never_contains_a_destructive_action ... ok
+test engine::db::tests::opening_a_newer_schema_refuses_to_run ... ok
+test engine::executor::tests::a_batch_is_ordered_by_dependency ... ok
+test engine::executor::tests::a_batch_reports_ineligible_repairs_instead_of_dropping_them ... ok
+test engine::executor::tests::a_batch_skips_admin_steps_without_elevation ... ok
+test engine::executor::tests::a_dropped_hook_is_never_called_but_the_request_is_still_recorded ... ok
+test engine::executor::tests::a_failed_dependency_skips_its_dependents ... ok
+test engine::executor::tests::a_registered_hook_runs_inside_cancel_on_the_calling_thread ... ok
+test engine::executor::tests::an_empty_batch_is_valid_and_empty ... ok
+test engine::executor::tests::cancel_token_reports_and_resets ... ok
 test engine::executor::tests::illegal_phase_transitions_are_refused ... ok
-test engine::executor::tests::registry_rejects_an_illegal_transition ... ok
+test engine::executor::tests::a_successful_step_is_recorded ... ok
+test engine::executor::tests::admin_actions_require_elevation ... ok
 test engine::executor::tests::only_one_action_runs_at_a_time ... ok
+test engine::executor::tests::registry_rejects_an_illegal_transition ... ok
+test adapters::child::tests::a_timeout_kills_the_child_and_reports_it ... ok
 test engine::executor::tests::irreversible_actions_require_matching_acknowledgement ... ok
-test engine::executor::tests::reversible_actions_do_not_require_a_confirmation ... ok
 test engine::executor::tests::the_documented_rollback_path_is_walkable ... ok
+test engine::db::tests::purge_empties_the_store ... ok
 test engine::executor::tests::registry_snapshot_is_in_manifest_order ... ok
+test engine::executor::tests::reversible_actions_do_not_require_a_confirmation ... ok
+test engine::db::tests::committing_an_unknown_snapshot_fails ... ok
+test engine::db::tests::a_fresh_store_has_schema_version_one ... ok
+test engine::db::tests::settings_round_trip_and_overwrite ... ok
+test engine::db::tests::recovery_removes_temp_files_and_quarantines_orphans ... ok
+test engine::db::tests::history_is_newest_first_and_marks_restored ... ok
 test engine::health::tests::a_clean_machine_scores_one_hundred ... ok
-test engine::health::tests::all_penalties_together_are_bounded_at_zero ... ok
+test engine::db::tests::a_corrupt_database_is_quarantined_not_deleted ... ok
+test engine::headless::tests::a_destructive_selection_is_refused_before_any_write ... ok
+test engine::db::tests::snapshot_lifecycle_pending_then_committed ... ok
+test engine::db::tests::recovery_aborts_pending_rows ... ok
+test engine::db::tests::recovery_marks_missing_archives_broken ... ok
 test engine::health::tests::a_failed_memory_read_reaches_the_wire_as_absent_not_zero ... ok
-test engine::health::tests::an_impossible_total_is_treated_as_unread ... ok
 test engine::health::tests::breakdown_sums_to_the_total_penalty ... ok
+test engine::headless::tests::help_and_version_do_not_touch_the_store ... ok
+test engine::health::tests::all_penalties_together_are_bounded_at_zero ... ok
+test engine::health::tests::an_impossible_total_is_treated_as_unread ... ok
 test engine::health::tests::dns_below_fifty_ms_is_free ... ok
 test engine::health::tests::five_gigabytes_of_junk_costs_exactly_thirty_points ... ok
 test engine::health::tests::issue_list_is_ordered_like_the_ui ... ok
-test engine::db::tests::opening_a_newer_schema_refuses_to_run ... ok
 test engine::health::tests::junk_penalty_saturates_rather_than_exceeding_its_weight ... ok
 test engine::health::tests::memory_at_ninety_five_percent_costs_twenty_five_points ... ok
-test engine::health::tests::memory_under_seventy_five_percent_is_free ... ok
-test engine::health::tests::severity_weighting_counts_high_more_than_low ... ok
 test engine::health::tests::telemetry_reports_metric_units_and_a_timestamp ... ok
 test engine::health::tests::unmeasurable_dns_is_not_scored_as_either_extreme ... ok
+test engine::pipeline::tests::an_empty_payload_has_no_roots ... ok
 test engine::health::tests::unmeasurable_memory_follows_the_same_rule_as_dns ... ok
 test engine::health::tests::windows_ten_build_is_flagged_for_lifecycle ... ok
-test engine::pipeline::tests::entry_names_round_trip ... ok
-test engine::pipeline::tests::an_empty_payload_has_no_roots ... ok
 test engine::pipeline::tests::safe_join_refuses_traversal_and_absolute_paths ... ok
-test engine::pipeline::tests::entry_names_without_a_root_prefix_are_rejected ... ok
 test engine::purge::tests::every_scope_name_parses_back ... ok
 test engine::redact::tests::aws_key_prefix ... ok
+test engine::headless::tests::a_dry_run_reports_without_mutating ... ok
+test engine::health::tests::memory_under_seventy_five_percent_is_free ... ok
 test engine::redact::tests::bearer_header ... ok
-test engine::redact::tests::connection_string ... ok
-test engine::redact::tests::embedded_mask_keeps_the_surrounding_text ... ok
-test engine::redact::tests::empty_input_is_safe ... ok
 test engine::redact::tests::github_token_prefix ... ok
+test engine::health::tests::severity_weighting_counts_high_more_than_low ... ok
+test engine::redact::tests::connection_string ... ok
 test engine::redact::tests::hyphenated_flag_names_are_recognised ... ok
-test engine::redact::tests::jwt_literal ... ok
-test engine::redact::tests::known_token_in_url_userinfo_is_masked ... ok
 test engine::redact::tests::long_flag_with_equals_value ... ok
 test engine::redact::tests::long_flag_with_space_value ... ok
-test engine::headless::tests::a_destructive_selection_is_refused_before_any_write ... ok
-test engine::redact::tests::ordinary_paths_and_ports_survive ... ok
-test engine::db::tests::purge_empties_the_store ... ok
-test engine::redact::tests::quoted_arguments_stay_together ... ok
-test engine::redact::tests::redaction_is_idempotent ... ok
+test engine::redact::tests::jwt_literal ... ok
+test engine::redact::tests::known_token_in_url_userinfo_is_masked ... ok
 test engine::redact::tests::secret_assignment_inside_a_log_line_is_masked ... ok
+test engine::redact::tests::redaction_is_idempotent ... ok
+test engine::purge::tests::purge_requires_the_exact_token ... ok
 test engine::redact::tests::short_flag_value ... ok
-test engine::redact::tests::whole_value_token_is_masked_entirely ... ok
 test engine::redact::tests::url_userinfo ... ok
+test engine::redact::tests::whole_value_token_is_masked_entirely ... ok
+test engine::pipeline::tests::entry_names_round_trip ... ok
 test engine::retention::tests::audit_rows_over_the_cap_are_counted ... ok
-test engine::retention::tests::byte_cap_is_honoured_independently_of_rows ... ok
-test engine::retention::tests::default_caps_are_the_documented_ones ... ok
+test engine::pipeline::tests::entry_names_without_a_root_prefix_are_rejected ... ok
+test engine::redact::tests::embedded_mask_keeps_the_surrounding_text ... ok
+test engine::redact::tests::empty_input_is_safe ... ok
 test engine::retention::tests::pruning_is_stable_regardless_of_input_order ... ok
 test engine::retention::tests::row_cap_prunes_restored_first ... ok
+test engine::redact::tests::ordinary_paths_and_ports_survive ... ok
+test engine::redact::tests::quoted_arguments_stay_together ... ok
 test engine::retention::tests::tmp_files_are_deleted_and_zips_are_quarantined ... ok
 test engine::retention::tests::under_the_cap_nothing_is_pruned ... ok
-test engine::retention::tests::unrestored_snapshots_require_consent ... ok
+test engine::retention::tests::byte_cap_is_honoured_independently_of_rows ... ok
 test engine::scope::tests::a_path_outside_the_scope_root_is_rejected ... ok
-test engine::scope::tests::a_registry_key_outside_the_scope_is_rejected ... ok
-test engine::scope::tests::a_relative_path_inside_temp_resolves ... ok
+test engine::retention::tests::unrestored_snapshots_require_consent ... ok
+test engine::retention::tests::default_caps_are_the_documented_ones ... ok
 test engine::scope::tests::absolute_paths_are_rejected ... ok
-test engine::scope::tests::every_scope_is_explicit_about_capability ... ok
 test engine::scope::tests::dot_segments_are_normalised_away ... ok
+test engine::scope::tests::every_scope_is_explicit_about_capability ... ok
 test engine::scope::tests::one_child_level_is_allowed_but_two_are_not ... ok
+test engine::keystore::tests::a_second_load_returns_a_key_and_does_not_rewrite_on_failure ... ok
 test engine::scope::tests::parent_traversal_is_rejected ... ok
 test engine::scope::tests::registry_comparison_is_case_insensitive_but_not_prefix_based ... ok
-test engine::scope::tests::registry_root_resolves ... ok
-test engine::scope::tests::scopes_without_paths_refuse_path_resolution ... ok
 test engine::snapshot::tests::a_changed_payload_invalidates_the_tag ... ok
 test engine::snapshot::tests::a_changed_schema_version_invalidates_the_tag ... ok
 test engine::snapshot::tests::a_different_key_cannot_forge_a_tag ... ok
 test engine::snapshot::tests::a_swapped_action_id_invalidates_the_tag ... ok
-test engine::headless::tests::help_and_version_do_not_touch_the_store ... ok
-test engine::db::tests::committing_an_unknown_snapshot_fails ... ok
 test engine::snapshot::tests::malformed_tags_are_rejected_without_panicking ... ok
-test engine::snapshot::tests::key_hex_round_trips_and_debug_is_redacted ... ok
 test engine::snapshot::tests::ordinary_names_are_accepted ... ok
 test engine::snapshot::tests::relative_names_are_slash_separated ... ok
 test engine::snapshot::tests::tag_verifies_and_rejects_mutation ... ok
 test engine::snapshot::tests::traversal_names_are_rejected ... ok
-test engine::db::tests::recovery_removes_temp_files_and_quarantines_orphans ... ok
-test engine::support::tests::identifier_scrubbing_replaces_identity_but_not_short_names ... ok
-test engine::support::tests::redaction_happens_before_identifier_scrubbing ... ok
-test engine::db::tests::history_is_newest_first_and_marks_restored ... ok
+test engine::scope::tests::a_registry_key_outside_the_scope_is_rejected ... ok
+test engine::scope::tests::a_relative_path_inside_temp_resolves ... ok
 test engine::support::tests::trimming_drops_whole_entries_until_the_budget_is_met ... ok
+test engine::support::tests::redaction_happens_before_identifier_scrubbing ... ok
+test engine::scope::tests::registry_root_resolves ... ok
+test engine::scope::tests::scopes_without_paths_refuse_path_resolution ... ok
+test engine::snapshot::tests::key_hex_round_trips_and_debug_is_redacted ... ok
+test engine::support::tests::identifier_scrubbing_replaces_identity_but_not_short_names ... ok
 test error::tests::correlation_ids_are_unique ... ok
-test engine::db::tests::settings_round_trip_and_overwrite ... ok
-test engine::purge::tests::purge_requires_the_exact_token ... ok
-test engine::db::tests::snapshot_lifecycle_pending_then_committed ... ok
-test i18n::tests::every_choice_is_supported_and_unique ... ok
-test engine::db::tests::recovery_marks_missing_archives_broken ... ok
-test i18n::tests::english_is_always_the_fallback ... ok
-test engine::db::tests::recovery_aborts_pending_rows ... ok
-test engine::snapshot::tests::extraction_refuses_a_hash_mismatch ... ok
-test i18n::tests::regional_tags_resolve_to_their_base ... ok
 test error::tests::error_serialises_to_the_ipc_shape ... ok
 test error::tests::every_code_has_distinct_stable_text ... ok
-test manifest::tests::elevated_preset_steps_are_reported_not_hidden ... ok
-test manifest::tests::exactly_twenty_two_actions ... ok
-test manifest::tests::every_code_row_matches_the_table ... ok
 test manifest::tests::irreversible_mutating_actions_are_only_batchable_in_disposable_scopes ... ok
+test i18n::tests::regional_tags_resolve_to_their_base ... ok
+test manifest::tests::every_code_row_matches_the_table ... ok
+test manifest::tests::exactly_twenty_two_actions ... ok
 test manifest::tests::manifest_is_structurally_sound ... ok
+test i18n::tests::english_is_always_the_fallback ... ok
+test manifest::tests::elevated_preset_steps_are_reported_not_hidden ... ok
+test i18n::tests::every_choice_is_supported_and_unique ... ok
 test manifest::tests::sfc_depends_on_dism ... ok
-test manifest::tests::windows_update_scan_does_not_need_admin ... ok
-test manifest::tests::no_snippet_contains_a_todo_marker ... ok
+test engine::snapshot::tests::verify_reports_entry_count ... ok
 test models::tests::action_ids_round_trip_through_the_wire_form ... ok
-test manifest::tests::safe_preset_is_eight_ordered_eligible_steps ... ok
-test manifest::tests::scope_of_every_action_is_declared ... ok
-test manifest::tests::reboot_is_destructive_abortable_and_never_batchable ... ok
+test manifest::tests::no_snippet_contains_a_todo_marker ... ok
 test models::tests::action_ids_serialise_as_kebab_case ... ok
-test models::tests::tiers_report_rollbackability_honestly ... ok
+test manifest::tests::windows_update_scan_does_not_need_admin ... ok
+test manifest::tests::reboot_is_destructive_abortable_and_never_batchable ... ok
+test engine::snapshot::tests::extraction_refuses_a_hash_mismatch ... ok
+test engine::snapshot::tests::a_tampered_archive_fails_verification ... ok
 test models::tests::parsing_an_unknown_action_fails_loudly ... ok
 test models::tests::terminal_phases_are_not_active ... ok
-test engine::keystore::tests::a_second_load_returns_a_key_and_does_not_rewrite_on_failure ... ok
-test engine::snapshot::tests::a_tampered_archive_fails_verification ... ok
-test engine::snapshot::tests::verify_reports_entry_count ... ok
-test engine::headless::tests::a_dry_run_reports_without_mutating ... ok
-test engine::snapshot::tests::writing_twice_replaces_the_archive_cleanly ... ok
+test manifest::tests::safe_preset_is_eight_ordered_eligible_steps ... ok
+test manifest::tests::scope_of_every_action_is_declared ... ok
+test models::tests::tiers_report_rollbackability_honestly ... ok
 test engine::snapshot::tests::archive_round_trips_through_disk ... ok
+test engine::snapshot::tests::writing_twice_replaces_the_archive_cleanly ... ok
 test engine::support::tests::seeded_secrets_do_not_survive_into_the_written_bundle ... ok
 test adapters::child::tests::stderr_is_drained_so_a_large_error_does_not_deadlock ... ok
 test adapters::child::tests::output_is_truncated_at_the_cap_but_the_child_still_exits ... ok
 
-test result: ok. 254 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.82s
+test result: ok. 254 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.59s
 
 
 running 0 tests
@@ -769,8 +783,8 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 
 running 2 tests
-test generated_catalog_parses_as_a_typescript_type_alias ... ok
 test generated_catalog_matches_the_manifest ... ok
+test generated_catalog_parses_as_a_typescript_type_alias ... ok
 
 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
@@ -784,19 +798,6 @@ running 0 tests
 
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-
-> zenith@1.0.0 build
-> tsc --noEmit && vite build
-
-[36mvite v7.3.8 [32mbuilding client environment for production...[36m[39m
-transforming...
-[32m✓[39m 74 modules transformed.
-rendering chunks...
-computing gzip size...
-[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.47 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
-[2mdist/[22m[35massets/index-BZiZWSpJ.css  [39m[1m[2m 23.61 kB[22m[1m[22m[2m │ gzip:   5.05 kB[22m
-[2mdist/[22m[36massets/index-BFiC5LtM.js   [39m[1m[2m739.51 kB[22m[1m[22m[2m │ gzip: 175.10 kB[22m
-[32m✓ built in 3.57s[39m
 
 > zenith@1.0.0 check:bundle
 > node scripts/check-bundle.mjs

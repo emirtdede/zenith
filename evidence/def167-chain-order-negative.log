@@ -1,0 +1,13 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def167.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T08:33:10.569Z
+# exit: 0
+baseline                          exit 0  green
+build moved after check:lint      exit 1  caught
+build moved after check:rust-tests exit 1  caught
+check:bundle moved before build   exit 1  caught
+build removed from the chain      exit 1  caught
+restored                          exit 0  green
+restore byte-identical: yes
+
+All 4 ordering mistakes caught; baseline and restored chain both green.

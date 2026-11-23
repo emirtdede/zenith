@@ -91,18 +91,72 @@ if (typeof rustScript !== "string") {
 }
 
 // ---------------------------------------------------------------- step 3 ----
-// It must be wired into the chain, and not behind the build.
+// It must be wired into the chain.
 if (!invoked.includes(RUST_TESTS)) {
   problems.push(`\`${RUST_TESTS}\` is not part of \`verify\`: a gate outside the chain does not run`);
-} else {
-  const testAt = invoked.indexOf(RUST_TESTS);
-  const buildAt = invoked.indexOf("build");
-  if (buildAt !== -1 && testAt > buildAt) {
-    problems.push("the Rust tests run after `build`: a failing test must stop the release first");
-  }
 }
 
 // ---------------------------------------------------------------- step 4 ----
+// The renderer bundle must be built before anything compiles Rust.
+//
+// `src-tauri/src/lib.rs` calls `tauri::generate_context!()`, which embeds
+// `frontendDist` **at compile time**. On a clean checkout `dist/` does not
+// exist - it is generated, and `.gitignore` says so - so every Rust-compiling
+// step fails with:
+//
+//     error: proc macro panicked
+//     help: The `frontendDist` configuration is set to `"../dist"` but this
+//           path doesn't exist
+//
+// That is what turned the third CI run red at `check:lint`, the first compiling
+// step in the chain. The chain put `build` **after** the Rust steps, so it only
+// worked on a machine that happened to have a stale `dist/`; a fresh clone could
+// not pass the gate at all. Ordering is therefore an invariant, not a preference.
+//
+// A step counts as compiling Rust when its command says so (`cargo test`,
+// `cargo run`, `cargo clippy`) **or** when the node script it names mentions
+// clippy in its own source - `check:lint` is `node scripts/check-lint.mjs` and
+// compiles everything through clippy. The second half is why this reads the
+// file instead of matching only the command string. `check:msrv` mentions
+// `cargo metadata` and `cargo tree`, which read the graph without compiling, so
+// it is correctly outside the rule.
+const COMPILES_RUST = /\bcargo\s+(test|build|run|clippy)\b|\bclippy\b/;
+
+function compilesRust(name) {
+  const command = scripts[name] ?? "";
+  if (COMPILES_RUST.test(command)) return true;
+  const nodeTarget = /^node\s+(\S+\.mjs)\s*$/.exec(command.trim());
+  if (!nodeTarget) return false;
+  try {
+    return COMPILES_RUST.test(readFileSync(join(ROOT, nodeTarget[1]), "utf8"));
+  } catch {
+    return false;
+  }
+}
+
+const buildAt = invoked.indexOf("build");
+if (buildAt === -1) {
+  problems.push(
+    "`build` is not part of `verify`: nothing produces the renderer bundle the Rust build embeds",
+  );
+} else {
+  for (const [index, name] of invoked.entries()) {
+    if (index >= buildAt || !compilesRust(name)) continue;
+    problems.push(
+      `\`${name}\` compiles Rust at step ${index + 1}, before \`build\` at step ${buildAt + 1}: ` +
+        "`tauri::generate_context!` needs the renderer bundle, which a clean checkout does not have (DEF-167)",
+    );
+  }
+}
+
+// `check:bundle` inspects the `dist/` that `build` produced, so it can only be
+// last: anywhere else it would verify a bundle that later steps replace.
+const BUNDLE = "check:bundle";
+if (invoked.length && invoked[invoked.length - 1] !== BUNDLE) {
+  problems.push(`\`${BUNDLE}\` must be the last step: it inspects the bundle \`build\` produced`);
+}
+
+// ---------------------------------------------------------------- step 5 ----
 // This gate must be in the chain too, or it protects nothing.
 const SELF = "check:verify-chain";
 if (!invoked.includes(SELF)) {
