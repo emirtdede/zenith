@@ -1,0 +1,11 @@
+# DEF-159 negative proof - check:workflows must catch four kinds of drift
+# Run 2026-11-23. Each mutation is applied to verify.yml, measured, and the
+# file restored byte-identically.
+
+baseline: exit 0
+caught  npm run verify -> npm run check:lint (a script that does not exist): exit 1
+caught  npm run verify -> npm run check:docs (the chain is no longer run): exit 1
+caught  Rust 1.90.0 -> 1.85.0 (toolchain no longer matches rust-version): exit 1
+caught  npm ci || true (a step that cannot fail): exit 1
+restored: bytes identical=true, exit 0
+PROOF OK: 4/4 mutations caught, tree restored green.

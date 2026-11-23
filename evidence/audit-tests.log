@@ -1,0 +1,14 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running unittests src\lib.rs (target\debug\build\zenith-core/b915f23cf8b67418\out\zenith_core-b915f23cf8b67418.exe)
+
+running 7 tests
+test engine::audit::tests::a_parsed_offset_is_normalised_to_utc ... ok
+test engine::audit::tests::audit_rows_close_with_a_non_negative_duration ... ok
+test engine::audit::tests::a_finished_entry_carries_the_error_code_and_counts ... ok
+test engine::audit::tests::the_compact_stamp_drops_separators_but_not_meaning ... ok
+test engine::audit::tests::correlation_ids_are_unique_and_url_safe ... ok
+test engine::audit::tests::timestamps_are_fixed_width_milliseconds ... ok
+test engine::audit::tests::timestamps_round_trip ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 238 filtered out; finished in 0.00s
+

@@ -1,0 +1,12 @@
+# command: node scripts\check-unused-keys.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T05:28:35.817Z
+# exit: 0
+catalogue keys:        453
+literal references:    370
+generated action keys: 44
+template families:     39
+unused:                0
+action prefixes:       22
+template families:     risk. snapshots. status. tier. titlebar.theme. trust.purge. trust.signature.
+template suffixes:     csv desc help json title

@@ -1,0 +1,13 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def124.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T04:48:45.716Z
+# exit: 0
+baseline (real tree): pass
+M1 CAUGHT  a suite row is changed so the rows no longer sum to the total
+      docs\07-quality\07-01-test-plan.md:64  column 1: rows sum to 281, total says 286
+M2 CAUGHT  the stated total is changed so it no longer matches its rows
+      docs\07-quality\07-01-test-plan.md:64  column 1: rows sum to 286, total says 290
+M3 CAUGHT  a module row is changed so the module table stops summing to 245
+restored tree: pass
+
+verdict: PROVEN

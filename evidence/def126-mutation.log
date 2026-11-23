@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def126.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T05:16:07.170Z
+# exit: 0
+baseline (real tree): pass
+M1 CAUGHT  a failed snapshot read returns a clean-looking report
+M2 CAUGHT  a failed audit read is collapsed to zero with no trace
+M3 CAUGHT  a failed prune is reported as zero removed with no reason
+M4 CAUGHT  a recorded failure no longer makes the report non-empty
+restored tree: pass
+
+verdict: PROVEN

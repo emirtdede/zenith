@@ -1,0 +1,118 @@
+name: verify
+
+# The same gate a release depends on: `npm run verify`, twenty-six steps,
+# stopping at the first failure. A green run here is the only claim this
+# workflow makes; it does not build an installer or publish anything.
+#
+# Why Windows only: the engine is a Windows system utility. Every `#[cfg(windows)]`
+# adapter is compiled here, which is the half a Linux runner would strip and
+# never lint (`03-06` section 2). `cargo test` on Linux would pass over code that
+# does not exist on a non-Windows target, which is the DEF-096 class of gate that
+# looks like it is watching.
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+  workflow_dispatch:
+
+# A second push to the same branch cancels the first run: the older commit's
+# result cannot describe the newer tree, and holding a Windows runner for it
+# delays the answer that matters.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  # Warnings are not free: `check:rust-tests` compiles with them visible, and
+  # the lint jobs below fail on any. One place to keep the colour decision.
+  RUST_BACKTRACE: 1
+
+jobs:
+  verify:
+    name: Windows gate
+    runs-on: windows-2022
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned in `.node-version`; the same file a developer's version manager
+      # reads. `cache: npm` keys on `package-lock.json`, so a dependency bump
+      # invalidates the cache exactly once.
+      - name: Node 24.22.3
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      # Rust 1.90 (MSVC), pinned by `rust-version` in `Cargo.toml` and stated in
+      # `08-01` section 3. `rustup` is already on the Windows image; naming the
+      # toolchain explicitly is what makes the build reproducible instead of
+      # dependent on the runner's default.
+      - name: Rust 1.90.0
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.90.0 --profile minimal --component rustfmt,clippy
+          rustup default 1.90.0
+          rustc --version
+          cargo --version
+
+      # `npm ci` is the whole point of a lockfile: it installs exactly the tree
+      # in `package-lock.json` or fails. `npm install` would silently accept a
+      # newer transitive dependency and the run would describe a different tree.
+      - name: Install npm dependencies
+        run: npm ci
+
+      # The pinned build assets are fetched rather than committed (215 MB
+      # WebView2 installer, past GitHub's per-file limit), so a clean checkout
+      # has none of them - and `resources/fetch.mjs --verify` would correctly
+      # report them missing. `check:resources` is the CI-shaped check: it proves
+      # the manifest is complete and self-consistent, and hash-verifies whatever
+      # happens to be present, without demanding a 307 MB download that no gate
+      # reads. The chain runs it again at step 22; this early copy exists so a
+      # broken pin fails before a cold `cargo test`, not after it.
+      - name: Verify the resources manifest
+        run: node scripts/check-resources.mjs
+
+      # Cold dependency build, so the gate's `cargo test` step is not charged
+      # for compiling the world inside a timeout. `--locked` refuses a
+      # resolution that differs from `Cargo.lock`.
+      - name: Fetch crates
+        run: cargo fetch --locked
+
+      # The vendored `cargo-deny` binary is committed under `tools/`, and
+      # `check:deny` prefers it over PATH for exactly this reason: the runner's
+      # rustup component catalogue is not a dependency policy.
+      - name: Lint (format and clippy)
+        shell: pwsh
+        run: |
+          cargo fmt --all -- --check
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          cargo clippy --workspace --all-targets -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      # Twenty-six steps. Each one is a named gate in `package.json`, and
+      # `check:verify-chain` fails if the chain gains or loses a step without the
+      # test plan being updated to say so.
+      - name: Release gate (26 steps)
+        run: npm run verify
+
+      # A failed run is only useful if the output survives. The gate writes
+      # nothing to disk on success that is not already committed, so this is
+      # strictly the failure case.
+      - name: Upload gate output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-failure
+          path: |
+            evidence/*.log
+            evidence/screens/*.png
+          retention-days: 14
+          if-no-files-found: ignore

@@ -1,0 +1,36 @@
+[workspace]
+members = ["crates/zenith-core", "src-tauri"]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.90"
+license = "MIT"
+authors = ["Emir Tarık Dede", "Vellium"]
+repository = "https://github.com/vellium/zenith"
+
+[workspace.dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+time = { version = "0.3.55", features = ["parsing"] }
+uuid = { version = "1.29.3", features = ["v4", "serde"] }
+sha2 = "0.10.9"
+hmac = "0.12.1"
+hex = "0.4.3"
+rusqlite = { version = "0.43.0", features = ["bundled"] }
+walkdir = "2.5.0"
+parking_lot = "0.13.0"
+zip = { version = "9.7.0", default-features = false, features = ["deflate"] }
+
+# Optimise dependencies even in dev profile: the DB and crypto crates are
+# unusable for interactive tests when unoptimised.
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

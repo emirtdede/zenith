@@ -1,0 +1,16 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def129.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T06:42:44.087Z
+# exit: 0
+baseline gate (real tree): pass
+baseline chain length: 19
+M1 CAUGHT  the Rust test step is dropped from the verify chain
+M2 CAUGHT  the test step is replaced by --list, which runs no test body
+M3 CAUGHT  the check:rust-tests script is deleted
+M4 CAUGHT  the chain gate itself is dropped, so it protects nothing
+M5 CAUGHT  the prose step count disagrees with the chain
+restored gate: pass
+restored package.json: identical
+restored 07-01: identical
+
+verdict: PROVEN

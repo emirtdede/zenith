@@ -1,0 +1,60 @@
+[package]
+name = "zenith"
+description = "Zenith - Windows diagnostic and self-healing desktop application."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+default-run = "zenith"
+
+[lib]
+name = "zenith_app"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[features]
+# DEF-155: `tauri/custom-protocol` is what swaps the dev-server URL for the
+# embedded asset protocol. Without it the crate compiles fine, the binary is
+# produced, and it opens a window pointed at `devUrl` (`http://localhost:1420`)
+# - so a plain `cargo build --release`, which is exactly what the release gate
+# and the screenshot sweep run, produced an executable that showed the browser's
+# "connection refused" page instead of the UI. The Tauri CLI passes this feature
+# itself, which is why `tauri build` hid the problem and every other build path
+# exposed it. Making it a default feature means a self-contained binary is what
+# `cargo build` produces, not something only one tool knows how to ask for.
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[build-dependencies]
+tauri-build = { version = "2.7.4", features = [] }
+
+[dependencies]
+zenith-core = { path = "../crates/zenith-core", version = "1.0.0" }
+tauri = { version = "2.12.5", features = [] }
+tauri-plugin-dialog = "2.7.2"
+tauri-plugin-single-instance = "2.4.3"
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+sha2.workspace = true
+hex.workspace = true
+zip.workspace = true
+parking_lot.workspace = true
+getrandom = "0.4.3"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_Threading",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[lints.rust]
+unused_must_use = "deny"
+unsafe_op_in_unsafe_fn = "deny"

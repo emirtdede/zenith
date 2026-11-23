@@ -1,0 +1,1472 @@
+/* Layout and components. Colour comes only from tokens.css. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+dt {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+h2 {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+}
+
+h3 {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-block: var(--space-3) var(--space-2);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: var(--text-xs);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.danger {
+  color: var(--bad);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  padding: 1px 5px;
+  background: var(--sunken);
+}
+
+:focus-visible {
+  outline: var(--ring-width) solid var(--focus);
+  outline-offset: var(--ring-offset);
+}
+
+/* ------------------------------------------------------------------ shell */
+/*
+ * Two columns: a persistent rail and the workspace.
+ *
+ * Before DEF-145 this was a single stack - toolbar, health, tabs, main, status -
+ * so every screen change repainted the whole window and "where can I go" lived
+ * in the least prominent strip on screen. The rail is a sibling of the
+ * workspace, not an overlay: it keeps its own scroll, and `.main` stays the only
+ * scroller inside the content column (`05-02` §1).
+ */
+.shell {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg);
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ----------------------------------------------------------------- sidebar */
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 15.5rem;
+  min-height: 0;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--line-soft);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-product {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-tight);
+}
+
+.sidebar-tagline {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  line-height: var(--leading-snug);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-2) var(--space-2);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: thin;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-align: start;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.nav-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+/*
+ * The current destination is marked three ways on purpose: `aria-current="page"`
+ * for assistive tech, weight for a monochrome screenshot, and the accent tint
+ * for everyone else. A border-inline-start bar was considered and dropped: at
+ * 320 CSS px the rail collapses to icons, and an indicator that disappears with
+ * the label is worse than none.
+ */
+.nav-btn.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: var(--weight-semibold);
+}
+
+.nav-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+}
+
+.nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border-top: 1px solid var(--line-soft);
+}
+
+.sidebar-action {
+  width: 100%;
+  justify-content: flex-start;
+  gap: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.sidebar-action .nav-label {
+  flex: 1;
+}
+
+.boot {
+  display: grid;
+  place-content: center;
+  gap: var(--space-3);
+  height: 100%;
+  color: var(--muted);
+}
+
+.boot-failed {
+  color: var(--text);
+  max-width: 42ch;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.simulation-banner {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-6);
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-bottom: 1px solid var(--warn);
+  font-size: var(--text-sm);
+}
+
+/*
+ * The single top strip.
+ *
+ * The window is undecorated, so this row replaces the OS title bar rather than
+ * sitting under it. That is what removed the "two bars for one window" look:
+ * before DEF-161 the app drew a native Windows caption and then a 40px toolbar
+ * beneath it, and no amount of styling made that read as one surface.
+ *
+ * Layout: the drag handle takes every pixel the controls do not, so the whole
+ * empty area of the bar moves the window - the behaviour a title bar is
+ * expected to have - while the buttons stay clickable.
+ */
+.appbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline-start: var(--space-4);
+  padding-inline-end: var(--space-2);
+  min-height: 40px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--bg);
+  /* The bar is chrome, not content: selecting the window title is never wanted
+     and makes a drag look like a text selection. */
+  user-select: none;
+}
+
+/* The drag handle. `flex: 1` so it absorbs the free width; a fixed width would
+ * leave dead pixels that refuse to move the window. */
+.appbar-drag {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: var(--space-6);
+}
+
+.appbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+/* -------------------------------------------------------- window controls */
+/*
+ * Three buttons, drawn because the OS no longer draws them. They are small and
+ * quiet on purpose: a window control is not a primary action, and a high-weight
+ * close button next to the app's own actions competes with them for attention.
+ * The close button is the only one that warms up on hover, which is the
+ * convention every Windows user already has in their hands.
+ */
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: var(--space-1);
+}
+
+.win-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.win-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.win-btn.is-close:hover {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: var(--text-inverse);
+}
+
+.palette-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: start;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.palette-trigger:hover {
+  background: var(--surface-hover);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+/* The shortcut hint is pushed to the far edge, so the control reads as a field
+   with a keybinding rather than a button with two labels. */
+.palette-trigger span {
+  flex: 1;
+}
+
+/* The rail slot that holds the palette trigger, under the brand. */
+.sidebar-palette {
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover {
+  background: var(--surface-hover);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: var(--weight-medium);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: var(--text-inverse);
+  font-weight: var(--weight-medium);
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn-quiet:hover,
+.btn-quiet.is-active {
+  background: var(--surface-hover);
+  border-color: var(--line-soft);
+}
+
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+.icon-btn:hover,
+.icon-btn.is-active {
+  color: var(--accent);
+  border-color: var(--line-soft);
+  background: var(--surface-hover);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.pill-ok {
+  border-color: var(--ok);
+  color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.pill-warn {
+  border-color: var(--warn);
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--sunken);
+  text-align: center;
+  font-size: var(--text-xs);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.toggle input,
+.radio input {
+  accent-color: var(--accent);
+}
+
+/* ----------------------------------------------------------------- health */
+/*
+ * The health strip is the workspace's KPI row: one score card and four metric
+ * cards. It was a single flat bar before (DEF-145); cards give each number a
+ * bounded surface, so "not measured" reads as an empty card rather than as a
+ * dash floating between two other numbers.
+ */
+.health {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 2fr) auto;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6) 0;
+}
+
+.health-score {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.score {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.health-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+/* Each metric is a card; the wrapper div carries the box. */
+.health-metrics > div {
+  display: flex;
+  flex-direction: column;
+  /* Space-between pins the value to the bottom edge, so a label that wraps to
+     two lines ("Geçici dosya") does not push its number out of line with the
+     numbers beside it. */
+  justify-content: space-between;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.health-metrics dt {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  /* DEF-156: this was `white-space: nowrap` + `text-overflow: ellipsis`, which
+     cut the Turkish label to "GEÇİCİ DO…" inside a card wide enough to hold it
+     on two lines. A KPI label that cannot be read is not a label. Wrapping is
+     safe here because the value below is bottom-pinned. */
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.health-metrics dd {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.health-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+/* ------------------------------------------------------------------- tabs */
+/*
+ * `.tabs` sits inside `.main` since DEF-161, so it carries no horizontal
+ * padding of its own: `.main` already supplies the page gutter, and adding it
+ * twice is what makes a header look indented from the cards below it.
+ */
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3) 0;
+}
+
+.tab-list {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.tab {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: var(--surface-hover);
+}
+
+.tab.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: var(--weight-medium);
+}
+
+.search input {
+  /* `min(280px, 100%)` so the field can shrink instead of forcing horizontal
+     scroll at 320 CSS px (WCAG 1.4.10). Measured as DEF-044. */
+  width: min(280px, 100%);
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+/* ------------------------------------------------------------------- grid */
+/*
+ * The page header. Every screen that is not the action grid already opened with
+ * one (`.screen-head`), so the grid was the screen that started cold: a row of
+ * cards with no sentence saying what the screen was for. It also fixes the
+ * heading order, which used to be six sibling `<h2>`s under the `<h1>` in the
+ * rail with no page level between them.
+ *
+ * It lives inside `.main` since DEF-161, so it takes no page gutter of its own
+ * - only the top space that separates it from the health strip above.
+ */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block-start: var(--space-2);
+}
+
+.page-head h2 {
+  font-size: var(--text-xl);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3) var(--space-6) var(--space-6);
+}
+
+/* The action grid already sits inside `.page`, which owns the vertical rhythm;
+   the shared `.main` top padding would double it on this one screen. */
+#main[data-screen="actions"] {
+  padding-block-start: 0;
+}
+
+.grid {
+  display: grid;
+  /* `min(280px, 100%)` rather than a bare 280px: a fixed track cannot shrink
+     below itself, so at 320 CSS px (WCAG 1.4.10) the grid used to force a
+     horizontal scrollbar. Measured as DEF-044. */
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.card:hover {
+  border-color: var(--line);
+  box-shadow: var(--shadow-2);
+}
+
+.card:focus-visible {
+  border-color: var(--focus);
+}
+
+.card.is-running {
+  border-color: var(--info);
+}
+
+.card.is-warn {
+  border-color: var(--warn);
+}
+
+.card.is-bad {
+  border-color: var(--bad);
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.card-head > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * A card title is an `<h3>` now, not an `<h2>` (see `ActionGrid.tsx`), so it has
+ * to opt out of the global `h3` treatment: that rule is for section labels
+ * inside a panel (uppercase, muted, small), and a card that inherited it would
+ * shout its name in grey caps. A card title is content, at content weight.
+ */
+.card-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text);
+  margin: 0;
+}
+
+.card-tools {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.card-desc {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.card-metric {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+  /* A metric is often a Windows path with no spaces in it
+     (`C:\Users\…\WindowsApps\winget.exe`). Without this the line overflows the
+     card and is clipped mid-word, which reads as a rendering bug and hides the
+     part of the path the user needs. `anywhere` breaks inside the token rather
+     than only at spaces. */
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.card-metric.is-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  /* DEF-156: `margin-top: auto` is what lines the card footers up across a row.
+     The cards on one grid row stretch to the tallest, and without this the spare
+     height was absorbed by `.card-desc` (`flex: 1`), so a card with a two-line
+     description pushed its badges and footer down while its neighbour sat
+     higher. Measured: footers on one row were 43px apart. Pinning the badge
+     cluster to the bottom puts the variable-length text at the top, where it
+     belongs, and every footer on the row at the same y. */
+  margin-top: auto;
+}
+
+.badge {
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line-soft);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.risk-safe {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.risk-moderate {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.risk-destructive {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.badge.is-bad {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.card-foot {
+  display: flex;
+  /*
+   * DEF-157: stacked, not a single row.
+   *
+   * A single row works only while the actions fit beside the status label, and
+   * they do not: at the default 282px card width the three buttons of a card
+   * that has an undo copy ("Details" 78px + "Undo" 64px + "Cancel" 104px, plus
+   * 8px gaps) need 262px, against 161px left over after the status label takes
+   * its ~79px. So that one card wrapped to a second row and became 88px tall
+   * while its two neighbours stayed 44px - the same row of cards had three
+   * different footer heights, and the squeezed status label itself broke in
+   * half ("Teşhis / ediliyor", measured `statusH` 36px against 18px).
+   *
+   * Stacking the status above the actions makes the footer one shape for every
+   * card: 18px status + 8px gap + 35px button row, whatever the button count and
+   * whatever the label length. The variable part is the description above, which
+   * is where it belongs. `column-reverse` keeps the buttons at the bottom edge of
+   * the card, which is the edge a reader's eye follows across a grid row.
+   */
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line-soft);
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.status {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status.is-ok {
+  color: var(--ok);
+}
+
+.status.is-warn {
+  color: var(--warn);
+}
+
+.status.is-bad {
+  color: var(--bad);
+}
+
+.status.is-running {
+  color: var(--info);
+}
+
+.show-hidden {
+  margin-top: var(--space-4);
+}
+
+.empty {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- screens */
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.screen-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/*
+ * Right-hand cluster of a screen header: the retention pill and the export
+ * buttons. Before this wrapper the header had three children and
+ * `justify-content: space-between` stranded the second one in the middle of the
+ * row - the buttons rendered as loose text over the table (DEF-076). Wrapping
+ * them makes the header two children again: title on the left, tools on the
+ * right, tools wrapping under themselves at narrow widths instead of colliding
+ * with the heading.
+ */
+.screen-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.panel {
+  padding: var(--space-4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.panel h3:first-child {
+  margin-top: 0;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  gap: var(--space-2) var(--space-4);
+}
+
+.facts div {
+  display: contents;
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.facts dd {
+  font-size: var(--text-sm);
+  word-break: break-word;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.table th {
+  text-align: start;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--sunken);
+}
+
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+  vertical-align: top;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+.shortcuts {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.shortcuts div {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.shortcuts dt {
+  min-width: 110px;
+}
+
+.manage-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+  /*
+   * No `max-height`/`overflow` here on purpose. `05-02` §1 makes `.main` the only
+   * scroll container; a 360 px inner scroller inside a page that also scrolls
+   * traps the wheel and the keyboard focus ring in a box the user did not ask
+   * for, and at 320 CSS px it hid rows behind a second scrollbar. The panel now
+   * grows and the page scrolls once.
+   */
+}
+
+.manage-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+}
+
+/* ---------------------------------------------------------------- console */
+.drawer {
+  border-top: 1px solid var(--line);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-drawer);
+  max-height: 34vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-6) var(--space-3);
+  min-height: 0;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  display: grid;
+  gap: 1px;
+}
+
+/*
+ * Only the console drawer scrolls its log. `05-02` §1 makes `.main` the page's
+ * only scroll container, and the Activity screen renders `ol.log` inside
+ * `.main`. An `overflow` on `.log` itself therefore turned that screen into a
+ * nested scroller, and `.log-tall`'s 55vh box hid rows behind a second
+ * scrollbar at 320 CSS px - the same class of defect as DEF-077 (.manage-list),
+ * fixed the same way: the list grows, the page scrolls once. The drawer is a
+ * sibling of `.main` and is itself bounded at 34vh, so it is the one place a
+ * log scroll is correct; `min-height: 0` lets that flex child shrink.
+ */
+.drawer .log {
+  overflow: auto;
+  min-height: 0;
+}
+
+.log li {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: var(--space-2);
+  padding: 1px 0;
+}
+
+/*
+ * The empty-state row is a sentence, not a log line: `.log li`'s 76px time
+ * column squeezed it into a ribbon one word wide (DEF-079). It spans both
+ * columns and drops the mono face so it reads as prose.
+ */
+.log li.log-empty {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+}
+
+.log-error {
+  color: var(--bad);
+}
+
+.log-warn {
+  color: var(--warn);
+}
+
+.log-debug {
+  color: var(--faint);
+}
+
+/* -------------------------------------------------------------- statusbar */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) var(--space-6);
+  border-top: 1px solid var(--line-soft);
+  background: var(--surface);
+  font-size: var(--text-xs);
+}
+
+.statusbar-left,
+.statusbar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.statusbar .btn {
+  padding: 3px 8px;
+  font-size: var(--text-xs);
+}
+
+/* ---------------------------------------------------------------- overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background: var(--overlay);
+  animation: fade var(--duration-fast) var(--ease-out);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.dialog {
+  width: min(620px, 100%);
+  max-height: 86vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-3);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line-soft);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  padding-block: 2px;
+}
+
+.warn-box {
+  padding: var(--space-2) var(--space-3);
+  border-inline-start: 3px solid var(--warn);
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-xs);
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: fit-content;
+}
+
+.segmented button {
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.script {
+  max-height: 300px;
+  overflow: auto;
+  padding: var(--space-3);
+  background: var(--sunken);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  font-size: var(--text-xs);
+}
+
+/* The bundled third-party notice file is long (hundreds of KB), so it lives in
+   a scrollable <details>: present offline, not in the way. */
+.licenses summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.licenses-text {
+  max-height: 420px;
+  overflow: auto;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3);
+  background: var(--sunken);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------------ notices */
+.notice-list {
+  margin: 0 var(--space-6) var(--space-2);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-inline-start: 3px solid var(--info);
+  background: var(--info-soft);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-sm);
+}
+
+.notice-warning {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.notice-critical {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}
+
+/* ----------------------------------------------------------------- error */
+.error-toast {
+  position: fixed;
+  inset-inline: auto var(--space-6);
+  inset-block-end: 64px;
+  z-index: 50;
+  width: min(420px, calc(100vw - 48px));
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border: 1px solid var(--bad);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-3);
+}
+
+/* ----------------------------------------------------------------- palette */
+.palette {
+  width: min(560px, 100%);
+  padding: var(--space-2);
+  gap: var(--space-2);
+}
+
+.palette-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-md);
+}
+
+.palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 48vh;
+  overflow: auto;
+}
+
+.palette-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.palette-item.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Narrow-width reflow (WCAG 1.4.10, 320 CSS px).
+
+   The rail collapses to an icon strip rather than disappearing: removing it
+   would leave six destinations reachable only by keyboard, and this app must
+   stay usable at 400% zoom with a pointer (DEF-044, DEF-145). Icons keep their
+   accessible name because each `<button>` carries `title` and its translated
+   label in the DOM - the label is clipped visually, not removed from the tree.
+   ========================================================================== */
+@media (max-width: 900px) {
+  .app-sidebar {
+    width: 3.75rem;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .sidebar-brand-text,
+  .sidebar-nav .nav-label,
+  .sidebar-footer .nav-label {
+    display: none;
+  }
+
+  .nav-btn,
+  .sidebar-action {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .health {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .appbar,
+  .tabs,
+  .statusbar,
+  .simulation-banner {
+    flex-wrap: wrap;
+  }
+
+  .palette-trigger {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .health-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tab-list {
+    flex-wrap: wrap;
+  }
+
+  .search,
+  .search input {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .facts,
+  .log li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .dialog {
+    width: 100%;
+    padding: var(--space-4);
+  }
+
+  .dialog-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .health-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

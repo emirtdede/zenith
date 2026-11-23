@@ -1,0 +1,300 @@
+# command: npm.cmd run verify
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-21T22:22:08.013Z
+# exit: 0
+
+> zenith@1.0.0 verify
+> npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:contract && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run check:fe && npm run check:doc-counts && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run build
+
+
+> zenith@1.0.0 check:locales
+> node scripts/check-locales.mjs
+
+en: 447 keys checked
+tr: 447 keys checked
+tr.ts: 8 string(s) identical to English (1.8%)
+
+All 2 locales agree with English on 447 keys.
+
+> zenith@1.0.0 check:unused-keys
+> node scripts/check-unused-keys.mjs
+
+catalogue keys:        447
+literal references:    364
+generated action keys: 44
+template families:     39
+unused:                0
+action prefixes:       22
+template families:     risk. snapshots. status. tier. titlebar.theme. trust.purge. trust.signature.
+template suffixes:     csv desc help json title
+
+> zenith@1.0.0 check:step-keys
+> node scripts/check-step-keys.mjs
+
+emitted step/error/remedy keys: 59
+catalogue steps.* keys:        39
+missing from en:               0
+missing from tr:               0
+steps.* with no emitter:       0
+
+> zenith@1.0.0 check:contract
+> node scripts/check-contract.mjs
+
+commands: 15 documented, 15 declared, 15 registered, 15 called
+events:   6 documented, 6 in EventMap
+errors:   25 codes checked in en + tr
+
+Contract holds: document = Rust registry = frontend bridge.
+
+> zenith@1.0.0 check:contrast
+> node scripts/check-contrast.mjs
+
+off-white      text        on bg       17.48:1  (min 4.5)  PASS
+off-white      text        on surface  18.11:1  (min 4.5)  PASS
+off-white      text        on sunken   16.14:1  (min 4.5)  PASS
+off-white      muted       on bg        6.13:1  (min 4.5)  PASS
+off-white      muted       on surface   6.35:1  (min 4.5)  PASS
+off-white      muted       on sunken    5.66:1  (min 4.5)  PASS
+off-white      accent      on bg        7.32:1  (min 4.5)  PASS
+off-white      accent      on surface   7.58:1  (min 4.5)  PASS
+off-white      accent      on sunken    6.76:1  (min 4.5)  PASS
+off-white      ok          on bg        6.88:1  (min 4.5)  PASS
+off-white      ok          on surface   7.13:1  (min 4.5)  PASS
+off-white      ok          on sunken    6.35:1  (min 4.5)  PASS
+off-white      warn        on bg        6.11:1  (min 4.5)  PASS
+off-white      warn        on surface   6.33:1  (min 4.5)  PASS
+off-white      warn        on sunken    5.64:1  (min 4.5)  PASS
+off-white      bad         on bg        7.20:1  (min 4.5)  PASS
+off-white      bad         on surface   7.46:1  (min 4.5)  PASS
+off-white      bad         on sunken    6.65:1  (min 4.5)  PASS
+off-white      line        on bg        3.64:1  (min 3.0)  PASS
+off-white      line        on surface   3.78:1  (min 3.0)  PASS
+off-white      line        on sunken    3.36:1  (min 3.0)  PASS
+off-white      focus       on bg        7.32:1  (min 3.0)  PASS
+off-white      focus       on surface   7.58:1  (min 3.0)  PASS
+off-white      focus       on sunken    6.76:1  (min 3.0)  PASS
+off-white      accent-soft on surface   1.16:1  (min 1.0)  PASS
+true-black     text        on bg       18.18:1  (min 4.5)  PASS
+true-black     text        on surface  16.89:1  (min 4.5)  PASS
+true-black     text        on sunken   17.76:1  (min 4.5)  PASS
+true-black     muted       on bg        8.96:1  (min 4.5)  PASS
+true-black     muted       on surface   8.32:1  (min 4.5)  PASS
+true-black     muted       on sunken    8.75:1  (min 4.5)  PASS
+true-black     accent      on bg       10.94:1  (min 4.5)  PASS
+true-black     accent      on surface  10.16:1  (min 4.5)  PASS
+true-black     accent      on sunken   10.68:1  (min 4.5)  PASS
+true-black     ok          on bg       13.03:1  (min 4.5)  PASS
+true-black     ok          on surface  12.10:1  (min 4.5)  PASS
+true-black     ok          on sunken   12.73:1  (min 4.5)  PASS
+true-black     warn        on bg       11.85:1  (min 4.5)  PASS
+true-black     warn        on surface  11.01:1  (min 4.5)  PASS
+true-black     warn        on sunken   11.58:1  (min 4.5)  PASS
+true-black     bad         on bg        8.83:1  (min 4.5)  PASS
+true-black     bad         on surface   8.20:1  (min 4.5)  PASS
+true-black     bad         on sunken    8.62:1  (min 4.5)  PASS
+true-black     line        on bg        3.89:1  (min 3.0)  PASS
+true-black     line        on surface   3.62:1  (min 3.0)  PASS
+true-black     line        on sunken    3.80:1  (min 3.0)  PASS
+true-black     focus       on bg       10.94:1  (min 3.0)  PASS
+true-black     focus       on surface  10.16:1  (min 3.0)  PASS
+true-black     focus       on sunken   10.68:1  (min 3.0)  PASS
+true-black     accent-soft on surface   1.15:1  (min 1.0)  PASS
+spatial-glass  text        on bg       16.51:1  (min 4.5)  PASS
+spatial-glass  text        on surface  15.31:1  (min 4.5)  PASS
+spatial-glass  text        on sunken   16.94:1  (min 4.5)  PASS
+spatial-glass  muted       on bg        8.58:1  (min 4.5)  PASS
+spatial-glass  muted       on surface   7.96:1  (min 4.5)  PASS
+spatial-glass  muted       on sunken    8.80:1  (min 4.5)  PASS
+spatial-glass  accent      on bg        9.31:1  (min 4.5)  PASS
+spatial-glass  accent      on surface   8.63:1  (min 4.5)  PASS
+spatial-glass  accent      on sunken    9.55:1  (min 4.5)  PASS
+spatial-glass  ok          on bg       11.97:1  (min 4.5)  PASS
+spatial-glass  ok          on surface  11.10:1  (min 4.5)  PASS
+spatial-glass  ok          on sunken   12.28:1  (min 4.5)  PASS
+spatial-glass  warn        on bg       13.02:1  (min 4.5)  PASS
+spatial-glass  warn        on surface  12.08:1  (min 4.5)  PASS
+spatial-glass  warn        on sunken   13.36:1  (min 4.5)  PASS
+spatial-glass  bad         on bg        9.34:1  (min 4.5)  PASS
+spatial-glass  bad         on surface   8.67:1  (min 4.5)  PASS
+spatial-glass  bad         on sunken    9.58:1  (min 4.5)  PASS
+spatial-glass  line        on bg        3.47:1  (min 3.0)  PASS
+spatial-glass  line        on surface   3.22:1  (min 3.0)  PASS
+spatial-glass  line        on sunken    3.56:1  (min 3.0)  PASS
+spatial-glass  focus       on bg        9.31:1  (min 3.0)  PASS
+spatial-glass  focus       on surface   8.63:1  (min 3.0)  PASS
+spatial-glass  focus       on sunken    9.55:1  (min 3.0)  PASS
+spatial-glass  accent-soft on surface   1.10:1  (min 1.0)  PASS
+
+All 75 checks pass in 3 themes.
+
+> zenith@1.0.0 check:simulator
+> node scripts/check-simulator.mjs
+
+Simulator import graph: 4 module(s)
+  src\bridge\simulator.ts
+  src\catalog.generated.ts
+  src\bridge\adapter.ts
+  src\bridge\types.ts
+
+No native import is reachable from the simulator. ADR-012 holds.
+
+> zenith@1.0.0 check:nonwindows
+> node scripts/audit-nonwindows.mjs
+
+guarded fns: 37
+Rule 0 holds: every guarded fn is fallible or documented-pessimistic.
+
+> zenith@1.0.0 check:docs
+> node scripts/check-docs.mjs
+
+docs 28 | lines 9280 | words 89921 | links 45 | DEF 109/109 | REQ-F 118/118 | REQ-N 86/86 | tests 93
+problems: none
+
+> zenith@1.0.0 check:fe
+> vitest run --reporter=default --reporter=json --outputFile=evidence/vitest-counts.json
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/emir/Desktop/Zenith[39m
+
+ [32m✓[39m src/ui/logText.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/i18n/format.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/perf.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/export.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/state/store.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/actions.budget.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/actions.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32m✓[39m src/ui/useFocusTrap.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 501[2mms[22m[39m
+ [32m✓[39m src/ui/errorBoundary.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 406[2mms[22m[39m
+ [32m✓[39m src/ui/errorBoundary.wiring.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 568[2mms[22m[39m
+   [33m[2m✓[22m[39m the boundary is mounted around the screens (T-FE-20)[2m > [22mcontains a screen throw inside #main and leaves the shell rendered [33m 559[2mms[22m[39m
+ [32m✓[39m src/ui/wiring089.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 978[2mms[22m[39m
+ [32m✓[39m src/ui/render.test.tsx [2m([22m[2m39 tests[22m[2m)[22m[33m 1312[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[32m134 passed[39m[22m[90m (134)[39m
+[2m   Start at [22m 01:22:24
+[2m   Duration [22m 6.22s[2m (transform 3.04s, setup 0ms, collect 13.55s, tests 3.93s, environment 14.62s, prepare 2.54s)[22m
+
+JSON report written to C:/Users/emir/Desktop/Zenith/evidence/vitest-counts.json
+
+> zenith@1.0.0 check:doc-counts
+> node scripts/check-doc-counts.mjs
+
+docs\06-i18n\06-01-i18n-strategy.md:33  keys: 471 — historical, marked as such (ok)
+docs\06-i18n\06-01-i18n-strategy.md:212  keys: 467 — historical, marked as such (ok)
+docs\08-delivery\08-03-wbs-roadmap.md:65  keys: 52 — historical, marked as such (ok)
+docs\10-audit\10-01-scorecard.md:136  keys: 471 — historical, marked as such (ok)
+docs\10-audit\10-01-scorecard.md:136  keys: 30 — historical, marked as such (ok)
+docs\10-audit\10-01-scorecard.md:136  keys: 22 — historical, marked as such (ok)
+docs\10-audit\10-01-scorecard.md:143  keys: 445 — historical, marked as such (ok)
+docs\10-audit\10-01-scorecard.md:151  rust: 255 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:36  vitest: 132 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:113  keys: 471 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:114  keys: 471 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:117  vitest: 88 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:118  vitest: 88 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:120  vitest: 103 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:121  vitest: 103 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:122  vitest: 104 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:123  vitest: 110 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:124  keys: 471 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:124  keys: 52 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:125  keys: 22 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:126  vitest: 124 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:126  keys: 443 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:126  keys: 445 — historical, marked as such (ok)
+docs\10-audit\10-02-deficiency-register.md:139  rust: 255 — historical, marked as such (ok)
+evidence/README.md:10  rust: 274 — historical, marked as such (ok)
+evidence/README.md:11  rust: 273 — historical, marked as such (ok)
+evidence/README.md:12  rust: 255 — historical, marked as such (ok)
+evidence/README.md:13  vitest: 132 — historical, marked as such (ok)
+evidence/README.md:13  keys: 445 — historical, marked as such (ok)
+evidence/README.md:18  vitest: 124 — historical, marked as such (ok)
+evidence/README.md:18  keys: 443 — historical, marked as such (ok)
+
+measured: {"rust":281,"vitest":134,"files":12,"keys":447,"commands":15,"defs":109,"closed":100,"open":9}
+numeric drift: 0 mismatch(es)
+
+> zenith@1.0.0 check:scorecard
+> node scripts/check-scorecard.mjs
+
+rubric:   C1/12 C2/12 C3/14 C4/13 C5/10 C6/9 C7/10 C8/6 C9/8 C10/6
+weights:  100
+v1 total: 45  v2 total: 98
+shortfall: 2 (C5-1, C7-1) | withheld: 2 (C5-1, C7-1)
+register: 109 ids, 1..109
+
+Scorecard arithmetic holds: rows sum to the stated totals, every withheld point maps
+to a real shortfall, and the register totals match its own rows.
+
+> zenith@1.0.0 check:ffi
+> node scripts/check-ffi.mjs
+
+files: 45
+unsafe blocks: 109
+documented: 109
+// SAFETY: comments: 112
+
+Every unsafe block carries a SAFETY comment.
+
+> zenith@1.0.0 check:licenses
+> node scripts/check-licenses.mjs
+
+Third-party notices hold: 277 components (273 cargo, 4 npm), 57 licence texts, 10 SPDX ids, f86aea34b003…
+
+> zenith@1.0.0 check:deny
+> node scripts/check-deny.mjs
+
+advisories ok, bans ok, licenses ok, sources ok
+Dependency policy holds: advisories, bans, licences and sources.
+
+> zenith@1.0.0 check:sbom
+> node scripts/generate-sbom.mjs --check
+
+SBOM is current: 277 components (273 cargo, 4 npm), 277 with a lockfile hash.
+
+> zenith@1.0.0 check:stubs
+> cargo run -q -p zenith-core --bin zenith-audit -- --all
+
+== L1 stubs ==
+  no todo!() / unimplemented!() in first-party source
+  NotImplemented sites: 6
+    crates/zenith-core/src/adapters/actions.rs:1301
+    crates/zenith-core/src/adapters/console.rs:35
+    crates/zenith-core/src/adapters/console.rs:66
+    crates/zenith-core/src/engine/pipeline.rs:365
+    crates/zenith-core/src/error.rs:278
+    crates/zenith-core/src/error.rs:329
+    -> gated by not(windows): crates/zenith-core/src/adapters/actions.rs
+    -> gated by not(windows): crates/zenith-core/src/adapters/console.rs
+    -> gated by not(windows): crates/zenith-core/src/adapters/console.rs
+== L3 dead configuration ==
+  11 published constants, every one consumed
+  10 environment variables read
+    env CARGO_MANIFEST_DIR (read 2x)
+    env CARGO_PKG_VERSION (read 1x)
+    env COMPUTERNAME (read 2x)
+    env PROFILE (read 1x)
+    env SOURCE_DATE_EPOCH (read 1x)
+    env USERNAME (read 1x)
+    env USERPROFILE (read 1x)
+    env ZENITH_BUILD_COMMIT (read 2x)
+    env ZENITH_SIMULATOR (read 1x)
+    env … (read 2x)
+== TODO markers ==
+  no unattributed TODO markers
+
+Zero-Stub audit: clean.
+
+> zenith@1.0.0 build
+> tsc --noEmit && vite build
+
+[36mvite v7.3.8 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 65 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  0.47 kB[22m[1m[22m[2m │ gzip:   0.29 kB[22m
+[2mdist/[22m[35massets/index-CvLiphxX.css  [39m[1m[2m 19.15 kB[22m[1m[22m[2m │ gzip:   4.34 kB[22m
+[2mdist/[22m[36massets/index-DyxXPuEF.js   [39m[1m[2m703.27 kB[22m[1m[22m[2m │ gzip: 164.31 kB[22m
+[32m✓ built in 2.06s[39m

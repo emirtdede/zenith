@@ -1,0 +1,13 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def127.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T05:49:43.741Z
+# exit: 0
+baseline TS (real tree): pass
+M1 CAUGHT  the old flat render returns, printing a null build as (0)
+M2 CAUGHT  a null build is rendered as the string 0
+M3 CAUGHT  the unknown branch is dropped, so a null pair still claims a build
+M4 CAUGHT  Rust flattens the Option again, so the wire can never carry null
+restored TS: pass
+restored Rust: pass
+
+verdict: PROVEN

@@ -1,0 +1,15 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def129-blind.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T06:20:34.913Z
+# exit: 0
+=== baseline: real tree ===
+check:doc-counts exit 0 (expect 0)
+cargo test     exit 0 (expect 0)
+
+=== mutant: assert!(false) inside a real test ===
+check:doc-counts exit 0  <-- 0 means the chain is blind
+cargo test     exit 101  <-- non-zero means the test does fail
+
+verdict: DEFECT CONFIRMED — verify is green while a test fails
+restored tree: cargo test exit 0 (expect 0)
+restored bytes: identical

@@ -1,0 +1,42 @@
+
+> zenith@1.0.0 verify
+> npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:contract && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run check:fe && npm run check:doc-counts && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run build
+
+
+> zenith@1.0.0 check:locales
+> node scripts/check-locales.mjs
+
+en: 445 keys checked
+tr: 445 keys checked
+tr.ts: 8 string(s) identical to English (1.8%)
+
+All 2 locales agree with English on 445 keys.
+
+> zenith@1.0.0 check:unused-keys
+> node scripts/check-unused-keys.mjs
+
+catalogue keys:        445
+literal references:    362
+generated action keys: 44
+template families:     39
+unused:                0
+action prefixes:       22
+template families:     risk. snapshots. status. tier. titlebar.theme. trust.purge. trust.signature.
+template suffixes:     csv desc help json title
+
+> zenith@1.0.0 check:step-keys
+> node scripts/check-step-keys.mjs
+
+emitted step/error/remedy keys: 63
+catalogue steps.* keys:        39
+missing from en:               4
+  MISSING en steps.delete
+  MISSING en steps.flush
+  MISSING en steps.probe
+  MISSING en steps.scan
+missing from tr:               4
+  MISSING tr steps.delete
+  MISSING tr steps.flush
+  MISSING tr steps.probe
+  MISSING tr steps.scan
+steps.* with no emitter:       0

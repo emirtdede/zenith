@@ -1,0 +1,45 @@
+# Build output and dependencies: reproduced by `npm ci` / `cargo build`.
+node_modules/
+dist/
+target/
+
+# Generated caches.
+coverage/
+*.log
+*.tsbuildinfo
+.vite/
+
+# Evidence logs are deliverables, not build noise: `evidence/README.md`
+# describes every one of them and `check:evidence-ledger` fails if a described
+# artefact is missing. Without this re-include, a clean clone has no logs, so the
+# ledger check passes locally (files on disk) and fails on the CI runner (files
+# absent) - the exact class of defect that only a fresh checkout exposes.
+!evidence/**/*.log
+
+# Editor and OS noise.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local secrets. The signing certificate and the updater private key never
+# enter the tree (08-02 section 5); a build machine supplies them by path.
+*.pfx
+*.p12
+*.snk
+.env
+.env.*
+!.env.example
+
+# Vendored binaries. `resources/manifest.json` pins every asset by SHA-256 and
+# `resources/README.md` records its source, but the files themselves are
+# fetched, not committed: the WebView2 evergreen installer alone is 215 MB,
+# which exceeds GitHub's 100 MB per-file limit, and the whole set is 307 MB of
+# bytes that no line of code reads. `node resources/fetch.mjs` downloads each
+# one and refuses a file whose hash does not match the manifest.
+resources/toolchain/*.exe
+resources/toolchain/*.zip
+resources/installers/*.exe
+resources/installers/*.zip
+resources/fonts/*.zip

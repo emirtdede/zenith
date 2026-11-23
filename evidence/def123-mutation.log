@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def123.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T04:54:45.776Z
+# exit: 0
+baseline (real tree): pass
+M1 CAUGHT  a failed snapshot read reports 0 instead of None
+M2 CAUGHT  a failed audit read reports 0 instead of None
+M3 CAUGHT  a negative audit count is cast without the clamp
+M4 CAUGHT  the wire field is non-optional again, so null can never be sent
+restored tree: pass
+
+verdict: PROVEN

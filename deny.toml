@@ -1,0 +1,91 @@
+# Dependency policy for Zenith (REQ-N-…; 04-01 §9).
+#
+# This file is the enforcement of the policy table that previously lived only
+# in prose. `npm run check:deny` runs it with the vendored cargo-deny binary.
+#
+# Four checks, each with a reason:
+#   advisories - a known-vulnerable crate fails the build.
+#   licenses   - only licences that permit closed-source redistribution.
+#   bans       - no wildcard versions, no OpenSSL-sys, no duplicate majors
+#                outside the reviewed exceptions.
+#   sources    - crates.io only; a git dependency is a supply-chain decision.
+
+[graph]
+targets = [{ triple = "x86_64-pc-windows-msvc" }]
+all-features = false
+no-default-features = false
+
+[advisories]
+version = 2
+# A yanked crate is not automatically vulnerable, but it is unresolvable on a
+# clean machine, which breaks the air-gapped rebuild promise.
+yanked = "deny"
+ignore = []
+# DEF-066 was closed on 2026-11-20 by removing `chrono` (RUSTSEC-2026-0543,
+# unmaintained) from the graph entirely: timestamps now use `time`, which Tauri
+# already pulled in. The former RUSTSEC-2026-0543 ignore was deleted with it -
+# an ignore for a crate that is not in the graph is dead policy, not safety.
+
+[licenses]
+version = 2
+# Every id below is either shipped by the current graph or deliberately allowed
+# for a future dependency. Copyleft is absent on purpose: GPL/AGPL/LGPL would
+# make the binary undistributable under Zenith's MIT terms.
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "CC0-1.0",
+  "ISC",
+  "MIT",
+  "MIT-0",
+  "MPL-2.0",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+]
+confidence-threshold = 0.9
+# Some allowed ids are there for a future dependency and are not in today's
+# graph (BSD-2-Clause, ISC). Warning on that would train reviewers to ignore the
+# gate; the id list itself is the policy.
+unused-allowed-license = "allow"
+
+[bans]
+# Duplicate crates fail unless named in `skip`. The skips below are the Tauri /
+# RustCrypto overlap already in the lockfile on 2026-11-20; a *new* duplicate is
+# a build failure, which is the point.
+multiple-versions = "deny"
+wildcards = "deny"
+deny = [
+  # 04-01 §9: use rustls / native-tls, never a vendored OpenSSL.
+  { name = "openssl-sys" },
+  # The `time` crate had two soundness advisories before 0.3.37. Zenith now uses
+  # it directly (DEF-066), so the floor is load-bearing: a transitive downgrade
+  # below 0.3.37 reintroduces those soundness bugs. The graph resolves 0.3.55.
+  { name = "time", version = "<0.3.37" },
+]
+skip = [
+  # Reviewed 2026-11-20: two majors are pulled by Tauri's stack / our direct
+  # RustCrypto crates and cannot be unified from this workspace.
+  { name = "block-buffer" },
+  { name = "cpufeatures" },
+  { name = "crypto-common" },
+  { name = "digest" },
+  { name = "getrandom" },
+  { name = "hashbrown" },
+  { name = "indexmap" },
+  { name = "lock_api" },
+  { name = "miniz_oxide" },
+  { name = "parking_lot" },
+  { name = "parking_lot_core" },
+  { name = "sha2" },
+  { name = "syn" },
+]
+skip-tree = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

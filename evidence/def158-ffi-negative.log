@@ -1,0 +1,10 @@
+# DEF-158 negative proof - check:ffi must see an undocumented unsafe construct
+# Run 2026-11-23 against the tree that closed DEF-158.
+# Method: delete one SAFETY comment block at a time, run the gate, restore the
+# file byte-identically, re-run the gate.
+
+baseline: exit 0
+caught  remove SAFETY above unsafe impl Sync: exit 1
+caught  remove SAFETY above unsafe impl Send: exit 1
+restored: bytes identical=true, exit 0
+PROOF OK: 2/2 mutations caught, tree restored green.

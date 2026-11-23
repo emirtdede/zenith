@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def131.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T07:15:59.609Z
+# exit: 0
+baseline gate (real helper): pass
+M1 CAUGHT  restore() writes the text view again, not the bytes
+M2 CAUGHT  snapshot() stops refusing a non-UTF-8 file
+M3 CAUGHT  restore() verifies against the text view, agreeing with the damage
+restored gate: pass
+restored bytes: identical
+
+verdict: PROVEN

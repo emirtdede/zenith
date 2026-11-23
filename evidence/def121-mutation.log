@@ -1,0 +1,10 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def121.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T03:04:53.905Z
+# exit: 0
+baseline (real tree): pass
+M1 CAUGHT  the in-flight check is deleted (a second press runs again)
+M2 CAUGHT  only the latch is deleted, the check stays (it can never be true)
+restored tree: pass
+
+verdict: PROVEN

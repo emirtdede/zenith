@@ -1,0 +1,109 @@
+{
+  "$schema": "./manifest.schema.json",
+  "manifestVersion": 1,
+  "generatedAtUtc": "2026-11-18T00:00:00Z",
+  "verifiedBy": "Get-FileHash -Algorithm SHA256 (PowerShell 5.1, Windows)",
+  "purpose": "Offline-reproducible toolchain and asset pinning for Zenith 1.0.0 (REQ-N-093). Every file below was downloaded, opened/validated, and hashed. Nothing here is referenced by a floating URL at build time.",
+  "assets": [
+    {
+      "id": "rustup-init-x64",
+      "path": "toolchain/rustup-init.exe",
+      "bytes": 12839424,
+      "sha256": "38027D51D69A5D05493627A0634DBEA52D6CD793C8F072D2373D3F4163EEC7DB",
+      "source": "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe",
+      "kind": "binary",
+      "validated": "PE header MZ (0x4D5A)",
+      "purpose": "Bootstraps the pinned Rust toolchain 1.90.0 (MSVC) on a clean Windows machine without internet after this download.",
+      "licence": "MIT OR Apache-2.0",
+      "usedBy": "08-01 §3"
+    },
+    {
+      "id": "node-win-x64-24.22.3",
+      "path": "toolchain/node-v24.22.3-win-x64.zip",
+      "bytes": 37762649,
+      "sha256": "E612AF99F626AB415EA225AF6BCE5C971FEB448CB5CAE250BB1C3FA50C5F7D9F",
+      "source": "https://nodejs.org/dist/v24.22.3/node-v24.22.3-win-x64.zip",
+      "kind": "zip",
+      "validated": "ZIP with 2459 entries; archive opened successfully",
+      "purpose": "Pinned Node.js LTS (Krypton) runtime for Vite 8 / TypeScript 7 build. Pinned by .node-version.",
+      "licence": "MIT (Node.js) + third-party notices inside the archive",
+      "usedBy": "08-01 §3, ADR-020"
+    },
+    {
+      "id": "webview2-offline-x64",
+      "path": "installers/MicrosoftEdgeWebView2RuntimeInstallerX64.exe",
+      "bytes": 215116512,
+      "sha256": "D3CBE8FEDB104282D745FFF106993EFEAD51AE94F5595A4E75804446A974F9C3",
+      "source": "https://go.microsoft.com/fwlink/?linkid=2124701",
+      "kind": "binary",
+      "validated": "PE header MZ (0x4D5A)",
+      "purpose": "Evergreen Standalone Installer for the WebView2 runtime. Required on locked-down images where the bootstrapper cannot reach the internet (REQ-N-073).",
+      "licence": "Microsoft proprietary redistributable (see licenses/Microsoft-WebView2-Runtime.txt)",
+      "usedBy": "08-02 §4, 04-01 §13"
+    },
+    {
+      "id": "nsis-3.11",
+      "path": "installers/nsis-3.11.zip",
+      "bytes": 2361546,
+      "sha256": "C7D27F780DDB6CFFB4730138CD1591E841F4B7EDB155856901CDF5F214394FA1",
+      "source": "https://github.com/tauri-apps/binary-releases/releases/download/nsis-3.11/nsis-3.11.zip",
+      "kind": "zip",
+      "validated": "ZIP with 441 entries; archive opened successfully",
+      "purpose": "The exact NSIS build Tauri's bundler uses. Vendored so installer output is byte-identical across machines.",
+      "licence": "zlib/libpng (see nsis-3.11/COPYING inside the archive)",
+      "usedBy": "08-02 §4, REQ-N-091",
+      "note": "SourceForge mirror was unreachable on the authoring machine; the official Tauri binary-release mirror of the same version was used instead. Hash above is authoritative for this copy."
+    },
+    {
+      "id": "inter-4.1",
+      "path": "fonts/Inter-4.1.zip",
+      "bytes": 33707794,
+      "sha256": "9883FDD4A49D4FB66BD8177BA6625EF9A64AA45899767DDE3D36AA425756B11E",
+      "source": "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip",
+      "kind": "zip",
+      "validated": "ZIP with 157 entries; archive opened successfully",
+      "purpose": "UI typeface, self-hosted (no CDN, no network at runtime). Ships woff2 subsets for Latin, Latin-Extended, Cyrillic, Greek, Vietnamese.",
+      "licence": "SIL Open Font License 1.1",
+      "usedBy": "05-01 §4"
+    },
+    {
+      "id": "jetbrains-mono-2.304",
+      "path": "fonts/JetBrainsMono-2.304.zip",
+      "bytes": 5622857,
+      "sha256": "6F6376C6ED2960EA8A963CD7387EC9D76E3F629125BC33D1FDCD7EB7012F7BBF",
+      "source": "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip",
+      "kind": "zip",
+      "validated": "ZIP with 55 entries; archive opened successfully",
+      "purpose": "Monospace face for the terminal drawer, script export preview, and log viewer. Tabular figures matter for byte counts.",
+      "licence": "SIL Open Font License 1.1",
+      "usedBy": "05-01 §4"
+    }
+  ],
+  "notVendored": [
+    {
+      "item": "Rust crates",
+      "why": "Fetched at build time from crates.io, pinned by Cargo.lock and verified by the lockfile hash. Vendoring ~400 crates would bloat the repo without improving reproducibility beyond `cargo build --locked`.",
+      "mitigation": "REQ-N-090, REQ-N-091, ADR-020"
+    },
+    {
+      "item": "npm packages",
+      "why": "Same reasoning; package-lock.json + `npm ci` gives a deterministic tree.",
+      "mitigation": "REQ-N-090, ADR-020"
+    },
+    {
+      "item": "Windows ADK / SDK",
+      "why": "Microsoft licence forbids redistribution; must be installed by the developer from Microsoft.",
+      "mitigation": "08-01 §2 lists the exact version and the install command"
+    },
+    {
+      "item": "EV code-signing certificate",
+      "why": "Secret material; lives in an HSM/token, never in a repository.",
+      "mitigation": "08-02 §5, risk Q-1"
+    }
+  ],
+  "verificationProcedure": [
+    "cd resources",
+    "Get-ChildItem -Recurse -File | ForEach-Object { Get-FileHash $_.FullName -Algorithm SHA256 }",
+    "Compare each hash with the table above; any mismatch means the asset is corrupt or substituted."
+  ]
+}

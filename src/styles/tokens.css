@@ -1,0 +1,296 @@
+/*
+ * Design tokens. Three themes, one shared geometry.
+ *
+ * Every colour pair here is held to WCAG 2.2 by `scripts/check-contrast.mjs`:
+ * 4.5:1 for text, 3:1 for interactive boundaries and focus rings. The script
+ * parses this file, so a change that breaks a ratio fails CI instead of shipping.
+ *
+ * Naming follows intent, not appearance: `--danger` stays the same role whether
+ * it is a deep red on off-white or a pale red on true black. Components never
+ * name a raw colour.
+ */
+
+:root {
+  /* ------------------------------------------------------------ geometry */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+
+  --text-xs: 11.5px;
+  --text-sm: 12.5px;
+  --text-base: 14px;
+  --text-md: 15.5px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --ring-width: 2px;
+  --ring-offset: 2px;
+
+  /* Motion is a preference, not a style. `reduce` collapses every duration. */
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 380ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --shadow-1: 0 1px 2px rgba(9, 12, 18, 0.06), 0 1px 1px rgba(9, 12, 18, 0.04);
+  --shadow-2: 0 4px 12px rgba(9, 12, 18, 0.08), 0 1px 3px rgba(9, 12, 18, 0.05);
+  --shadow-3: 0 16px 40px rgba(9, 12, 18, 0.16), 0 4px 12px rgba(9, 12, 18, 0.08);
+  --shadow-drawer: 0 -12px 40px rgba(9, 12, 18, 0.18);
+}
+
+/* ==========================================================================
+   Off-white - the default. Warm paper, near-black ink, deep green accent.
+   Chosen over pure white because a full-screen utility at #FFFFFF at night is
+   uncomfortable, and over a grey because screenshots of this app end up in
+   tickets printed on white paper.
+   ========================================================================== */
+[data-theme="off-white"] {
+  color-scheme: light;
+
+  --bg: #fbfbf9;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #f6f6f2;
+  --surface-active: #efefe9;
+  --sunken: #f2f2ee;
+
+  --text: #14161a;
+  --text-inverse: #ffffff;
+  --muted: #5a6068;
+  --faint: #7c7c72;
+
+  --line: #84847a;
+  --line-soft: #e2e2dc;
+
+  --accent: #1f5e4e;
+  --accent-hover: #174a3d;
+  --accent-soft: #e6f0ec;
+  --accent-text: #ffffff;
+
+  --ok: #166534;
+  --ok-soft: #e8f4ec;
+  --warn: #8a5300;
+  --warn-soft: #fdf1de;
+  --bad: #a51d2d;
+  --bad-soft: #fbe9eb;
+  --info: #1d4ed8;
+  --info-soft: #e8eefc;
+
+  --focus: #1f5e4e;
+  --overlay: rgba(18, 20, 24, 0.42);
+  --glass: rgba(255, 255, 255, 0.72);
+
+  --shadow-1: 0 1px 2px rgba(20, 22, 26, 0.06);
+  --shadow-2: 0 4px 12px rgba(20, 22, 26, 0.08);
+  --shadow-3: 0 16px 40px rgba(20, 22, 26, 0.14);
+}
+
+/* ==========================================================================
+   True black - for OLED panels and dark rooms. Background is #07080A rather
+   than #000000: an absolute black background with light text produces visible
+   smearing on OLED during scroll, and removes all depth cues.
+   ========================================================================== */
+[data-theme="true-black"] {
+  color-scheme: dark;
+
+  --bg: #07080a;
+  --bg-elevated: #16181c;
+  --surface: #111316;
+  --surface-hover: #191c21;
+  --surface-active: #20242a;
+  --sunken: #0b0c0e;
+
+  --text: #f2f4f7;
+  --text-inverse: #0a0b0d;
+  --muted: #a7aeb8;
+  --faint: #8b939e;
+
+  --line: #666e7b;
+  --line-soft: #24272c;
+
+  --accent: #5fd3b4;
+  --accent-hover: #86e3ca;
+  --accent-soft: #10241f;
+  --accent-text: #06120f;
+
+  --ok: #6ee7a8;
+  --ok-soft: #0d2016;
+  --warn: #f0c063;
+  --warn-soft: #241c0c;
+  --bad: #ff8a8a;
+  --bad-soft: #2a1214;
+  --info: #93b4ff;
+  --info-soft: #101a33;
+
+  --focus: #5fd3b4;
+  --overlay: rgba(0, 0, 0, 0.62);
+  --glass: rgba(17, 19, 22, 0.72);
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-3: 0 18px 44px rgba(0, 0, 0, 0.65);
+}
+
+/* ==========================================================================
+   Spatial glass - a cool, layered theme for the "premium" impression without
+   the frosted-blur accessibility trap. Blur is applied only to the two overlay
+   surfaces, never to body text, so no label is ever rendered on a moving
+   background.
+   ========================================================================== */
+[data-theme="spatial-glass"] {
+  color-scheme: dark;
+
+  --bg: #0d1220;
+  --bg-elevated: #1a2237;
+  --surface: #141a2b;
+  --surface-hover: #1c2438;
+  --surface-active: #243049;
+  --sunken: #0a0f1a;
+
+  --text: #edf1fa;
+  --text-inverse: #0b1020;
+  --muted: #a6b0c6;
+  --faint: #8c98b2;
+
+  --line: #5c6a8e;
+  --line-soft: #26304a;
+
+  --accent: #8fb8ff;
+  --accent-hover: #b0ccff;
+  --accent-soft: #162338;
+  --accent-text: #08111f;
+
+  --ok: #7ee2b8;
+  --ok-soft: #10241d;
+  --warn: #ffd08a;
+  --warn-soft: #241d0f;
+  --bad: #ff9ba8;
+  --bad-soft: #271419;
+  --info: #9ec3ff;
+  --info-soft: #131d33;
+
+  --focus: #8fb8ff;
+  --overlay: rgba(6, 9, 16, 0.66);
+  --glass: rgba(20, 26, 43, 0.68);
+
+  --shadow-1: 0 1px 2px rgba(3, 6, 14, 0.5);
+  --shadow-2: 0 6px 18px rgba(3, 6, 14, 0.55);
+  --shadow-3: 0 20px 48px rgba(3, 6, 14, 0.7);
+}
+
+/* ==========================================================================
+   Reduced motion. Honour the OS setting *and* the in-app toggle: `main.tsx`
+   sets `data-reduce-motion` from both, and the media query catches the case
+   where the user changed it mid-session.
+   ========================================================================== */
+[data-reduce-motion="true"],
+[data-reduce-motion="true"] * {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 1ms;
+    --duration-fast: 1ms;
+    --duration-base: 1ms;
+    --duration-slow: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Windows high-contrast mode overrides every colour with system values. The
+   only thing this app must do is stop painting its own backgrounds. */
+@media (forced-colors: active) {
+  * {
+    box-shadow: none !important;
+  }
+
+  .card,
+  .panel,
+  .dialog,
+  .drawer {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+}
+
+/* Font faces. Local files only: the app must render correctly with no network,
+   and a CDN font is both a privacy leak and a first-paint delay. */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

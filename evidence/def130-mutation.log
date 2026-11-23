@@ -1,0 +1,18 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def130.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T07:07:57.803Z
+# exit: 0
+baseline (real cargo-deny): exit 0
+  Dependency policy holds: advisories, bans, licences and sources.
+
+M1 CAUGHT  killed before deciding (exit -1, no output)
+  exit 2; says: cargo-deny check produced no verdict twice: the process was killed before it decided anything (no stdout, no stderr, non-zero status).
+
+M2 CAUGHT  killed but spoke: must stay a policy result
+  exit 4294967295; says: cargo-deny check failed with exit 4294967295 — this is a policy result, not a transport one.
+
+M3 CAUGHT  the bare "failed with exit -1" wording is gone
+
+restored: exit 0, bytes identical
+
+verdict: PROVEN

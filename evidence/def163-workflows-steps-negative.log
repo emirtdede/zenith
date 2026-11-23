@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def163.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T05:19:17.953Z
+# exit: 0
+baseline            exit 0  green
+yaml label 26 -> 25                exit 1  caught  "states "25 steps""
+prose twenty-six -> twenty-five    exit 1  caught  "prose says "twenty-five steps""
+both at once (the shipped shape)   exit 1  caught  "states "25 steps""
+restored            exit 0  green
+restore byte-identical: yes
+
+All 3 mutations caught; baseline and restored tree both green.

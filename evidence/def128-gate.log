@@ -1,0 +1,10 @@
+   Compiling zenith v1.0.0 (C:\Users\emir\Desktop\Zenith\src-tauri)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.91s
+     Running unittests src\lib.rs (target\debug\build\zenith/0ee3216c7c4deb2d\out\zenith_app-0ee3216c7c4deb2d.exe)
+
+running 2 tests
+test commands::app_info_tests::app_info_get_never_falls_back_to_a_literal ... ok
+test commands::app_info_tests::display_facts_are_optional_on_the_wire ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 44 filtered out; finished in 0.00s
+

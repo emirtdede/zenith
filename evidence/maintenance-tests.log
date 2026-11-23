@@ -1,0 +1,19 @@
+   Compiling zenith v1.0.0 (C:\Users\emir\Desktop\Zenith\src-tauri)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.45s
+     Running unittests src\lib.rs (target\debug\build\zenith/0ee3216c7c4deb2d\out\zenith_app-0ee3216c7c4deb2d.exe)
+
+running 11 tests
+test maintenance::retention_failure_tests::a_failed_snapshot_read_is_reported_not_silent ... ok
+test maintenance::retention_failure_tests::a_healthy_store_produces_an_empty_report ... ok
+test maintenance::tests::a_summary_names_each_change_by_key_not_prose ... ok
+test maintenance::tests::published_caps_match_the_documented_values ... ok
+test maintenance::retention_failure_tests::a_failed_prune_is_reported_not_zeroed ... ok
+test maintenance::retention_failure_tests::a_clean_pass_reports_no_failure_reason ... ok
+test maintenance::retention_failure_tests::a_failed_audit_read_is_reported_and_prunes_no_audit_rows ... ok
+test maintenance::tests::a_tmp_file_in_quarantine_is_removed_immediately ... ok
+test maintenance::tests::a_recent_quarantined_zip_survives ... ok
+test maintenance::tests::a_fresh_store_needs_no_maintenance ... ok
+test maintenance::tests::an_empty_retention_plan_deletes_nothing ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 33 filtered out; finished in 0.03s
+

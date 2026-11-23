@@ -1,0 +1,15 @@
+# command: node scripts/sweep-screens.mjs --app target/release/zenith.exe --driver C:\Users\emir\AppData\Local\Temp\zenith-e2e\msedgedriver.exe
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T05:02:55.799Z
+# exit: 0
+  PASS  01-actions :: screen=actions heading="Tüm eylemler" overflowX=0 dialogs=0 136kB
+  PASS  02-actions-cleanup :: screen=actions heading="Tüm eylemler" overflowX=0 dialogs=0 127kB
+  PASS  03-actions-search :: screen=actions heading="Tüm eylemler" overflowX=0 dialogs=0 74kB
+  PASS  04-confirm-dialog :: screen=actions heading="Tüm eylemler" overflowX=0 dialogs=1 132kB
+  PASS  05-snapshots :: screen=snapshots heading="Geri alma geçmişi" overflowX=0 dialogs=0 132kB
+  PASS  06-trust :: screen=trust heading="Güven Merkezi" overflowX=0 dialogs=0 128kB
+  PASS  07-settings :: screen=settings heading="Ayarlar" overflowX=0 dialogs=0 98kB
+  PASS  08-help :: screen=help heading="Klavye ve yardım" overflowX=0 dialogs=0 85kB
+  PASS  09-activity :: screen=activity heading="Konsol" overflowX=0 dialogs=0 55kB
+  PASS  10-palette :: screen=actions heading="Tüm eylemler" overflowX=0 dialogs=1 131kB
+screens: 10, problems: 0

@@ -1,0 +1,59 @@
+# command: npm.cmd run verify
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T09:34:52.692Z
+# exit: 1
+
+> zenith@1.0.0 verify
+> npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:contract && npm run check:dashes && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run check:fe && npm run check:doc-counts && npm run check:evidence-ledger && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run check:mutate-restore && npm run check:verify-chain && npm run check:rust-tests && npm run build
+
+
+> zenith@1.0.0 check:locales
+> node scripts/check-locales.mjs
+
+en: 455 keys checked
+tr: 455 keys checked
+tr.ts: 8 string(s) identical to English (1.8%)
+
+All 2 locales agree with English on 455 keys.
+
+> zenith@1.0.0 check:unused-keys
+> node scripts/check-unused-keys.mjs
+
+catalogue keys:        455
+literal references:    372
+generated action keys: 44
+template families:     39
+unused:                0
+action prefixes:       22
+template families:     risk. snapshots. status. tier. titlebar.theme. trust.purge. trust.signature.
+template suffixes:     csv desc help json title
+
+> zenith@1.0.0 check:step-keys
+> node scripts/check-step-keys.mjs
+
+emitted step/error/remedy keys: 59
+catalogue steps.* keys:        39
+missing from en:               0
+missing from tr:               0
+steps.* with no emitter:       0
+
+> zenith@1.0.0 check:contract
+> node scripts/check-contract.mjs
+
+commands: 15 documented, 15 declared, 15 registered, 15 called
+events:   6 documented, 6 in EventMap
+errors:   25 codes checked in en + tr
+
+Contract holds: document = Rust registry = frontend bridge.
+
+> zenith@1.0.0 check:dashes
+> node scripts/check-dashes.mjs
+
+scanned 181 first-party text files
+
+2 typographic dash(es) in 1 line(s):
+  resources/sbom/zenith-1.0.0.cdx.json:1791  2x  "description": "Fowler–Noll–Vo hash function",
+
+Use the ASCII hyphen instead. For 'not measured', import NOT_MEASURED from
+src/shared/placeholder.ts - the marker must be one named constant, not a
+glyph repeated per screen (DEF-118).

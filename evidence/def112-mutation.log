@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def112.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T00:21:34.886Z
+# exit: 0
+=== DEF-112 mutation results ===
+M1 CAUGHT  hung-ness and title come from two enumerations again
+M2 CAUGHT  floor is a typed literal instead of the constant
+M3 CAUGHT  catalogue claims a measured duration, not a floor
+clean rust after restore: exit 0
+clean vitest after restore: exit 0
+
+verdict: PROVEN

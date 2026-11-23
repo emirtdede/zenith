@@ -1,0 +1,10 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def111.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-21T23:08:04.350Z
+# exit: 0
+=== DEF-111 mutation results ===
+M1 CAUGHT  checkbox goes back to aria-label={key}
+M2 CAUGHT  sentence loses the process name
+clean after restore: exit 0
+
+verdict: PROVEN

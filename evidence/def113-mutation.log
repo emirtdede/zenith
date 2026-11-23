@@ -1,0 +1,10 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def113.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T00:49:26.157Z
+# exit: 0
+baseline (real tree): exit 0
+M1 CAUGHT  the re-stamp line is deleted
+M2 CAUGHT  the re-stamp line is commented out
+restored tree: exit 0
+
+verdict: PROVEN

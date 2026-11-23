@@ -1,0 +1,12 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def122.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T03:26:04.709Z
+# exit: 0
+baseline (real tree): pass
+M1 CAUGHT  roving tabindex removed (all five tabs are Tab stops)
+M2 CAUGHT  aria-controls removed (a tab names nothing)
+M3 CAUGHT  arrow/Home/End handler removed (keyboard half gone)
+M4 CAUGHT  role=tabpanel removed (aria-controls has no target)
+restored tree: pass
+
+verdict: PROVEN

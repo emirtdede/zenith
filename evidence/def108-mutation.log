@@ -1,0 +1,11 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def107-108.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-21T21:31:03.067Z
+# exit: 0
+=== DEF-107 / DEF-108 mutation results ===
+M1 CAUGHT  candidates_scan borrows the diagnosis token again (DEF-108)
+M2 CAUGHT  cancel_all_scans becomes a no-op, so Stop stops nothing
+M3 CAUGHT  the dialog prints the raw rejected value again (DEF-107)
+M4 CAUGHT  Stop presses the diagnosis scope instead of the scan scope
+
+mutations: 4, caught: 4, restored: true

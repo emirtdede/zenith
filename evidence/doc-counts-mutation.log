@@ -1,0 +1,17 @@
+# command: node scripts\check-doc-counts-mutation.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-21T22:21:00.983Z
+# exit: 0
+PASS  pristine tree -> gate accepts it
+PASS  stale Rust count -> gate rejected it ("rust: 262 (measured 281)")
+PASS  stale vitest report -> gate rejected it ("older than")
+PASS  register total -> gate rejected it ("which is not")
+PASS  ledger split count -> gate rejected it (rust measured mismatch)
+PASS  unmarked stale prose -> gate rejected it ("keys: 471 (measured 447)")
+restore: docs/06-i18n/06-01-i18n-strategy.md byte-identical, mtime preserved
+restore: evidence/README.md byte-identical, mtime preserved
+restore: docs/10-audit/10-02-deficiency-register.md byte-identical, mtime preserved
+restore: evidence/vitest-counts.json byte-identical, mtime preserved
+restore: docs/10-audit/10-01-scorecard.md byte-identical, mtime preserved
+
+All mutations caught; tree restored.

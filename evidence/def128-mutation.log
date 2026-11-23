@@ -1,0 +1,13 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def128.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T06:38:43.216Z
+# exit: 0
+baseline TS (real tree): pass
+M1 CAUGHT  Rust ships the English literal again, so the wire cannot carry null
+M2 CAUGHT  the screen renders the raw value again, bypassing the catalogue
+M3 CAUGHT  the screen falls back to an English literal instead of the catalogue
+M4 CAUGHT  the Turkish catalogue entry is the English word
+restored TS: pass
+restored Rust: pass
+
+verdict: PROVEN

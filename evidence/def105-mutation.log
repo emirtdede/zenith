@@ -1,0 +1,4 @@
+PASS  old skip condition restored -> wiring test FAILED, as it must
+restore: byte-identical true, mtime preserved true
+touched commands.rs to now to force recompilation
+PASS  restored source -> wiring test passes

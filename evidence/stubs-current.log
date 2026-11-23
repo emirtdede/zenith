@@ -1,0 +1,29 @@
+== L1 stubs ==
+  no todo!() / unimplemented!() in first-party source
+  NotImplemented sites: 6
+    crates/zenith-core/src/adapters/actions.rs:1301
+    crates/zenith-core/src/adapters/console.rs:35
+    crates/zenith-core/src/adapters/console.rs:66
+    crates/zenith-core/src/engine/pipeline.rs:365
+    crates/zenith-core/src/error.rs:278
+    crates/zenith-core/src/error.rs:329
+    -> gated by not(windows): crates/zenith-core/src/adapters/actions.rs
+    -> gated by not(windows): crates/zenith-core/src/adapters/console.rs
+    -> gated by not(windows): crates/zenith-core/src/adapters/console.rs
+== L3 dead configuration ==
+  11 published constants, every one consumed
+  10 environment variables read
+    env CARGO_MANIFEST_DIR (read 2x)
+    env CARGO_PKG_VERSION (read 1x)
+    env COMPUTERNAME (read 2x)
+    env PROFILE (read 1x)
+    env SOURCE_DATE_EPOCH (read 1x)
+    env USERNAME (read 1x)
+    env USERPROFILE (read 1x)
+    env ZENITH_BUILD_COMMIT (read 2x)
+    env ZENITH_SIMULATOR (read 1x)
+    env … (read 2x)
+== TODO markers ==
+  no unattributed TODO markers
+
+Zero-Stub audit: clean.

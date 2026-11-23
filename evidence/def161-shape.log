@@ -1,0 +1,23 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\measure-def162.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-23T05:03:18.613Z
+# exit: 0
+{
+  "cardHeadingKinds": [
+    "H3"
+  ],
+  "hasMain": true,
+  "mainFirstHeading": "H2",
+  "mainFirstHeadingText": "Tüm eylemler",
+  "misaligned": 0,
+  "nested": 0,
+  "overflowX": 0,
+  "pageHeadInMain": true,
+  "panelHasTablist": false,
+  "panelId": "action-panel",
+  "panelInMain": true,
+  "screen": "actions",
+  "tablistsInMain": 1,
+  "titlebars": 0
+}
+SHAPE OK

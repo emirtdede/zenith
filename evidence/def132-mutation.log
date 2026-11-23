@@ -1,0 +1,13 @@
+# command: node C:\Users\emir\AppData\Local\Temp\opencode\prove-def132.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-22T08:16:24.400Z
+# exit: 0
+baseline gate (real ledger): pass
+M1 CAUGHT  an artefact on disk loses its ledger row
+M2 CAUGHT  the ledger describes a file that is not there
+M3 CAUGHT  an artefact is emptied
+M4 CAUGHT  a document cites an artefact that is gone
+restored gate: pass
+restored bytes: identical
+
+verdict: PROVEN

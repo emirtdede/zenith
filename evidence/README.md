@@ -1,0 +1,124 @@
+# Evidence
+
+Run artefacts kept so a reader can check the claims in `docs/10-audit/10-01-scorecard.md` without
+re-running an 8-minute suite. **Nothing here is a source of truth**: every file is the captured output
+of a command named below, and the command is what to run if the file and the code disagree.
+
+| File | Command | Recorded |
+| :--- | :--- | :--- |
+| `rust-tests-current.log` | `cargo test --workspace` | 306 tests (50 app + 254 core + 2 drift), 0 failed, exit 0 - current |
+| `test-final12.log` | `cargo test --workspace` | 281 tests (34 app + 254 core + 2 drift), 0 failed, exit 0 (2026-11-21) - superseded by `rust-tests-current.log`; the run before the `commands::app_info_tests` and `retention_tests` additions took the suite to 293 |
+| `test-final11.log` | `cargo test --workspace` | 274 tests (29 app + 243 core + 2 drift), 0 failed, exit 0 - superseded by `test-final12.log` |
+| `test-final10.log` | `cargo test --workspace` | 273 tests (28 app + 243 core + 2 drift), 0 failed, exit 0 - superseded by `test-final11.log` |
+| `test-final.log` | `cargo test --workspace` | 255 tests (16 app + 237 core + 2 drift), 0 failed, exit 0 - superseded by `test-final10.log` |
+| `verify-final.log` | `npm run verify` | **the canonical latest-green chain**, promoted by `run-verify.mjs` only on exit 0. Run logs are captured in the temp directory first, so a failing run never lands under `evidence/` and never feeds back into this ledger (DEF-132). One permanent row, rewritten in place |
+| `verify-final22.log` | `npm run verify` | 20-step chain, **exit 0** (2026-11-22) - superseded by `verify-final25.log`; 455 keys × 2, 44 generated action keys, 59 emitted step/error/remedy keys, 15 commands, 75 contrast × 3 themes, 28 docs / 134 DEF / 118 F / 86 N, 0 numeric drift, 0 table-total problems, 156 vitest / 12 files, 293 rust (46 + 245 + 2) executed by the chain, 122 register closed + 9 open, Zero-Stub clean, mutation helper 12/12, chain gate holds, SBOM 277 components |
+| `verify-final27.log` | `npm run verify` | **failed at step 15, kept deliberately**: `check:deny` reported `advisories FAILED` on RUSTSEC-2026-0592 (`url 2.5.8`, stack overflow in `Url::origin()` on nested `blob:` URLs). This is the run that found the vulnerability, so it stays (DEF-134) |
+| `verify-final26.log` | `npm run verify` | 22-step chain, **exit 0** (2026-11-22) - at the time it ran: the first fully green run to include `check:dashes`; 455 keys × 2 locales, 156 vitest / 12 files, 293 rust tests executed, 133 register ids (124 closed + 9 open), 0 numeric drift, 0 table-total problems, 277 SBOM components, mutation helper 12/12 (DEF-133). Superseded by `verify-final.log`; those counts are that run's counts, not today's |
+| `verify-final25.log` | `npm run verify` | 22-step chain (2026-11-22) - superseded by `verify-final26.log`; the first chain to include `check:dashes`, kept as the run that proved the dash gate and `check:sbom` could both be green at once (DEF-133) |
+| `verify-final24.log` | `npm run verify` | **failed at step 5, kept deliberately**: `check:dashes` rejected `resources/sbom/zenith-1.0.0.cdx.json` for the two en dashes in the upstream `Fowler-Noll-Vo` hash description. Rewriting a generated SBOM falsifies a file that must be byte-stable, so `resources/sbom/**` became an exemption instead (DEF-133) |
+| `verify-final23.log` | `npm run verify` | **failed at step 16, kept deliberately**: `check:sbom` reported `SBOM is stale`. Cause: the first dash sweep rewrote the generated SBOM. Regeneration is deterministic - two runs produced byte-identical 204,901-byte output with the same SHA-256 - which is why the file is exempt rather than normalised (DEF-133) |
+| `verify-final21.log` | `npm run verify` | **failed at step 14, kept deliberately**: the 19-step chain at the time it ran died in `check:deny` with `cargo-deny check failed with exit 4294967295` and no output, while thirteen standalone runs passed. That contradiction is what surfaced DEF-130 (a killed process reported as a policy verdict) and, one layer down, DEF-131 (the mutation helper had corrupted the vendored binary and certified it unchanged) |
+| `verify-final20.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-22) - superseded by `verify-final21.log`; at the time of that run the tree held 455 keys × 2, 28 docs / 126 DEF, 117 register closed, 150 vitest / 12 files, before DEF-127 and DEF-128 were found |
+| `verify-final19.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-22) - superseded by `verify-final20.log`; at the time of that run the tree held 451 keys × 2, 28 docs / 114 DEF, 114 register ids, 135 vitest / 12 files |
+| `verify-final18.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-22) - superseded by `verify-final20.log`; at the time of that run the tree held 455 keys × 2, 28 docs / 125 DEF, 116 register closed before DEF-126 was found |
+| `verify-final17.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final18.log`; at the time of that run the tree held 455 keys × 2, 28 docs / 113 DEF, 112 register ids before DEF-113 was recorded |
+| `verify-final16.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final17.log`; at the time of that run the tree held 449 keys × 2, 28 docs / 111 DEF, 111 register ids, before the DEF-111 rebuild |
+| `verify-final15.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final16.log`; at the time of that run the tree held 447 keys × 2, 28 docs / 110 DEF, 110 register ids |
+| `verify-final14.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final15.log`; at the time of that run the tree held 447 keys × 2, 28 docs / 110 DEF, 110 register ids before the final build-hash alignment |
+| `verify-final13.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final14.log`; at the time of that run the tree held 447 keys × 2, 28 docs / 108 DEF, 108 register ids |
+| `verify-final12.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final13.log`; at the time of that run the tree held 445 keys × 2, 0 unused, 59 emitted step/error/remedy keys, 15 commands, 28 docs / 106 DEF / 118 F / 86 N, 0 numeric drift, 132 vitest / 12 files, 106 register ids, Zero-Stub clean, `vite build` 1.56 s |
+| `verify-final11.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final13.log`; at the time of that run the tree held 445 keys × 2, 28 docs / 105 DEF, 105 register ids |
+| `verify-final10.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final11.log`; at the time of that run the tree held 445 keys × 2, 28 docs / 104 DEF, 104 register ids |
+| `verify-final9.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final12.log`; at the time of that run the tree held 28 docs / 100 DEF, 100 register ids |
+| `verify-final8.log` | `npm run verify` | **failed, kept deliberately**: `check-step-keys` rejected four `steps.*` keys invented by this session's own new tests - the gate catching its author |
+| `verify-final7.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded by `verify-final8.log`; at the time of that run the tree held 445 keys × 2, 28 docs / 96 DEF, 96 register ids |
+| `def105-mutation.log` | `node …\prove-def105.mjs` | reintroduces the old `if err.code != Cancelled` skip; the DEF-105 wiring test FAILS, then the file is restored byte- and mtime-identical and the test passes again (DEF-105) |
+| `def108-mutation.log` | `node …\prove-def107-108.mjs` | four mutations, four caught: a scan that borrows the diagnosis token, a `cancel_all_scans` that reaches no token, a dialog that prints the raw rejected value, and a Stop button wired to the wrong scope. Every file restored byte- and mtime-identical (DEF-107, DEF-108) |
+| `def113-mutation.log` | `node …\prove-def113.mjs` | two mutations, two caught: the re-stamp line deleted, and the same line commented out (a raw-text guard would be fooled by the comment) - the gate reports DEF-113 both times. File restored byte- and mtime-identical, baseline and restored tree both exit 0 (DEF-113) |
+| `def112-mutation.log` | `node …\prove-def112.mjs` | three mutations, three caught: hung-ness and title come from two enumerations again (the original wrong-window defect), the floor is a typed literal, and the catalogue claims a measured duration - each fails its gate while the clean tree passes. Files restored byte- and mtime-identical (DEF-112) |
+| `def111-mutation.log` | `node …\prove-def111.mjs` | two mutations, two caught: the checkbox returns to `aria-label={key}`, and the sentence loses the process name - both fail `wiring089` while a test that only checked "differs from the key" would pass the second. File restored byte- and mtime-identical, clean run exits 0 (DEF-111) |
+| `def109-mutation.log` | `node …\prove-def109.mjs` | the released gate exits 0; restoring the local-calendar expression makes it exit 1 with the DEF-092 message, and the file comes back byte- and mtime-identical. The proof measures its own precondition (this host is UTC+03:00, so local 20261122 vs UTC 20261121) and prints `SKIP` instead of a false catch when the calendars coincide (DEF-109) |
+| `doc-counts-mutation.log` | `node scripts/check-doc-counts-mutation.mjs` | the numeric-drift gate accepts the real tree and rejects 6 reintroduced errors (stale Rust count, report older than a test source, register total disagreeing with its rows, the ledger's own split count, an unmarked historical number, and a required history marker); every file restored byte- and mtime-identical. Every expected value is derived from the run's own `measured:` object, never typed (DEF-096, DEF-104, DEF-110) |
+| `verify-final6.log` | `npm run verify` | 17-step chain, exit 0 (2026-11-21) - superseded; at the time of that run the tree held 443 keys × 2, 0 unused, 59 emitted step/error/remedy keys, 15 commands, 75 contrast × 3 themes, 28 docs / 92 DEF / 118 F / 86 N, 0 numeric drift, 124 vitest / 11 files, Zero-Stub clean, `vite build` 1.31 s |
+| `verify-final5.log` | `npm run verify` | superseded by `verify-final6.log`; the 124-test run before the last doc alignment |
+| `verify-final4.log` | `npm run verify` | superseded; the run that first carried the `wiring089` tests |
+| `verify-final3.log` | `npm run verify` | superseded; the 442-key / 110-test run |
+| `verify-final2.log` | `npm run verify` | superseded; the 15-step chain |
+| `e2e-final.log` | `node scripts/e2e-journeys.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | 3 journeys, 11 steps, 0 failures, exit 0 |
+| `tauri-build-current.log` | `npm run tauri build` | NSIS installer, 2.77 MiB, exit 0 (2026-11-22); the run that produced the hashes in `08-02` §3 (`c7330273…` / `8643904e…`), after the DEF-123 and DEF-126 fixes |
+| `tauri-build-final.log` | `npm run tauri build` | superseded by `tauri-build-current.log`; at the time of that run the bytes were `6,155,776` / `2,908,841` (`6718A795…` / `25AA362C…`) |
+| `tauri-build-final9.log` | `npm run tauri build` | NSIS bundle at 2.77 MiB, exit 0 (2026-11-21) - superseded by `build-final13.log`; recorded because it is the run where the installer first bundled instead of falling back to a bare executable |
+| `build-final13.log` | `npm run tauri build` | first `npm run tauri build` to exit 0 (2026-11-21T21:42Z) - superseded by `tauri-build-current.log`; the vite half printed `65 modules transformed` and `703.27 kB` of JS |
+| `scorecard-mutation.log` | `node scripts/check-scorecard-mutation.mjs` | the arithmetic gate accepts the real scorecard and rejects 3 reintroduced defects; file restored byte-identical (DEF-080, DEF-081) |
+| `sweep-final.log` | `node scripts/sweep-screens.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | 10 states, 0 problems; also walks `#main *` for real nested scrollers (DEF-082) |
+| `scorecard-bands-mutation.log` | `node scripts/check-bands-mutation.mjs` | the eight-band check accepts the real prose and rejects 4 reintroduced denominator errors; file restored byte-identical (DEF-084) |
+| `def123-mutation.log` | `node …\prove-def123.mjs` | four mutations, four caught: a failed snapshot read reporting 0 instead of `None`, a failed audit read doing the same, a negative count cast without the clamp, and the wire field made non-optional so JSON can never carry `null`. Five Rust tests fail in turn; file restored byte- and mtime-identical, clean run passes (DEF-123) |
+| `def122-mutation.log` | `node …\prove-def122.mjs` | four mutations, four caught: roving `tabindex` removed (all five tabs become Tab stops), `aria-controls` removed, the arrow/Home/End handler removed, and `role=tabpanel` removed. Baseline and restored tree both pass (DEF-122) |
+| `def121-mutation.log` | `node …\prove-def121.mjs` | two mutations, two caught: the in-flight check deleted (a second press runs again), and only the latch deleted so the check can never be true. Baseline and restored tree both pass (DEF-121) |
+| `def124-mutation.log` | `node …\prove-def124.mjs` | three mutations, three caught: a suite row falsified, a stated total falsified, and a module row falsified. The first two SURVIVED until the audit was fixed to sum only the rows *above* a total - the trailing gate rows made every column non-numeric and disabled the check silently, which is the defect class the gate exists to catch (DEF-124) |
+| `def126-mutation.log` | `node …\prove-def126.mjs` | four mutations, four caught: the snapshot read returning a clean report, the audit read collapsing to `unwrap_or(0)`, the prune error dropped, and a recorded failure no longer counting as non-empty. Each fails a `retention_failure_tests` case; file restored byte- and mtime-identical (DEF-126) |
+| `def127-mutation.log` | `node …\prove-def127.mjs` | four mutations, four caught: the old flat render returning `" (0)"`, a null build printed as `0`, the unknown branch dropped, and Rust flattening the `Option` again so the wire can never carry `null`. TS mutations fail `render.test.tsx`, the Rust one fails `cargo check`; both files restored byte- and mtime-identical (DEF-127) |
+| `vitest-render127.log` | `npx vitest run src/ui/render.test.tsx` | 50 tests / 1 file at DEF-127 closure, 0 failed - the per-file run behind the three `TrustScreen` OS cases; superseded by the 53-test run in `vitest-render128.log` |
+| `vitest-render128.log` | `npx vitest run src/ui/render.test.tsx` | 53 tests / 1 file at DEF-128 closure, 0 failed - the three WebView-version cases on top of the earlier 50; superseded by the full-suite count in `vitest-counts.json` |
+| `def128-mutation.log` | `node …\prove-def128.mjs` | four mutations, four caught: Rust shipping the English literal `"unknown"` again, the screen rendering the raw value, the screen falling back to an English literal, and the Turkish catalogue entry replaced by the English word. The Rust half is caught by `commands::app_info_tests`, which is the gate DEF-129 made it possible to rely on - under `cargo check` alone this mutation SURVIVED, which is how the missing gate was found (DEF-128) |
+| `def128-gate.log` | `cargo test app_info_tests` | the Rust half of the DEF-128 gate: both `commands::app_info_tests` cases pass (2 passed, 44 filtered out) - the gate that catches the English `"unknown"` literal coming back |
+| `rust-retention-test.log` | `cargo test retention_tests` | 5 `commands::retention_tests` cases pass (34 filtered out) - the `Option`-not-zero cases DEF-123 added to the app crate |
+| `rust-maintenance126.log` | `cargo test maintenance::retention_failure_tests` | 5 `retention_failure_tests` cases pass (39 filtered out) - the failure-reporting cases DEF-126 added to the core crate |
+| `maintenance-tests.log` | `cargo test maintenance::` | all 11 `maintenance::` cases pass (33 filtered out), including the three failure paths DEF-126 made observable |
+| `audit-tests.log` | `cargo test engine::audit::` | all 7 `engine::audit::tests` cases pass (238 filtered out) - timestamp normalisation, correlation ids, and the non-negative duration invariant |
+| `def129-blindness.log` | `node …\prove-def129-blind.mjs` | the measurement that started it: baseline clean, then `assert!(false)` planted in a real test - `cargo test` exits 101, `check:doc-counts` (the chain's only cargo contact) still exits 0. The release gate was green with a failing test in the tree (DEF-129) |
+| `def129-mutation.log` | `node …\prove-def129.mjs` | five mutations, five caught: the test step dropped from the chain, the step replaced by `--list`, the script deleted, the chain gate itself dropped, and the prose step count disagreed. `package.json` and `07-01` both restored byte-identical (DEF-129) |
+| `def130-mutation.log` | `node …\prove-def130.mjs` | three mutations against the vendored binary: a stub that exits `-1` with no output must be reported as "no verdict - NOT a policy violation and NOT a pass", the same stub printing a policy line must stay a policy result, and the old bare "failed with exit -1" wording must be gone. The 9,125,888-byte binary is restored byte-identical (DEF-130) |
+| `def131-mutation.log` | `node …\prove-def131.mjs` | three mutations, three caught: `restore()` writing the text view again, `snapshot()` no longer refusing a non-UTF-8 file, and `restore()` verifying against text instead of bytes. Each makes `check-mutate-restore` fail; the helper is restored byte-identical (DEF-131) |
+| `def132-mutation.log` | `node …\prove-def132.mjs` | four mutations, four caught: an artefact on disk losing its ledger row, a row naming a file that is not there, an artefact emptied to 0 bytes, and a document citing an artefact that was deleted. The ledger and both probe files are restored byte-identical (DEF-132) |
+| `unused-keys.log` | `node scripts/check-unused-keys.mjs` | 0 of 455 catalogue keys unreachable, 44 generated action keys; the gate that found DEF-089's 52 |
+| `stubs-current.log` | `cargo run -q -p zenith-core --bin zenith-audit -- --all` | `Zero-Stub audit: clean.` across all layers, with 6 documented `NotImplemented` sites (each justified in `04-01`) and no `todo!()`/`unimplemented!()` in first-party source |
+| `vitest-counts.json` | written by `check:fe` (`vitest run --reporter=json --outputFile=…`) | the machine-readable run the numeric-drift gate reads: 158 tests / 158 passed, 58 suites, 0 failed. `check:doc-counts` takes `vitest` and `files` from this file rather than from prose |
+| `build-identity.log` | `node scripts/check-build-identity.mjs` | embedded `release-20261122` equals the binary's own mtime and no shipped source is newer (DEF-092) |
+| `build-identity-mutation.log` | `node scripts/check-build-identity-mutation.mjs` | three mutations (stale date, stale source, stripped marker) each rejected, artefact and tree restored byte- and mtime-identical |
+| `overlay-scroll.log` | `node scripts/probe-overlay-scroll.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | script and palette overlays measured at 780 px and at the 640 px minimum: no scroll box nests inside `.dialog` (confirms `05-02` §1) |
+| `focus-trap.log` | `node scripts/probe-focus-trap.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | packaged binary: focus inside the dialog on open, Tab and Shift+Tab wrap at both edges, Tab from the background is pulled back, Escape restores the opening control, palette contained (DEF-086, DEF-087) |
+| `focus-trap-mutation.log` | `node scripts/check-focus-trap-mutation.mjs` | deletes the render-time capture and requires the `autoFocus` regression case to fail - observed 8 passed / 1 failed - then restores the file byte-identically (DEF-087) |
+| `ui-main-screen.png` | `powershell scripts/capture-window.ps1 -Out evidence\ui-main-screen.png` | Main screen after first-launch diagnosis, Turkish, off-white theme |
+| `def158-ffi-negative.log` | `node …\capture-proofs.mjs` | two mutations, two caught: the `SAFETY` comment above `unsafe impl Sync` deleted, then the one above `unsafe impl Send`. Both are reported as an undocumented construct; `child.rs` restored byte- and mtime-identical and the clean tree exits 0 again (DEF-158) |
+| `def159-workflows-negative.log` | `node …\capture-proofs.mjs` | four mutations, four caught against `.github/workflows/verify.yml`: a renamed script, the chain replaced by a single gate, a Rust toolchain that disagrees with `rust-version`, and `npm ci || true`. The second mutation SURVIVED the first version of the gate because the header comment contained the phrase `npm run verify`; the gate now blanks YAML comments before matching. Workflow restored byte- and mtime-identical (DEF-159) |
+| `screens/*.png` | `node scripts/sweep-screens.mjs --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | 10 states, 0 problems; saved by WebDriver, so they are the renderer's own pixels |
+| `def161-shape.log` | `node …\measure-def162.mjs` against `target/release/zenith.exe` | the shape the DEF-161/162 rework claims, measured on the binary: `titlebars: 0`, `.page-head` inside `#main`, first heading in `#main` is `H2` reading "Tüm eylemler", 22 card titles all `H3`, panel id `action-panel`, panel inside `#main`, panel contains no `tablist`, 0 misaligned footers, `overflowX: 0`, 0 nested scrollers |
+| `def163-workflows-steps-negative.log` | `node …\prove-def163.mjs` | three mutations of `.github/workflows/verify.yml`, three caught: the YAML label `(26 steps)` to `(25 steps)`, the prose `twenty-six steps` to `twenty-five steps`, and both at once. The first run of the check SURVIVED the prose mutation because the pattern read `step\b`, which never matches the plural, so the negative proof is what made the fix correct rather than merely present. Baseline and restored tree green, workflow restored byte-identically (DEF-163) |
+
+`screens/06-trust.png` is the one to open if you want the shortest proof that the release build
+identifies itself: it shows the build date the binary embeds, not `dev` (DEF-075), and that date is
+checked against the binary's own mtime by `check:build-identity` (DEF-092).
+
+## Removed artefacts
+
+Six files were removed on 2026-11-22 because they could not support a claim:
+
+| File | Why it proved nothing |
+| :--- | :--- |
+| `tsc-current.log` | 0 bytes. Silence cannot be told apart from a truncated redirect. |
+| `vitest-current.log` | one line, "JSON report written to …" - a pointer to `vitest-counts.json`, which is the artefact that carries the numbers. |
+| `check-def127.log` | two lines, both "Finished `dev` profile" - no assertion, no result. |
+| `check-def128.log` | same shape as `check-def127.log`. |
+| `check-maintenance.log` | same shape as `check-def127.log`. |
+| `cargo-check.log` | a successful check wrapped in PowerShell's `NativeCommandError` noise, which reads as a failure. |
+
+None was cited by any document, script or gate. Each was the residue of a
+scratch run whose real output lives in a file that *is* described above
+(`vitest-counts.json`, `def127-mutation.log`, `def128-mutation.log`,
+`def126-mutation.log`). Keeping them would put files under a heading called
+Evidence that assert nothing - the failure mode this ledger exists to prevent,
+pointed at the ledger itself.
+
+## Capturing a screenshot without stealing focus
+
+`scripts/capture-window.ps1` uses `PrintWindow(hwnd, hdc, PW_RENDERFULLCONTENT)`. A naive
+`CopyFromScreen` captures whatever window happens to be on top - on the reference machine the first
+attempt produced a screenshot of a text editor. `PW_RENDERFULLCONTENT` asks the window to paint itself,
+which is also the only flag that works for a DirectComposition surface such as WebView2.
+
+`PrintWindow` can still hand back a stale composite mid-scroll, which is why layout claims are never
+made from a PNG. `scripts/sweep-screens.mjs` and `scripts/probe-layout.mjs` read
+`getBoundingClientRect` in the live page; the images are for a human deciding whether it *looks*
+right, and the geometry is what a gate can fail on.
