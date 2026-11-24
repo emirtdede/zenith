@@ -9,17 +9,16 @@
  *   1. every icon path exists (a missing `icons/icon.ico` fails the bundle step);
  *   2. `installerHooks` names a file that exists and defines the macros the NSIS
  *      template actually calls;
- *   3. the declared installer languages are real NSIS translations, and there are
- *      exactly as many as the product's language registry advertises - 73, not a
- *      hand-written "English, Turkish" pair left over from the first release;
+ *   3. every declared installer language exists in the pinned NSIS 3.11 archive,
  *   4. the text fields carry no U+FFFD, which is what a Windows-1254 read of a
  *      UTF-8 file leaves behind and what shipped in `copyright` for a week.
  *
  * Usage: `node scripts/check-installer.mjs`
  */
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateInstallerLanguages } from "./lib/installer-languages.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const problems = [];
@@ -32,12 +31,33 @@ const config = JSON.parse(readFileSync(join(ROOT, "src-tauri", "tauri.conf.json"
 const languagesSource = readFileSync(join(ROOT, "src", "i18n", "languages.ts"), "utf8");
 const registryCount = [...languagesSource.matchAll(/code:\s*"/g)].length;
 
-// The NSIS translation set Tauri bundles. Read from the local cache when it is
-// present, because a hard-coded list is one more thing that can drift.
-const nsisCache = join(process.env.LOCALAPPDATA ?? "", "tauri", "NSIS", "Contrib", "Language files");
-const available = existsSync(nsisCache)
-  ? new Set(readdirSync(nsisCache).filter((name) => name.endsWith(".nlf")).map((name) => name.slice(0, -4)))
-  : null;
+// The NSIS translation set Tauri bundles, read from the pinned archive's own
+// inventory. Reading the developer's LOCALAPPDATA cache was wrong: that cache is
+// shared with every other Tauri project on the machine, it can be edited by hand,
+// and CI starts without one, so the gate passed here and skipped there while the
+// release build failed on a language the cache happened to contain.
+const inventoryPath = join(ROOT, "src-tauri", "installer", "nsis-3.11-languages.json");
+let inventory = null;
+let available = null;
+if (!existsSync(inventoryPath)) {
+  problems.push("src-tauri/installer/nsis-3.11-languages.json is missing; the NSIS language set has no pinned inventory");
+} else {
+  try {
+    inventory = JSON.parse(readFileSync(inventoryPath, "utf8"));
+    available = new Set(inventory.languages ?? []);
+    const manifest = JSON.parse(readFileSync(join(ROOT, "resources", "manifest.json"), "utf8"));
+    const asset = (manifest.assets ?? []).find((entry) => entry.id === inventory.archive?.id);
+    if (!asset) {
+      problems.push(`the inventory names archive ${inventory.archive?.id}, which resources/manifest.json does not list`);
+    } else if (asset.sha256 !== inventory.archive?.sha256) {
+      problems.push(
+        `the inventory covers a different archive than resources/manifest.json (${inventory.archive?.sha256} vs ${asset.sha256})`,
+      );
+    }
+  } catch (error) {
+    problems.push(`installer/nsis-3.11-languages.json is unusable: ${error.message}`);
+  }
+}
 
 const iconPaths = config?.bundle?.icon ?? [];
 if (iconPaths.length === 0) problems.push("bundle.icon is empty");
@@ -69,6 +89,7 @@ if (!hooks) {
 }
 
 const declared = config?.bundle?.windows?.nsis?.languages ?? [];
+const registryCodes = [...languagesSource.matchAll(/code:\s*"([^"]+)"/g)].map((m) => m[1]);
 const mappingPath = join(ROOT, "src-tauri", "installer", "languages.json");
 if (!existsSync(mappingPath)) {
   problems.push("src-tauri/installer/languages.json is missing; the installer languages have no registry-linked contract");
@@ -80,34 +101,19 @@ if (!existsSync(mappingPath)) {
     problems.push(`installer/languages.json is not valid JSON: ${error.message}`);
   }
   if (mapping) {
-    const rows = mapping.languages ?? [];
-    if (rows.length !== registryCount) {
-      problems.push(`installer/languages.json has ${rows.length} rows but the product registry has ${registryCount}`);
-    }
-    const codes = new Set(rows.map((row) => row.code));
-    for (const code of [...languagesSource.matchAll(/code:\s*"([^"]+)"/g)].map((m) => m[1])) {
-      if (!codes.has(code)) problems.push(`installer/languages.json has no row for ${code}`);
-    }
-    for (const row of rows) {
-      if (row.nsis === null) {
-        // A locale with no NSIS translation runs the installer in English. That
-        // is allowed, but it must be a declared fallback, not a silent gap.
-        if (row.fallback !== "en") problems.push(`${row.code}: nsis is null and no English fallback is declared`);
-      } else if (available && !available.has(row.nsis)) {
-        problems.push(`${row.code}: "${row.nsis}" is not an NSIS translation in ${nsisCache}`);
-      }
-    }
-    const expected = [...new Set(rows.filter((row) => row.nsis).map((row) => row.nsis))];
-    if (JSON.stringify(expected) !== JSON.stringify(declared)) {
-      problems.push(
-        `tauri.conf.json nsis.languages does not match installer/languages.json (${declared.length} declared, ${expected.length} mapped)`,
-      );
-    }
+    problems.push(
+      ...validateInstallerLanguages({
+        rows: mapping.languages ?? [],
+        registryCodes,
+        declared,
+        archiveLanguages: inventory?.languages ?? null,
+        archiveCount: inventory?.languages?.length ?? null,
+      }),
+    );
   }
 }
-if (new Set(declared).size !== declared.length) problems.push("installer language list has duplicates");
 if (!config?.bundle?.windows?.nsis?.displayLanguageSelector) {
-  problems.push("displayLanguageSelector is false, so the 73 languages are declared but unreachable");
+  problems.push("displayLanguageSelector is false, so the declared languages are unreachable");
 }
 
 const textFields = {
@@ -140,7 +146,80 @@ if (problems.length) {
   process.exit(1);
 }
 
+// ---------------------------------------------------------- negative self-test
+// A gate is only worth its lines if it fails on the bug it was written for.
+// DEF-168 was a declaration of 19 translations the pinned archive does not
+// contain; the release build failed on the first of them. These synthetic cases
+// drive the same validator, so the check cannot silently lose its teeth.
+const selfTestCases = [
+  {
+    name: "a translation present in the archive passes",
+    rows: [{ code: "en", nsis: "English" }, { code: "tr", nsis: "Turkish" }],
+    registryCodes: ["en", "tr"],
+    declared: ["English", "Turkish"],
+    archiveLanguages: ["English", "Turkish", "German"],
+    shouldFail: false,
+  },
+  {
+    name: "a translation absent from the archive fails (the DEF-168 shape)",
+    rows: [{ code: "en", nsis: "English" }, { code: "bn", nsis: "Bengali" }],
+    registryCodes: ["en", "bn"],
+    declared: ["English", "Bengali"],
+    archiveLanguages: ["English", "Turkish", "German"],
+    shouldFail: true,
+  },
+  {
+    name: "a null translation without an English fallback fails",
+    rows: [{ code: "lo", nsis: null }],
+    registryCodes: ["lo"],
+    declared: [],
+    archiveLanguages: ["English"],
+    shouldFail: true,
+  },
+  {
+    name: "a declared language missing from the mapping fails",
+    rows: [{ code: "en", nsis: "English" }],
+    registryCodes: ["en"],
+    declared: ["English", "Turkish"],
+    archiveLanguages: ["English", "Turkish"],
+    shouldFail: true,
+  },
+  {
+    name: "a duplicate declaration fails",
+    rows: [{ code: "en", nsis: "English" }],
+    registryCodes: ["en"],
+    declared: ["English", "English"],
+    archiveLanguages: ["English"],
+    shouldFail: true,
+  },
+  {
+    name: "a registry locale with no row fails",
+    rows: [{ code: "en", nsis: "English" }],
+    registryCodes: ["en", "tr"],
+    declared: ["English"],
+    archiveLanguages: ["English"],
+    shouldFail: true,
+  },
+];
+
+const selfTestFailures = [];
+for (const test of selfTestCases) {
+  const found = validateInstallerLanguages(test);
+  const failed = found.length > 0;
+  if (failed !== test.shouldFail) {
+    selfTestFailures.push(
+      `${test.name}: expected ${test.shouldFail ? "a problem" : "no problem"}, got ${failed ? found.join("; ") : "none"}`,
+    );
+  }
+}
+if (selfTestFailures.length) {
+  console.error("check:installer self-test is broken:");
+  for (const failure of selfTestFailures) console.error(`  - ${failure}`);
+  process.exit(1);
+}
+
 console.log(
   `Installer holds: ${declared.length} NSIS translations for ${registryCount} UI locales (the rest fall back to the English installer), ` +
     `${iconPaths.length} icons, hooks with a silent-uninstall guard.`,
 );
+console.log(`Self-test holds: ${selfTestCases.length} language cases, including the DEF-168 shape.`);

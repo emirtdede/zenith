@@ -88,7 +88,7 @@ was "the sum with C10 capped at its weight". Both statements could not be true -
 | C7 | Interface & a11y | 5 | **9** | `05-02` 6 screens/5 overlays/key map; `check-contrast` 75×3 all pass; `05-03` assesses **31 criteria, all verified** (1.2.x is N/A - no media) with the live screen-reader session still open as DEF-043, which is the −1 on this row; zoom reflow 1.4.4/1.4.10 measured at 320 px / 200 % / 400 % across 54 cells (DEF-044 closed) |
 | C8 | Localization | 4 | **6** | ICU subset; `check-locales` 866×2 exact parity, `check-unused-keys` 0 of 866 unreachable, `check-step-keys` 328 emitted keys present, 0 missing from either catalogue; ADR-023 tiers honest about 2 shipped locales |
 | C9 | Tests & automation | 4 | **8** | 341 Rust tests + 196 vitest tests (reducer, ICU formatter, 47 render, 2 render-boundary, 9 focus-trap, 8 controller, 1 diagnose-budget, 11 audit-export, 4 boot-timing, 13 log-text, 17 candidate-wiring); 22-step `npm run verify` (17 node script gates + `check:fe` + `zenith-audit --all` + `cargo test --workspace` + build, the last three being the only steps that execute code rather than read it); contract 15/15/15/15; 3-journey/11-step WebDriver E2E (`scripts/e2e-journeys.mjs`, exit 0, re-run after every UI change) |
-| C10 | Delivery & truth | 6 | **6** | `08-02`/`08-03`/`08-04`; 167-row register with 9 admitted-open rows; installer built, hashed, install→uninstall tested (`08-02` §8.1), and the uninstaller now offers data deletion |
+| C10 | Delivery & truth | 6 | **6** | `08-02`/`08-03`/`08-04`; 168-row register with 9 admitted-open rows; installer built, hashed, install→uninstall tested (`08-02` §8.1), and the uninstaller now offers data deletion |
 | **Total** | | **45** | **98** | |
 
 ### 3.1 What running the packaged binary found that the tests did not
@@ -308,7 +308,7 @@ Every number in §3 comes from one of these. Re-run them to reproduce the score.
 | Dependency policy holds | `npm run check:deny` | advisories, bans, licences and sources clean |
 | Installer | `npm run tauri build` | 2.77 MiB NSIS, SHA-256 recorded in `08-02` §3 |
 | Uninstall leaves no orphan | `scripts/verify-uninstall.ps1 -Mode verify` + `-Mode diff` | 7/7 checks pass; zero drift vs pre-install baseline |
-| The scorecard's own arithmetic is correct | `node scripts/check-scorecard.mjs` | rubric weights sum to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld points = 2 points of shortfall; register 167 ids, contiguous, 158 closed + 9 open (DEF-080…DEF-167) |
+| The scorecard's own arithmetic is correct | `node scripts/check-scorecard.mjs` | rubric weights sum to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld points = 2 points of shortfall; register 168 ids, contiguous, 159 closed + 9 open (DEF-080…DEF-168) |
 | Docs are internally consistent | `node scripts/check-docs.mjs` | 28 files, 45 links resolve, 108 DEF ids defined, 118/118 F + 86/86 N traced, 93 test ids closed, 4-key headers, no U+FFFD |
 | Every `unsafe` block and `unsafe impl` is documented | `node scripts/check-ffi.mjs` | 106 blocks + 2 impls, 108 documented, 110 `// SAFETY:` comments |
 | Real desktop binary completes diagnose → run → rollback | `node scripts/e2e-journeys.mjs --app target/release/zenith.exe` | 3 journeys, 11 steps, 0 failures, exit 0 (log in `evidence/e2e-final.log`) |
@@ -334,7 +334,7 @@ notice freshness gate as `check:licenses`, and the dependency policy as `check:d
 | ADRs | 24 (ADR-001 … ADR-024) |
 | Requirements | 118 functional · 86 non-functional |
 | Traceability | 118/118 functional mapped to a design section, a test id, and a WP |
-| Deficiencies | 167 rows: 158 closed, 9 open (3 blocker-class) |
+| Deficiencies | 168 rows: 159 closed, 9 open (3 blocker-class) |
 | Risks | 24 scored delivery risks + 12 security risks |
 
 ---

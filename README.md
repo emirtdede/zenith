@@ -430,7 +430,7 @@ separate submission step, described in [`docs/store/`](docs/store/README.md).
 
 Build artifacts are produced under `target/release/bundle/`:
 
-- **NSIS installer** - `Zenith_1.0.0_x64-setup.exe` (71 installer translations, 73 UI locales with an English installer fallback)
+- **NSIS installer** - `Zenith_1.0.0_x64-setup.exe` (52 installer translations from the pinned NSIS 3.11 archive; all 73 UI locales are selectable in the app, and the 21 without an NSIS translation run the installer in English)
 - **MSIX package** - `npm run msix:package` assembles a Store package from the same binary; `npm run check:msix` re-opens it and verifies the manifest, the tiles, and the file set
 - **Icons** - `npm run icons:generate` reproduces ICO (16 to 256), PNG, tray and APPX tiles byte for byte from `assets/zenith-mark.svg`
 - **SBOM** - `npm run sbom:generate`, checked by `npm run check:sbom`
@@ -684,7 +684,7 @@ Paketleyici tek bir çıktı üretir: `target/release/bundle/nsis/` altındaki m
 
 Derleme çıktıları `target/release/bundle/` altında üretilir:
 
-- **NSIS kurulum dosyası** - `Zenith_1.0.0_x64-setup.exe` (71 kurulum çevirisi, İngilizce kurulum yedeğiyle 73 arayüz dili)
+- **NSIS kurulum dosyası** - `Zenith_1.0.0_x64-setup.exe` (sabitlenmiş NSIS 3.11 arşivinden 52 kurulum çevirisi; 73 arayüz dilinin tamamı uygulamada seçilebilir, NSIS çevirisi olmayan 21 dil kurulumu İngilizce çalıştırır)
 - **MSIX paketi** - `npm run msix:package` aynı ikiliden bir Mağaza paketi üretir; `npm run check:msix` paketi yeniden açar ve bildirimi, karoları ve dosya kümesini doğrular
 - **İkonlar** - `npm run icons:generate`, `assets/zenith-mark.svg` dosyasından ICO (16 - 256), PNG, tepsi ve APPX karolarını bayt bayt yeniden üretir
 - **SBOM** - `npm run sbom:generate`, `npm run check:sbom` ile denetlenir

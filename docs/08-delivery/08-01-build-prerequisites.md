@@ -27,7 +27,19 @@ a build is reproducible.
 | **WebView2** | Evergreen runtime (any) | Tauri renderer | vendored offline installer (`resources/`) |
 | **NSIS** | 3.11 | Tauri bundler shell-out; different versions change installer bytes | `resources/installers/nsis-3.11.zip` |
 
-Target triple is fixed: **`x86_64-pc-windows-msvc`**. No 32-bit or ARM build ships in 1.0.0.
+Target triple is fixed for release output: **`x86_64-pc-windows-msvc`**. No 32-bit
+build ships. ARM64 does compile from this tree
+(`cargo build --release --target aarch64-pc-windows-msvc --locked`) and
+`npm run check:arm64` verifies the result by its PE header, but 1.0.0 publishes the
+x64 installer only.
+
+The NSIS row matters for languages: the installer can only offer translations that
+exist inside the pinned archive, so `src-tauri/installer/nsis-3.11-languages.json`
+records the 67 names it contains, and `npm run check:installer` rejects a declared
+language that is not in that list. The locale registry has 73 rows; 52 of them have
+an NSIS translation and the other 21 run the installer in English. Reading the
+developer's `%LOCALAPPDATA%\tauri\NSIS` cache would have hidden that difference,
+because that cache is shared with every other Tauri project on the machine.
 
 ---
 

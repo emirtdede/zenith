@@ -1,5 +1,5 @@
 {
-  "note": "One row per UI locale. nsis is the installer translation that covers it, or null when NSIS ships none for that language.",
+  "note": "One row per UI locale. nsis is the installer translation inside the pinned NSIS 3.11 archive, or null when that archive ships none for this language, in which case the installer runs in English.",
   "languages": [
     {
       "code": "tr",
@@ -63,15 +63,18 @@
     },
     {
       "code": "bn",
-      "nsis": "Bengali"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "pa",
-      "nsis": "Punjabi"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "ur",
-      "nsis": "Urdu"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "fa",
@@ -175,11 +178,13 @@
     },
     {
       "code": "az",
-      "nsis": "Azerbaijani"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "kk",
-      "nsis": "Kazakh"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "uz",
@@ -187,11 +192,13 @@
     },
     {
       "code": "ky",
-      "nsis": "Kyrgyz"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "tk",
-      "nsis": "Turkmen"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "ka",
@@ -219,11 +226,13 @@
     },
     {
       "code": "tl",
-      "nsis": "Filipino"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "km",
-      "nsis": "Khmer"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "lo",
@@ -232,35 +241,43 @@
     },
     {
       "code": "my",
-      "nsis": "Burmese"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "ta",
-      "nsis": "Tamil"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "te",
-      "nsis": "Telugu"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "mr",
-      "nsis": "Marathi"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "gu",
-      "nsis": "Gujarati"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "kn",
-      "nsis": "Kannada"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "ml",
-      "nsis": "Malayalam"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "si",
-      "nsis": "Sinhala"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "ne",
@@ -269,11 +286,13 @@
     },
     {
       "code": "sw",
-      "nsis": "Swahili"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "am",
-      "nsis": "Amharic"
+      "nsis": null,
+      "fallback": "en"
     },
     {
       "code": "af",

@@ -102,6 +102,10 @@ of a command named below, and the command is what to run if the file and the cod
 | `screens/boot/*.png` | `node scripts/capture-boot.mjs --app target/release/zenith.exe` | the boot skeleton and the loaded shell side by side at 1180x780, captured through WebView2's DevTools endpoint because the skeleton exists for about a second; the run fails when the skeleton is never observed or when the two files are byte-identical |
 | `boot-capture.log` | the run that produced `screens/boot/*.png` | the launch-to-skeleton latency, the guide dismissal result, and the measured size of both captures |
 | `msix-check.log` | `node scripts/check-msix.mjs` | the Store package built, unpacked with the SDK's own `makeappx unpack`, and checked against the manifest: identity, four-part version, six tiles measured from their PNG headers, `runFullTrust` as the only restricted capability, and the exact file set in the archive |
+| `installer-languages.log` | `npm run check:installer` | the installer language contract measured against the pinned NSIS 3.11 archive: 52 translations for 73 UI locales, plus six self-test cases including the DEF-168 shape |
+| `installer-build.log` | `npm run tauri build` | the NSIS bundle produced on a machine whose NSIS cache holds only the archive's own 67 language files, so the declaration is proven buildable rather than merely plausible |
+| `arm64-build.log` | `cargo build --release --target aarch64-pc-windows-msvc --locked` | a clean ARM64 compile of the workspace, `Finished release profile [optimized]` in 6m 08s, exit 0 |
+| `arm64-check.log` | `node scripts/check-arm64.mjs` | the ARM64 claim measured on the PE header rather than the file name: machine `0xAA64`, six sections, a 240-byte PE32+ optional header, and a size that differs from the x64 binary |
 | `gitleaks.log` | `node scripts/check-secrets.mjs` | worktree (`detect --no-git`) and full-history (`gitleaks git`) scans, both clean; ANSI stripped so the log is readable as text |
 
 `screens/06-trust.png` is the one to open if you want the shortest proof that the release build

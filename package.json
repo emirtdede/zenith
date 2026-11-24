@@ -49,6 +49,7 @@
     "icons:generate": "node scripts/generate-icons.mjs",
     "check:icons": "node scripts/check-icons.mjs",
     "check:msix": "node scripts/check-msix.mjs",
+    "check:arm64": "node scripts/check-arm64.mjs",
     "check:installer": "node scripts/check-installer.mjs",
     "check:emoji": "node scripts/check-emoji.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",

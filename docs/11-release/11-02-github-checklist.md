@@ -98,12 +98,11 @@ newsletter.
 | G-52 | The installer is built from the same commit as the binary | file timestamps and `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | PASS - `npm run tauri build` on 2026-11-24 produced the binary and the bundle in the same run, identity `release-20261124`, and `check-build-identity` passes against the pair |
 | G-53 | The installer and the binary are Authenticode-signed | `Get-AuthenticodeSignature target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | `NotSigned` | FAIL - DEF-028, no EV certificate on this machine. Owner action: supply the certificate and re-run `npm run tauri build`. |
 | G-54 | Installer icons are the project set, with no Tauri default | `npm run check:icons` | `evidence/verify-final.log` | PASS - 17 files reproduced byte-for-byte |
-| G-55 | The installer offers 73 languages and the NSIS list matches | `npm run check:installer` | `evidence/verify-final.log` | PASS - 73 rows, 71 real translations, 2 fall back to `en` |
-| G-56 | Uninstall deletes user data only when the user asks | `src-tauri/installer/hooks.nsh` | `evidence/verify-final.log` | PASS - gated on `$DeleteAppDataCheckboxState` |
-| G-57 | SHA-256 checksums are published next to the release asset | release page | none | FAIL - no release has been published. Owner action: attach the installer and a `SHA256SUMS.txt` generated from it. |
-| G-58 | GitHub build-provenance attestation is attached | `gh attestation verify` | none | FAIL - requires the release workflow that does not exist yet. |
+| G-55 | The installer language list matches the 73-locale registry and every declared translation exists in the pinned NSIS archive | `npm run check:installer` | `evidence/verify-final.log` | PASS - 73 registry rows, 52 translations that the pinned NSIS 3.11 archive actually contains, 21 rows declared as English-installer fallbacks || G-56 | Uninstall deletes user data only when the user asks | `src-tauri/installer/hooks.nsh` | `evidence/verify-final.log` | PASS - gated on `$DeleteAppDataCheckboxState` |
+| G-57 | SHA-256 checksums are published next to the release asset | release page | run `45316192561` failed before the checksum step | FAIL - `v1.0.0` was pushed and `release.yml` ran, but the installer build died on DEF-168 (19 declared translations absent from the pinned NSIS archive), so no asset was produced to hash. Owner action: re-run once the corrected tree is tagged. |
+| G-58 | GitHub build-provenance attestation is attached | `gh attestation verify` | run `45316192561` passed the 31-step gate, then failed at the installer step | FAIL - `.github/workflows/release.yml` exists and calls `actions/attest-build-provenance`, but no run has reached the attest step. Owner action: re-run on the corrected tag. |
 | G-59 | The update check reads GitHub Releases and never downloads in-app | `node scripts/check-update-path.mjs` (inspection of `AboutPanel`) | `src/ui/SettingsScreen.tsx` | PASS - semver comparison only; the Store channel is answered locally |
-| G-60 | ARM64 build exists | `cargo build --release --target aarch64-pc-windows-msvc` | not attempted | FAIL - open register row; no ARM64 toolchain on this machine. |
+| G-60 | ARM64 build exists | `cargo build --release --target aarch64-pc-windows-msvc --locked`; `node scripts/check-arm64.mjs` | `evidence/arm64-build.log`, `evidence/arm64-check.log` | PASS - clean compile in 6m 08s and a 6,319,616-byte binary whose PE machine field is `0xAA64`, distinct from the x64 build |
 | G-61 | Windows 10 and 11 x64 are tested on real hosts | VM matrix | not run | FAIL - open register row (DEF-047). |
 | G-62 | MacOS/Linux are explicitly unsupported, not silently broken | `npm run check:nonwindows` | `evidence/verify-final.log` | PASS |
 
@@ -111,7 +110,7 @@ newsletter.
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-63 | Release notes are written from CHANGELOG, not from commit titles | release draft | none | FAIL - owner action: open the release draft for tag `1.0.0`. |
+| G-63 | Release notes are written from CHANGELOG, not from commit titles | release draft | `11-04-release-notes-1.0.0.md` | FAIL - the notes exist and the workflow attaches them to a draft, but the first tagged run (`45316192561`) failed at the installer step on DEF-168, before the draft step. Owner action: re-run on the corrected tag. |
 | G-64 | The published README matches this tree | `gh api repos/emirtdede/zenith/contents/README.md --jq .sha` vs `git rev-parse HEAD:README.md` | both `3537f450` | PASS - the default branch carries this README, blob for blob |
 | G-65 | A rollback plan exists for a bad release | `Get-Content docs/08-delivery/08-02-ci-cd-release.md` | release document | PASS |
 | G-66 | Supported versions and their support window are stated | `public/legal/support.md` | support policy | PASS |
@@ -121,12 +120,12 @@ newsletter.
 | Measure | Value |
 | :--- | :--- |
 | Requirement rows | 66 |
-| `PASS` | 60 |
-| `FAIL` | 6 |
+| `PASS` | 61 |
+| `FAIL` | 5 |
 | Tree under review | `v1.0.0` at `4d1bf5f` on `main` |
-| Commands re-run for this revision | `npm run verify` (31 steps), `npm run check:secrets` over 14 commits, `npm run e2e` (3 journeys), `npm run check:msix` |
+| Commands re-run for this revision | `npm run verify` (31 steps), `npm run check:secrets` over 14 commits, `npm run e2e` (3 journeys), `npm run check:msix`, `npm run check:arm64` |
 
-The six `FAIL` rows are listed below with the owner action that closes each one.
+The five `FAIL` rows are listed below with the owner action that closes each one.
 No row is `PASS` because it looks likely to work: every one names a command and a
 file, and the file is the output of that command against this tree.
 
@@ -135,12 +134,11 @@ file, and the file is the output of that command against this tree.
 | G-53 | Installer unsigned | Supply the EV certificate (DEF-028) |
 | G-57 | No published release asset to checksum | Let the tag push run `release.yml`, which attaches `SHA256SUMS.txt` to the draft |
 | G-58 | No provenance attestation | Same run: `attest-build-provenance` signs the installer and the binary |
-| G-60 | No ARM64 build | Install the ARM64 MSVC target and build |
 | G-61 | No real-host Windows matrix | Run the T-WIN matrix (DEF-047) |
 | G-63 | No release draft | Same run: the workflow opens the draft from `11-04-release-notes-1.0.0.md` |
 
-Six FAIL rows remain. Three of them (G-57, G-58, G-63) close when the release
+Five FAIL rows remain. Two of them (G-57, G-58, G-63) close when the release
 workflow that `v1.0.0` started finishes, and this row set is updated from its
-output rather than in advance. The other three need an owner asset: an EV
-certificate, an ARM64 toolchain, and a real-host Windows matrix. None is a defect
-in the code, and none is hidden in this document.
+output rather than in advance. The remaining two need an owner asset: an EV
+certificate and a real-host Windows matrix. Neither is a defect in the code, and
+neither is hidden in this document.
