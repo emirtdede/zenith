@@ -88,7 +88,7 @@ const report = `# Zenith 1.0.0 Release Readiness Report
 | Owner | Release Engineering |
 | Closes | REQ-N-046 |
 | Product | Zenith 1.0.0 |
-| Tree under review | \`v1.0.0\` at \`7b4f73b\` on \`main\` |
+| Tree under review | \`v1.0.0\` at \`85c125a\` on \`main\` |
 | Reviewed on | 2026-11-24 |
 
 This report is generated from

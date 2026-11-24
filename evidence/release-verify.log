@@ -1,22 +1,24 @@
 $ gh release view v1.0.0 --json name,isDraft,tagName,assets
 name=Zenith v1.0.0 draft=true tag=v1.0.0
 asset=SHA256SUMS.txt bytes=172
-asset=Zenith_1.0.0_x64-setup.exe bytes=3287840
+asset=Zenith_1.0.0_x64-setup.exe bytes=3289013
+
+$ git rev-parse --short=7 "v1.0.0^{commit}"
+85c125a
 
 $ gh release download v1.0.0 --dir <tmp>
 (no output)
 
 SHA256SUMS.txt
-a6989e5df5943a5936f2958ddd3dc715665cfaeae07275b516c6a3bda1c71e93  Zenith_1.0.0_x64-setup.exe
-57fd211fd60824f5ed8d513405b652f5e7d0a06cb2b255d95afcfa684aa6891d  zenith.exe
+67316c71c2e615b41b9fe01663512379cb33d0ca8f548972ab9ebeddc81701fb  Zenith_1.0.0_x64-setup.exe
+17acf291882d2a472fabb2e5948b6fa74bee6a73a5c4efd47c4fcaca6ecfacf2  zenith.exe
 
 $ Get-FileHash -Algorithm SHA256 Zenith_1.0.0_x64-setup.exe
-a6989e5df5943a5936f2958ddd3dc715665cfaeae07275b516c6a3bda1c71e93  Zenith_1.0.0_x64-setup.exe
+67316c71c2e615b41b9fe01663512379cb33d0ca8f548972ab9ebeddc81701fb  Zenith_1.0.0_x64-setup.exe
 match=yes
 
 $ gh attestation verify Zenith_1.0.0_x64-setup.exe --repo emirtdede/zenith --format json
 attestations=1
 certificate=present
 mediaType=application/vnd.dev.sigstore.bundle.v0.3+json
-bundle bytes=2340
 verification exit code 0

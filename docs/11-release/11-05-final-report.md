@@ -7,7 +7,7 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-046 |
 | Product | Zenith 1.0.0 |
-| Tree under review | `v1.0.0` at `7b4f73b` on `main` |
+| Tree under review | `v1.0.0` at `85c125a` on `main` |
 | Reviewed on | 2026-11-24 |
 
 This report is generated from
@@ -54,11 +54,11 @@ could write. Section 4 lists each one with the action that closes it.
 | G-01 | The licence is OSI-approved MIT and the file is the unmodified canonical text | **PASS** | `Get-Content LICENSE` | `LICENSE` |
 | G-02 | Copyright holder and year are correct for the publishing entity | **PASS** | `Get-Content LICENSE -TotalCount 3` | `LICENSE` |
 | G-03 | Version in `package.json`, `Cargo.toml`, `tauri.conf.json`, and the installer all agree | **PASS** | `node scripts/check-doc-counts.mjs`; `node scripts/check-contract.mjs` | `evidence/verify-final.log` |
-| G-04 | Git tag exists for the released version | **PASS** | `git ls-remote --tags origin`; `git rev-parse "v1.0.0^{commit}"` | `v1.0.0` -> `7b4f73b` |
+| G-04 | Git tag exists for the released version | **PASS** | `git ls-remote --tags origin`; `git rev-parse "v1.0.0^{commit}"` | `v1.0.0` -> `85c125a` |
 | G-05 | Published repository description and licence are set | **PASS** | `https://github.com/emirtdede/zenith` | repository page |
 | G-06 | Repository topics are set so the project is discoverable | **PASS** | `gh api repos/emirtdede/zenith/topics` | `evidence/repo-settings.log` |
-| G-07 | The default branch carries the reviewed tree | **PASS** | `git status --porcelain`; `git ls-remote --heads origin`; `git diff --name-only v1.0.0 -- src src-tauri crates assets resources` | `main` and `development` pushed; tag `v1.0.0` names `7b4f73b` |
-| G-08 | The last commit on the default branch is green in CI | **PASS** | Actions run for that SHA | run `45328204501` |
+| G-07 | The default branch carries the reviewed tree | **PASS** | `git status --porcelain`; `git ls-remote --heads origin`; `git diff --name-only v1.0.0 -- src src-tauri crates assets resources` | `main` and `development` pushed; tag `v1.0.0` names `85c125a` |
+| G-08 | The last commit on the default branch is green in CI | **PASS** | Actions run for that SHA | run `45342289468` |
 | G-09 | README follows the fixed section order and holds both language halves | **PASS** | inspection | `README.md` |
 | G-10 | README badges state real values (version, stack, licence, languages, palettes) | **PASS** | badge values vs `package.json`, `Cargo.toml`, `src/settings/palettes.json`, `src/i18n/languages.ts` | `README.md` lines 24-40 |
 | G-11 | The CI badge points at the workflow file that exists | **PASS** | `Select-String README.md -Pattern 'verify.yml'` | `README.md` |
@@ -107,14 +107,14 @@ could write. Section 4 lists each one with the action that closes it.
 | G-54 | Installer icons are the project set, with no Tauri default | **PASS** | `npm run check:icons` | `evidence/verify-final.log` |
 | G-55 | The installer language list matches the 73-locale registry and every declared translation exists in the pinned NSIS archive | **PASS** | `npm run check:installer` | `evidence/installer-languages.log` |
 | G-56 | Uninstall deletes user data only when the user asks | **PASS** | `src-tauri/installer/hooks.nsh` | `evidence/verify-final.log` |
-| G-57 | SHA-256 checksums are published next to the release asset | **PASS** | `gh release download v1.0.0`; `Get-FileHash` | draft release `Zenith v1.0.0`, `SHA256SUMS.txt` |
-| G-58 | GitHub build-provenance attestation is attached | **PASS** | `gh attestation verify Zenith_1.0.0_x64-setup.exe --repo emirtdede/zenith` | Sigstore bundle in run `45330291458` |
+| G-57 | SHA-256 checksums are published next to the release asset | **PASS** | `gh release download v1.0.0`; `Get-FileHash` | draft release `Zenith v1.0.0`, `SHA256SUMS.txt`, `evidence/release-verify.log` |
+| G-58 | GitHub build-provenance attestation is attached | **PASS** | `gh attestation verify Zenith_1.0.0_x64-setup.exe --repo emirtdede/zenith` | Sigstore bundle in run `45345059565` |
 | G-59 | The update check reads GitHub Releases and never downloads in-app | **PASS** | `node scripts/check-update-path.mjs` (inspection of `AboutPanel`) | `src/ui/SettingsScreen.tsx` |
 | G-60 | ARM64 build exists | **PASS** | `cargo build --release --target aarch64-pc-windows-msvc --locked`; `node scripts/check-arm64.mjs` | `evidence/arm64-build.log`, `evidence/arm64-check.log` |
 | G-61 | Windows 10 and 11 x64 are tested on real hosts | **FAIL** | VM matrix | not run |
 | G-62 | MacOS/Linux are explicitly unsupported, not silently broken | **PASS** | `npm run check:nonwindows` | `evidence/verify-final.log` |
-| G-63 | Release notes are written from CHANGELOG, not from commit titles | **PASS** | `gh release view v1.0.0` | draft `Zenith v1.0.0`, run `45330291458` |
-| G-64 | The published README matches this tree | **PASS** | `gh api repos/emirtdede/zenith/contents/README.md --jq .sha` vs `git rev-parse HEAD:README.md` | both `3537f450` |
+| G-63 | Release notes are written from CHANGELOG, not from commit titles | **PASS** | `gh release view v1.0.0` | draft `Zenith v1.0.0`, run `45345059565` |
+| G-64 | The published README matches this tree | **PASS** | `gh api repos/emirtdede/zenith/contents/README.md --jq .sha` vs `git rev-parse HEAD:README.md` | both `e091614a` |
 | G-65 | A rollback plan exists for a bad release | **PASS** | `Get-Content docs/08-delivery/08-02-ci-cd-release.md` | release document |
 | G-66 | Supported versions and their support window are stated | **PASS** | `public/legal/support.md` | support policy |
 

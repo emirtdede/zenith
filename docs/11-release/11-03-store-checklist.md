@@ -7,7 +7,7 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-047 |
 | Channel | Microsoft Store (MSIX/APPX, Partner Center) |
-| Tree under review | `1.0.0`, tag `v1.0.0` at `7b4f73b` on `main` |
+| Tree under review | `1.0.0`, tag `v1.0.0` at `85c125a` on `main` |
 | Reviewed on | 2026-11-24 |
 
 The Store channel is not a repackaging of the GitHub channel. A Store package is
