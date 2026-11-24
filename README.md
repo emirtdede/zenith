@@ -154,19 +154,26 @@ Zenith also ships the surfaces an IT team or an AI coding agent actually needs: 
 
 </div>
 
-### Runtime and UI
+### Runtime & UI
 - **Tauri 2.12** with a **Rust 1.90 (edition 2024)** core and a **WebView2** renderer. The release build embeds the built renderer through the `custom-protocol` feature.
 - **React 19 + TypeScript 5.9**, bundled by **Vite 7**. No CDN at runtime: CSP is `default-src 'self'`, and the UI fonts (**Plus Jakarta Sans** for display, **DM Sans** for body, **JetBrains Mono** for code) are self-hosted with Windows complex-script fallbacks.
 - **Hand-written SVG icons**, one module, `aria-hidden`, drawn in `currentColor`. There is no icon font, no fallback glyph and no emoji anywhere in the product.
 
-### Core and Data
+### Data & Security
 - **`crates/zenith-core`** owns measurement, planning, execution, snapshots, retention and recovery. It is usable without the GUI and is exercised by its own test suite.
 - **SQLite** (`rusqlite`, bundled) for the operation ledger and snapshot metadata, in WAL mode.
 - **HMAC-SHA256** over snapshot archives, verified by reading the archive back before any mutation proceeds.
 - **Windows DPAPI** for secrets at rest, and a **Win32 and WinHTTP FFI layer** where every `unsafe` block and every `unsafe impl` carries its own `SAFETY` comment that a gate verifies (115 blocks + 2 impls).
 - **15 IPC commands** exactly, asserted across the documentation, the Rust command list, the `generate_handler!` registration and the typed renderer client.
 
-### Build, Test and Release
+### Integrations
+- **Built-in MCP server** over stdio (JSON-RPC 2.0) with two read-only tools, `zenith_list_actions` and `zenith_diagnose`. It cannot mutate the machine by construction: no command that changes state is registered.
+- **Read-only loopback API** on `127.0.0.1` with `GET /v1/health`, `/v1/actions` and `/v1/diagnose`, guarded by an origin check, a host check and a bearer token.
+- **Headless CLI** (`zenith diagnose --json`) sharing the command grammar with the GUI, with `--json` output for scripts and CI.
+- **HMAC-SHA256 webhooks** that fire on completed, failed and rolled-back runs. The signing secret is stored with DPAPI and never returned to the renderer.
+- **In-app and Windows native notifications** through one delivery layer, driven by four presets and a per-type channel matrix.
+
+### Build, Test & Release
 - **`npm run verify`**: a **31-step** chain that runs the frontend gate, the Rust tests, the production build and a bundle proof, in that order.
 - **`cargo test --workspace`**: **341 tests** across the core and the shell.
 - **`npm run test`**: **196 Vitest tests** across 14 files.
@@ -567,12 +574,19 @@ Zenith ayrıca bir BT ekibinin veya yapay zekâ kodlama ajanının ihtiyaç duyd
 - **React 19 + TypeScript 5.9**, **Vite 7** ile paketlenir. Çalışma anında CDN yoktur: CSP `default-src 'self'` ve yazı tipleri (**Plus Jakarta Sans**, **DM Sans**, **JetBrains Mono**) kendi sunulur; Windows karmaşık betik yedekleri tanımlıdır.
 - **Elle yazılmış SVG ikonlar**, tek modül, `aria-hidden`, `currentColor`. İkon fontu, yedek glif ve ürünün hiçbir yerinde emoji yoktur.
 
-### Çekirdek ve Veri
+### Veri ve Güvenlik
 - **`crates/zenith-core`** ölçümün, planlamanın, yürütmenin, anlık görüntülerin, saklamanın ve kurtarmanın sahibidir. Arayüz olmadan kullanılabilir ve kendi test paketiyle sınanır.
 - **SQLite** (`rusqlite`, gömülü) işlem defteri ve anlık görüntü üst verisi için, WAL modunda.
 - **HMAC-SHA256** anlık görüntü arşivleri üzerinde; herhangi bir değişiklik ilerlemeden önce arşiv okunarak doğrulanır.
 - **Windows DPAPI** durağan sırlar için, ve her `unsafe` bloğunun ve her `unsafe impl`in kendi `SAFETY` yorumunu taşıdığı bir **Win32 ve WinHTTP FFI katmanı** (115 blok + 2 impl).
 - Tam olarak **15 IPC komutu**; doküman, Rust komut listesi, `generate_handler!` kaydı ve tipli arayüz istemcisi arasında bir kapı tarafından eşitlenir.
+
+### Entegrasyonlar
+- **Yerleşik MCP sunucusu** stdio üzerinde (JSON-RPC 2.0), iki salt okunur araçla: `zenith_list_actions` ve `zenith_diagnose`. Yapısı gereği makineyi değiştiremez: durumu değiştiren hiçbir komut kayıtlı değildir.
+- **Salt okunur yerel API** `127.0.0.1` üzerinde `GET /v1/health`, `/v1/actions` ve `/v1/diagnose`; kaynak denetimi, ana bilgisayar denetimi ve taşıyıcı token ile korunur.
+- **Başsız CLI** (`zenith diagnose --json`), arayüzle aynı komut dilbilgisini paylaşır ve betikler için `--json` çıktısı verir.
+- **HMAC-SHA256 webhook'ları** tamamlanan, başarısız olan ve geri alınan çalışmalarda tetiklenir. İmzalama sırrı DPAPI ile saklanır ve arayüze hiç döndürülmez.
+- **Uygulama içi ve Windows yerel bildirimleri** tek bir teslim katmanından, dört profil ve tür bazlı kanal matrisiyle gönderilir.
 
 ### Derleme, Test ve Sürüm
 - **`npm run verify`**: ön yüz kapısını, Rust testlerini, üretim derlemesini ve paket kanıtını bu sırayla çalıştıran **31 adımlık** zincir.
