@@ -42,9 +42,11 @@ First public release.
   rolled-back runs.
 - A headless mode (`zenith diagnose --json`) for scripts and CI, and a command
   line grammar shared with the graphical application.
-- A Vellium monochrome setup and uninstall surface in six states, with 73
-  installer languages, reached through a launch mode so the installer page never
-  holds an IPC capability.
+- A Vellium monochrome setup and uninstall surface in six states, reached through
+  a launch mode (`--setup`, `--uninstall`) so the setup page never holds an IPC
+  capability. It ships as a separate 640x420 page; the installer itself remains
+  Tauri's NSIS template, which offers 52 installer translations of the 73 UI
+  locales.
 - An icon set generated from a single brand SVG: ICO 16 to 256, the PNG ladder,
   the four Store tiles, the wide tile, the Store logo, and the tray icon.
 - A GitHub Releases update check with semantic version comparison. The Microsoft

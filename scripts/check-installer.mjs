@@ -140,6 +140,29 @@ if (config?.bundle?.copyright && !config.bundle.copyright.startsWith("(c)")) {
 }
 if (!(config?.bundle?.targets ?? []).includes("nsis")) problems.push("bundle.targets no longer includes nsis");
 
+// The setup surface names the install directory on its first screen. It said
+// `%LOCALAPPDATA%\Programs\Zenith` while this config installs perMachine into
+// `C:\Program Files\Zenith`, so the one directory a user reads before installing
+// was a directory the product never writes to. The two are now tied together.
+const setupSource = join(ROOT, "src", "setup", "SetupApp.tsx");
+if (!existsSync(setupSource)) {
+  problems.push("src/setup/SetupApp.tsx is missing, so the install location shown to users cannot be checked");
+} else {
+  const match = readFileSync(setupSource, "utf8").match(/DEFAULT_INSTALL_DIR\s*=\s*"([^"]+)"/);
+  if (!match) {
+    problems.push("src/setup/SetupApp.tsx no longer exports DEFAULT_INSTALL_DIR");
+  } else {
+    const shown = match[1].replace(/\\\\/g, "\\");
+    const installMode = config?.bundle?.windows?.nsis?.installMode;
+    if (installMode === "perMachine" && !shown.startsWith("C:\\Program Files")) {
+      problems.push(`the setup wizard shows "${shown}" but installMode is perMachine, which installs under C:\\Program Files`);
+    }
+    if (installMode === "currentUser" && !shown.startsWith("%LOCALAPPDATA%")) {
+      problems.push(`the setup wizard shows "${shown}" but installMode is currentUser, which installs under %LOCALAPPDATA%`);
+    }
+  }
+}
+
 if (problems.length) {
   console.error("Installer configuration is not releasable:");
   for (const problem of problems) console.error(`  - ${problem}`);

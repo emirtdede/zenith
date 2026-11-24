@@ -367,12 +367,12 @@ Verify by computing `HMAC-SHA256(secret, t + "." + rawBody)` and comparing in co
 
 1. Download `Zenith_1.0.0_x64-setup.exe` from the releases page.
 2. Run it. The installer is per-machine and asks for the elevation Windows requires for a system utility.
-3. You can pick a different install directory and an installer language in the custom Vellium setup wizard.
+3. You can pick a different install directory and an installer language in the NSIS wizard. 52 of the 73 UI languages have an installer translation; the rest run the installer in English, and the application itself is fully selectable in all 73.
 4. After install, **Zenith** appears in the Start menu.
 
 **SmartScreen on unsigned downloads:** until release signing is applied, Windows may show the "Windows protected your PC" prompt on first run. Choose **More info**, then **Run anyway**. A Store (MSIX) build is re-signed by Microsoft and does not show it.
 
-**Uninstall:** Windows Settings, Apps, Zenith, Uninstall. The custom uninstaller offers to keep or permanently remove your local data under `%LOCALAPPDATA%\Vellium\Zenith` and `%ProgramData%\Vellium\Zenith`, and a silent uninstall leaves both in place.
+**Uninstall:** Windows Settings, Apps, Zenith, Uninstall. The uninstaller asks whether to keep or permanently remove your local data under `%LOCALAPPDATA%\Vellium\Zenith` and `%ProgramData%\Vellium\Zenith`, and a silent uninstall leaves both in place.
 
 ### Prerequisites (building from source)
 - **Windows 10 (1809+) or Windows 11** (64-bit)
@@ -644,12 +644,12 @@ Zenith/
 
 1. Sürümler sayfasından `Zenith_1.0.0_x64-setup.exe` dosyasını indirin.
 2. Çalıştırın. Kurulum makine genelidir ve bir sistem aracı için Windows'un istediği yükseltmeyi talep eder.
-3. Özel Vellium kurulum sihirbazında farklı bir kurulum dizini ve kurulum dili seçebilirsiniz.
+3. NSIS sihirbazında farklı bir kurulum dizini ve kurulum dili seçebilirsiniz. 73 arayüz dilinin 52'sinin kurulum çevirisi vardır; kalanlar kurulumu İngilizce çalıştırır ve uygulamanın kendisi 73 dilin tamamında seçilebilir.
 4. Kurulumdan sonra Başlat menüsünde **Zenith** görünür.
 
 **İmzasız indirmelerde SmartScreen:** sürüm imzalaması uygulanana kadar Windows ilk çalıştırmada "Windows kişisel bilgisayarınızı korudu" uyarısını gösterebilir. **Diğer bilgiler**, ardından **Yine de çalıştır** seçin. Mağaza (MSIX) derlemesi Microsoft tarafından yeniden imzalanır ve bu uyarıyı göstermez.
 
-**Kaldırma:** Windows Ayarlar, Uygulamalar, Zenith, Kaldır. Özel kaldırıcı, `%LOCALAPPDATA%\Vellium\Zenith` ve `%ProgramData%\Vellium\Zenith` altındaki yerel verilerinizi koruma veya kalıcı olarak silme seçeneği sunar; sessiz kaldırma her ikisini de yerinde bırakır.
+**Kaldırma:** Windows Ayarlar, Uygulamalar, Zenith, Kaldır. Kaldırıcı, `%LOCALAPPDATA%\Vellium\Zenith` ve `%ProgramData%\Vellium\Zenith` altındaki yerel verilerinizi koruma veya kalıcı olarak silme seçeneği sunar; sessiz kaldırma her ikisini de yerinde bırakır.
 
 ### Kaynaktan Çalıştırma ve Derleme
 

@@ -25,7 +25,7 @@ export const APP_NAME = "Zenith";
 export const APP_VERSION = "1.0.0";
 export const ESTIMATED_SIZE_MB = 18;
 export const CLI_COMMAND = "zenith";
-export const DEFAULT_INSTALL_DIR = "%LOCALAPPDATA%\\Programs\\Zenith";
+export const DEFAULT_INSTALL_DIR = "C:\\Program Files\\Zenith";
 export const USER_DATA_DIR = "%LOCALAPPDATA%\\Vellium\\Zenith";
 
 export type SetupMode = "setup" | "uninstall";

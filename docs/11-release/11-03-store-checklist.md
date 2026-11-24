@@ -18,7 +18,7 @@ by a file on this machine, a command in this tree, or a Partner Center setting.
 A row is `PASS` only when the artifact exists in the reviewed tree; a capability
 that is described but not built is `FAIL`, and the reason names the owner action.
 
-Nine rows are `FAIL` today, and they share two causes: **the Store identity is not
+Eight rows are `FAIL` today, and they share two causes: **the Store identity is not
 reserved** and **nothing has been submitted**. The package itself exists - it is
 built by `scripts/pack-msix.mjs` and re-opened by `npm run check:msix` - but a
 package assembled with a local test identity is not a Store submission, and this
@@ -124,7 +124,7 @@ treating a locally built package as a submission.
 | M-39 | No static analysis report | Follows from submission |
 | M-40 | Support and privacy URLs do not resolve | Follows from M-16 |
 
-Nine FAIL rows, eight of them blocked on Partner Center or on hosting, and none of
+Eight FAIL rows, seven of them blocked on Partner Center or on hosting, and none of
 them on code in this tree: the package builds, and `check:msix` verifies its
 contents against the manifest. Two of them (M-16 and M-40) are also GitHub
 blockers, because a public privacy URL is owed to every user, not only to the

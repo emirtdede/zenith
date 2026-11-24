@@ -66,6 +66,11 @@ describe("options", () => {
   it("shows the install directory, the four checkboxes and the size line", () => {
     renderState({ screen: "welcome", sheetOpen: true });
     expect(screen.getByLabelText("Install location")).toBeTruthy();
+    // The wizard's folder must be the one the shipped installer writes to. It
+    // said %LOCALAPPDATA%\Programs\Zenith while tauri.conf.json installs
+    // perMachine into C:\Program Files\Zenith, so the first screen a user saw
+    // named a directory the product never used.
+    expect((screen.getByLabelText("Install location") as HTMLInputElement).value).toBe("C:\\Program Files\\Zenith");
     const checks = document.querySelectorAll(".setup-check input[type=checkbox]");
     expect(checks).toHaveLength(4);
     expect((checks[0] as HTMLInputElement).checked).toBe(true);

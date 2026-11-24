@@ -99,9 +99,9 @@ excluded - so `--port` is only needed to pin a known pair.
 | `check-installer` | 73 language rows, 52 NSIS names present in the pinned archive, 10 icon paths | pass |
 | `check-ffi` | 115 unsafe blocks + 2 unsafe impls, SAFETY pairing | pass |
 | `check-docs` | 118 F / 86 N traced, 93 test ids, 134 DEF ids | pass |
-| `check-doc-counts` | every "<n> tests/keys/rows" claim in the docs matched against the measured tree (168 rows / 159 closed / 196 vitest / 866 keys / 341 Rust); historical closure rows pass only when marked "at the time" | pass |
+| `check-doc-counts` | every "<n> tests/keys/rows" claim in the docs matched against the measured tree (169 rows / 160 closed / 196 vitest / 866 keys / 341 Rust); historical closure rows pass only when marked "at the time" | pass |
 | `check-evidence-ledger` | every artefact under `evidence/` has a ledger row, every row names a file that exists, no artefact is 0 bytes, and every `evidence/…` path a document cites resolves (DEF-132) | pass |
-| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 168 ids, 1..168, 159+9 | pass |
+| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 169 ids, 1..169, 160+9 | pass |
 | `check-unused-keys` | every one of the 858 catalogue keys is referenced by `src/` (DEF-089 found 52 that were not) | 0 of 858 unreachable, pass |
 | `check-step-keys` | every `steps.*`/`error.*`/`remedy.*` key the core emits exists in both catalogues, and no `steps.*` key is emitted-less (DEF-088, DEF-090) | 39 catalogue keys, 0 missing, 0 orphaned, pass |
 | `check-scorecard-mutation` | 3 rubric mutations of `10-01` each rejected, file restored byte-identical | pass (exit 0, `evidence/scorecard-mutation.log`) |

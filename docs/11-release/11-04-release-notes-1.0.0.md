@@ -66,4 +66,8 @@ Get-FileHash .\Zenith_1.0.0_x64-setup.exe -Algorithm SHA256
   channel only. A local MSIX test package can be built with
   `npm run msix:package`, but the Store identity is not yet reserved.
 - 71 of the 73 languages fall back to English outside the translated chrome.
+- The installer is Tauri's NSIS template, not the Vellium setup surface that ships
+  in the application. The surface is reachable with `zenith --setup` and
+  `zenith --uninstall`, and 21 of the 73 locales have no NSIS translation, so their
+  installers run in English. 52 installer translations exist.
 - The real-host Windows 10 and Windows 11 matrix is not complete.
