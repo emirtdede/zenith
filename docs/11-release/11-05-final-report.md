@@ -58,7 +58,7 @@ could write. Section 4 lists each one with the action that closes it.
 | G-05 | Published repository description and licence are set | **PASS** | `https://github.com/emirtdede/zenith` | repository page |
 | G-06 | Repository topics are set so the project is discoverable | **PASS** | `gh api repos/emirtdede/zenith/topics` | `evidence/repo-settings.log` |
 | G-07 | The default branch carries the reviewed tree | **PASS** | `git status --porcelain`; `git ls-remote --heads origin`; `git diff --name-only v1.0.0 -- src src-tauri crates assets resources` | `main` and `development` pushed; tag `v1.0.0` names `85c125a` |
-| G-08 | The last commit on the default branch is green in CI | **PASS** | Actions run for that SHA | run `45342289468` |
+| G-08 | The last commit on the default branch is green in CI | **PASS** | Actions run for that SHA | run `45350833212` for `f605397`; run `45342289468` for the tagged `85c125a` |
 | G-09 | README follows the fixed section order and holds both language halves | **PASS** | inspection | `README.md` |
 | G-10 | README badges state real values (version, stack, licence, languages, palettes) | **PASS** | badge values vs `package.json`, `Cargo.toml`, `src/settings/palettes.json`, `src/i18n/languages.ts` | `README.md` lines 24-40 |
 | G-11 | The CI badge points at the workflow file that exists | **PASS** | `Select-String README.md -Pattern 'verify.yml'` | `README.md` |
