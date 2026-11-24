@@ -17,11 +17,15 @@
  * written for, using synthetic sources instead of editing product files.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { analyse, catalogueKeys } from "./lib/key-scan.mjs";
 
-const ROOT = "C:/Users/emir/Desktop/Zenith";
+// Derived from this file's location, never from a machine path: a gate that only
+// passes in the author's checkout is not a gate, and CI runs the script from a
+// clone under a different drive letter.
+const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
 function files(dir, exts, out = []) {
   let entries;
@@ -43,7 +47,7 @@ function files(dir, exts, out = []) {
   return out;
 }
 
-const rel = (p) => p.replace(`${ROOT}/`, "").replaceAll("\\", "/");
+const rel = (p) => p.slice(ROOT.length + 1).replaceAll("\\", "/");
 
 // Tests may deliberately reference keys that do not exist (a fixture naming a
 // future key is a fixture, not a product string), so `.test.ts(x)` is excluded.

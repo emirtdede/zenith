@@ -31,7 +31,7 @@
 ![React](https://img.shields.io/badge/React-19-000000?style=flat-square&logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-000000?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-000000?style=flat-square&logo=vite&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-3-000000?style=flat-square&logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4-000000?style=flat-square&logo=vitest&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-Server_Built--in-000000?style=flat-square)
 ![Languages](https://img.shields.io/badge/Languages-73_Supported-000000?style=flat-square)
 ![Themes](https://img.shields.io/badge/Themes-28_Palettes-000000?style=flat-square)
@@ -149,7 +149,7 @@ Zenith also ships the surfaces an IT team or an AI coding agent actually needs: 
 ![TypeScript](https://img.shields.io/badge/TypeScript_5.9-000000?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite_7-000000?style=flat-square&logo=vite&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-rusqlite-000000?style=flat-square&logo=sqlite&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest_3-000000?style=flat-square&logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest_4-000000?style=flat-square&logo=vitest&logoColor=white)
 ![Playwright](https://img.shields.io/badge/tauri--driver-E2E-000000?style=flat-square)
 
 </div>
@@ -517,7 +517,7 @@ Zenith ayrıca bir BT ekibinin veya yapay zekâ kodlama ajanının ihtiyaç duyd
 - **Bağlam menüleri** sağ tık, `Shift+F10` veya Menu tuşuyla açılır, `ESC` ile kapanır; destekleyen yüzeylerde kopyala, yapıştır, kes, tümünü seç ve sabitle/kaldır taşır.
 
 ### <img src="assets/icons/cpu.svg" width="20" height="20" align="absmiddle" alt="" /> Doğrulanmak İçin Kuruldu
-- **341 Rust testi** (282 çekirdek, 57 kabuk, 2 katalog kayması) ve 13 dosyada **196 Vitest testi**.
+- **341 Rust testi** (282 çekirdek, 57 kabuk, 2 katalog kayması) ve 14 dosyada **196 Vitest testi**.
 - İlk hatada duran **31 adımlık sürüm kapısı** (`npm run verify`): dil paritesi, sözleşme sayısı, tire ve emoji yasağı, kontrast, IPC sözleşmesi, doküman sayıları, kanıt defteri, SBOM, lisans politikası, FFI güvenliği, kurulum sözleşmesi, ikon yeniden üretilebilirliği, MSRV ve lint, Rust testleri ve gönderilen ikilinin kendi kendine yeterli olduğunun kanıtı.
 - Her üretim kaynak dosyası için bir hüküm içeren **dosya dosya yayın öncesi denetim**: [`10-03`](docs/10-audit/10-03-pre-deployment-qa.md).
 
@@ -533,7 +533,7 @@ Zenith ayrıca bir BT ekibinin veya yapay zekâ kodlama ajanının ihtiyaç duyd
 ![TypeScript](https://img.shields.io/badge/TypeScript_5.9-000000?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite_7-000000?style=flat-square&logo=vite&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-rusqlite-000000?style=flat-square&logo=sqlite&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest_3-000000?style=flat-square&logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest_4-000000?style=flat-square&logo=vitest&logoColor=white)
 ![E2E](https://img.shields.io/badge/tauri--driver-E2E-000000?style=flat-square)
 
 </div>
@@ -553,7 +553,7 @@ Zenith ayrıca bir BT ekibinin veya yapay zekâ kodlama ajanının ihtiyaç duyd
 ### Derleme, Test ve Sürüm
 - **`npm run verify`**: ön yüz kapısını, Rust testlerini, üretim derlemesini ve paket kanıtını bu sırayla çalıştıran **31 adımlık** zincir.
 - **`cargo test --workspace`**: çekirdek ve kabuk genelinde **341 test**.
-- **`npm run test`**: 13 dosyada **196 Vitest testi**.
+- **`npm run test`**: 14 dosyada **196 Vitest testi**.
 - **GitHub Actions**: `main` ve `development` dallarında, sürümün dayandığı aynı kapıyı çalıştıran CI.
 
 ---
