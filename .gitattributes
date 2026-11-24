@@ -1,0 +1,23 @@
+# Every tracked text file is stored and checked out with LF, so the line-based
+# gates (`check:dashes`, `check:docs`, `check:scorecard`, ...) see identical
+# bytes on Windows, Linux, and in CI. Binary artefacts keep their bytes.
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.zip binary
+*.exe binary
+*.dll binary
+*.msi binary
+*.msix binary
+*.lib binary
+*.rlib binary
+*.pdb binary
