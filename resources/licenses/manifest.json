@@ -3,8 +3,8 @@
   "generator": "scripts/generate-licenses.mjs",
   "target": "x86_64-pc-windows-msvc",
   "sources": {
-    "Cargo.lock": "d23b88d21b66a82a4e1e961eacd1fc565c0dc9dc8ecc615c500f236eec8e2d2c",
-    "package-lock.json": "fae219ea544abc5ae14b71b922f75340f8e7ce61c70daa3f019e1cb6e07a213f"
+    "Cargo.lock": "5aebf077cfdb046ae8199ab4351b02b9ef74e3fa47c719e65fd1919a00eab63d",
+    "package-lock.json": "4d9e5393e0cf1358639b09818eb71300fa997bbf6bbdbd728ebc1fed7da17837"
   },
   "counts": {
     "cargo": 270,
@@ -5131,7 +5131,7 @@
     {
       "ecosystem": "cargo",
       "name": "zip",
-      "version": "9.7.0",
+      "version": "9.8.1",
       "license": "MIT",
       "repository": "https://github.com/zip-rs/zip2",
       "authors": [
@@ -5256,5 +5256,5 @@
     }
   ],
   "notices": "THIRD-PARTY-NOTICES.txt",
-  "noticesSha256": "bf63787ca73312244c5a33e9c18431074ad2f3343f3272502e3963598b2e2893"
+  "noticesSha256": "fe20d56e77f5b000fe4325eab59ed71404e4e0d4668158073cf4979779fc1c55"
 }

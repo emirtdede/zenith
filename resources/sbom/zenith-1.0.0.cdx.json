@@ -1,7 +1,7 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:575da031-d1b3-5cbe-b424-8ee1d29120c0",
+  "serialNumber": "urn:uuid:8bea587a-8f5f-5753-8aee-969c88c55b1b",
   "version": 1,
   "metadata": {
     "tools": [
@@ -7211,10 +7211,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/zip@9.7.0",
+      "bom-ref": "pkg:cargo/zip@9.8.1",
       "name": "zip",
-      "version": "9.7.0",
-      "purl": "pkg:cargo/zip@9.7.0",
+      "version": "9.8.1",
+      "purl": "pkg:cargo/zip@9.8.1",
       "description": "Library to support the reading and writing of zip files.",
       "licenses": [
         {
@@ -7226,7 +7226,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "08687262e7c0f1284b259686f322805a8adaa8ef4d7210e76448950b3f083bf7"
+          "content": "a9534624d547e3f516ecde0ed9a70d37788f01d340efcfdd03bf3ea8e163c1d0"
         }
       ],
       "externalReferences": [
@@ -7668,7 +7668,7 @@
         "pkg:cargo/zerotrie@0.2.5",
         "pkg:cargo/zerovec@0.11.9",
         "pkg:cargo/zerovec-derive@0.11.7",
-        "pkg:cargo/zip@9.7.0",
+        "pkg:cargo/zip@9.8.1",
         "pkg:cargo/zlib-rs@0.6.8",
         "pkg:cargo/zmij@1.0.23",
         "pkg:cargo/zopfli@0.8.4",

@@ -1558,7 +1558,7 @@ zerovec-derive 0.11.7
   Authors: Manish Goregaokar <manishsmail@gmail.com>
   Copyright © 2020-2024 Unicode, Inc.
 
-zip 9.7.0
+zip 9.8.1
   Licence: MIT
   Source: https://github.com/zip-rs/zip2
   Authors: Mathijs van de Nes <git@mathijs.vd-nes.nl>, Marli Frost <marli@frost.red>, Ryan Levick <ryan.levick@gmail.com>, Chris Hennick <hennickc@amazon.com>
