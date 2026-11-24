@@ -394,6 +394,29 @@ npm run check:contrast       # 520 WCAG 2.2 pairs across 14 palettes
 npm run verify               # the full 31-step gate, stops at the first failure
 ```
 
+### Build Installers
+
+```bash
+# NSIS setup (target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe)
+npm run tauri build
+
+# Reproducible app icons from assets/zenith-mark.svg (ICO 16-256, PNG, tray, APPX tiles)
+npm run icons:generate
+
+# SBOM and third-party notices, both regenerated from the resolved graph
+npm run sbom:generate
+npm run licenses:generate
+
+# What a release workflow runs before it attaches anything
+npm run verify
+node scripts/check-build-identity.mjs
+```
+
+The bundler produces one artifact: the per-machine NSIS installer under
+`target/release/bundle/nsis/`. There is no portable build and no APPX target in
+this tree; the Microsoft Store package is prepared from the same binary as a
+separate submission step, described in [`docs/store/`](docs/store/README.md).
+
 ---
 
 ## <img src="assets/icons/package.svg" width="20" height="20" align="absmiddle" alt="" /> Distribution Packages
@@ -401,6 +424,7 @@ npm run verify               # the full 31-step gate, stops at the first failure
 Build artifacts are produced under `target/release/bundle/`:
 
 - **NSIS installer** - `Zenith_1.0.0_x64-setup.exe` (71 installer translations, 73 UI locales with an English installer fallback)
+- **MSIX package** - `npm run msix:package` assembles a Store package from the same binary; `npm run check:msix` re-opens it and verifies the manifest, the tiles, and the file set
 - **Icons** - `npm run icons:generate` reproduces ICO (16 to 256), PNG, tray and APPX tiles byte for byte from `assets/zenith-mark.svg`
 - **SBOM** - `npm run sbom:generate`, checked by `npm run check:sbom`
 - **Third-party notices** - `npm run licenses:generate`, checked by `npm run check:licenses`
@@ -629,7 +653,16 @@ npm run e2e
 npm run check:locales
 npm run check:contrast
 npm run verify
+
+# Kurulum Paketini Derleme (target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe)
+npm run tauri build
+npm run icons:generate
+npm run sbom:generate
+npm run licenses:generate
+node scripts/check-build-identity.mjs
 ```
+
+Paketleyici tek bir çıktı üretir: `target/release/bundle/nsis/` altındaki makine geneli NSIS kurulum dosyası. Bu depoda taşınabilir derleme ve APPX hedefi yoktur; Microsoft Store paketi aynı ikiliden ayrı bir gönderim adımı olarak hazırlanır ve [`docs/store/`](docs/store/README.md) altında anlatılır.
 
 ---
 
@@ -638,6 +671,7 @@ npm run verify
 Derleme çıktıları `target/release/bundle/` altında üretilir:
 
 - **NSIS kurulum dosyası** - `Zenith_1.0.0_x64-setup.exe` (71 kurulum çevirisi, İngilizce kurulum yedeğiyle 73 arayüz dili)
+- **MSIX paketi** - `npm run msix:package` aynı ikiliden bir Mağaza paketi üretir; `npm run check:msix` paketi yeniden açar ve bildirimi, karoları ve dosya kümesini doğrular
 - **İkonlar** - `npm run icons:generate`, `assets/zenith-mark.svg` dosyasından ICO (16 - 256), PNG, tepsi ve APPX karolarını bayt bayt yeniden üretir
 - **SBOM** - `npm run sbom:generate`, `npm run check:sbom` ile denetlenir
 - **Üçüncü taraf bildirimleri** - `npm run licenses:generate`, `npm run check:licenses` ile denetlenir

@@ -62,7 +62,8 @@ Get-FileHash .\Zenith_1.0.0_x64-setup.exe -Algorithm SHA256
 
 ## Known limitations
 
-- The Microsoft Store package is not produced yet; this release is the GitHub
-  channel only.
+- The Microsoft Store listing is not submitted; this release is the GitHub
+  channel only. A local MSIX test package can be built with
+  `npm run msix:package`, but the Store identity is not yet reserved.
 - 71 of the 73 languages fall back to English outside the translated chrome.
 - The real-host Windows 10 and Windows 11 matrix is not complete.

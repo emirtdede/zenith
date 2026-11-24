@@ -1733,9 +1733,12 @@ kbd {
 .context-menu-item:disabled { color: var(--text-muted); cursor: default; }
 .context-menu-rule { height: 1px; margin: 4px 6px; background: var(--border); }
 
-/* Skeleton */
+/* Skeleton: shape only. The tone and the shimmer are defined once in the token
+   layer (`.skeleton` in `tokens.css`); a second full definition here silently
+   overrode it with the resting-surface tone, which is the reason the boot
+   placeholders were invisible on every dark palette. */
 .skeleton-stack { display: flex; flex-direction: column; gap: 10px; }
-.skeleton { display: block; height: 12px; border-radius: var(--radius-xs); background: linear-gradient(90deg, var(--surface-subtle) 25%, var(--surface-hover) 37%, var(--surface-subtle) 63%); background-size: 400% 100%; animation: agShimmer 1.4s ease infinite; }
+.skeleton.is-line { display: block; height: 12px; border-radius: var(--radius-xs); }
 .skeleton-line-1 { width: 100%; }
 .skeleton-line-2 { width: 82%; }
 .skeleton-line-3 { width: 64%; }

@@ -7,8 +7,8 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-047 |
 | Channel | Microsoft Store (MSIX/APPX, Partner Center) |
-| Tree under review | `1.0.0`, working tree at commit `755885d` plus the uncommitted redesign |
-| Reviewed on | 2026-11-23 |
+| Tree under review | `1.0.0`, release commit `feaa12f` on `main` |
+| Reviewed on | 2026-11-24 |
 
 The Store channel is not a repackaging of the GitHub channel. A Store package is
 MSIX, it is installed per user by the Store service, it cannot carry an NSIS
@@ -18,18 +18,19 @@ by a file on this machine, a command in this tree, or a Partner Center setting.
 A row is `PASS` only when the artifact exists in the reviewed tree; a capability
 that is described but not built is `FAIL`, and the reason names the owner action.
 
-Nine rows are `FAIL` today, and they all share one cause: **this tree
-produces an NSIS installer and nothing else**. That is recorded here rather than
-softened, because the Store listing cannot be submitted from a package that does
-not exist.
+Nine rows are `FAIL` today, and they share two causes: **the Store identity is not
+reserved** and **nothing has been submitted**. The package itself exists - it is
+built by `scripts/pack-msix.mjs` and re-opened by `npm run check:msix` - but a
+package assembled with a local test identity is not a Store submission, and this
+document says so rather than counting the file as progress.
 
 ## 1. Packaging
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| M-01 | The build generates an MSIX or APPX package | `Select-String src-tauri/tauri.conf.json -Pattern 'msix\|appx'` | no match | FAIL - `bundle.targets` is NSIS only. Owner action: add the MSIX target and re-run `npm run tauri build`. |
-| M-02 | The MSIX declares the Store identity (name, publisher, publisher display name) | `src-tauri/tauri.conf.json` | no `windows.msix` block | FAIL - identity must match the Partner Center reservation exactly; a guessed value fails submission. |
-| M-03 | The package is signed by Microsoft for Store ingestion | Partner Center | not submitted | FAIL - follows from M-01. |
+| M-01 | The build generates an MSIX or APPX package | `npm run msix:package`; `npm run check:msix` | `evidence/msix-check.log` | PASS - `pack-msix.mjs` assembles a 3.7 MB MSIX from the release binary and `makeappx unpack` re-opens it; 38 content checks, six tiles measured from their PNG headers |
+| M-02 | The MSIX declares the Store identity (name, publisher, publisher display name) | `Get-Content src-tauri/msix/identity.json`; `node scripts/pack-msix.mjs --identity partner-center` | `src-tauri/msix/identity.json` | FAIL - the `partnerCenter` block is null and the script refuses to build from a guessed identity. Owner action: reserve the name in Partner Center and paste the three values. |
+| M-03 | The package is signed by Microsoft for Store ingestion | Partner Center | `_test.msix` is unsigned and local | FAIL - signing happens after submission. Owner action: submit the signed package (M-02, M-38). |
 | M-04 | The NSIS-only hooks are excluded from the Store package | `src-tauri/installer/hooks.nsh` | file exists and is NSIS-scoped | PASS - the hook is an NSIS include and is not part of an MSIX build. |
 | M-05 | The Store package writes only to per-user locations | `src-tauri/installer/hooks.nsh`; `crates/zenith-core/src/config.rs` | `%LOCALAPPDATA%\Vellium\Zenith`, `%APPDATA%\Vellium\Zenith` | PASS - both are per-user; an MSIX install adds no machine-wide path. |
 | M-06 | No process launches another executable outside the package without a capability declaration | `npm run check:contract`; `src-tauri/capabilities/default.json` | `evidence/verify-final.log` | PASS - the core runs system tools with an explicit manifest entry per action, and the window capability set is enumerated. |
@@ -40,11 +41,11 @@ not exist.
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| M-09 | APPX tile assets exist at the exact Store-required sizes | `Get-ChildItem src-tauri/icons` | `Square44x44Logo.png` 44, `Square71x71Logo.png` 71, `Square150x150Logo.png` 150, `Square310x310Logo.png` 310, `Wide310x150Logo.png` 310x150, `StoreLogo.png` 50 | PASS |
+| M-09 | APPX tile assets exist at the exact Store-required sizes | `npm run check:msix` | `evidence/msix-check.log` | PASS - 50x50, 44x44, 71x71, 150x150, 310x310, 310x150, each measured from the PNG header rather than the file name |
 | M-10 | Tiles are generated from the brand SVG, not hand-drawn per size | `npm run check:icons` | `evidence/verify-final.log` | PASS - all 17 files are reproduced byte-for-byte from `assets/zenith-mark.svg` |
 | M-11 | No Tauri default icon survives anywhere in the set | `npm run check:icons` | `evidence/verify-final.log` | PASS |
 | M-12 | The package icon is transparent where the tile requires it | inspection of a generated PNG | `src-tauri/icons/Square150x150Logo.png` | PASS - generated with an alpha channel from the source SVG |
-| M-13 | Store listing artwork (screenshots) meet the size rules | `node scripts/capture-settings.mjs` | `evidence/screens/store/*.png` at 1366x768 | PASS - five captures at the Store's minimum 1366x768 |
+| M-13 | Store listing artwork (screenshots) meet the size rules | `node scripts/capture-settings.mjs` | `evidence/screens/store/*.png` at 1366x768; `evidence/screens/locales/*.png` | PASS - five Store captures at the minimum 1366x768, plus eleven script and direction samples for the listing's international claims |
 
 ## 3. Capabilities and privacy
 
@@ -88,7 +89,7 @@ not exist.
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| M-37 | Windows App Certification Kit passes on the package | `appcert.exe` against the MSIX | no package to submit | FAIL - blocked by M-01. |
+| M-37 | Windows App Certification Kit passes on the package | `"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\appcert.exe" test -packagepath <msix> -reportoutputpath <xml>` | `appcert.exe` refuses to start without elevation | FAIL - the kit needs an elevated prompt and a signed package. Owner action: sign the package (M-02, M-03) and run the kit on a clean host. |
 | M-38 | Partner Center account is verified and the publisher is reserved | Partner Center | not available from this machine | FAIL - owner action: complete account verification and reserve the name `Zenith`. |
 | M-39 | The package passes the Store's static analysis without a suppression file | Partner Center report | not submitted | FAIL - follows from M-37. |
 | M-40 | The submission declares a support URL and a privacy URL that both resolve | `curl` of both URLs | neither resolves | FAIL - follows from M-16. |
@@ -103,26 +104,27 @@ not exist.
 
 | ID | Blocker | Owner action |
 | :--- | :--- | :--- |
-| M-01 | No MSIX package | Add the MSIX target and build it |
-| M-02 | No Store identity | Reserve the name and paste the identity into config |
-| M-03 | Package unsigned by Microsoft | Submit the MSIX |
+| M-02 | Store identity not reserved | Reserve the name in Partner Center and paste the three values into `src-tauri/msix/identity.json` |
+| M-03 | Package unsigned by Microsoft | Submit the signed package |
 | M-16 | Privacy URL not hosted | Publish the policy at `https://vellium.dev/zenith/privacy` |
 | M-22 | IARC questionnaire not submitted | Complete it in Partner Center |
-| M-37 | WACK not run | Run it on the signed MSIX |
+| M-37 | WACK not run | Sign the package, then run the kit from an elevated prompt on a clean host |
 | M-38 | Partner Center not verified | Complete account verification |
 | M-39 | No static analysis report | Follows from submission |
 | M-40 | Support and privacy URLs do not resolve | Follows from M-16 |
 
-Nine FAIL rows, all of them blocked on the missing package or on Partner Center.
-Two of them (M-16 and M-40) are also GitHub blockers, because a public privacy
-URL is owed to every user, not only to the Store.
+Nine FAIL rows, eight of them blocked on Partner Center or on hosting, and none of
+them on code in this tree: the package builds, and `check:msix` verifies its
+contents against the manifest. Two of them (M-16 and M-40) are also GitHub
+blockers, because a public privacy URL is owed to every user, not only to the
+Store.
 
 ### 7.2 What would move this checklist
 
 The shortest honest path is one work package, not a set of rows:
 
-1. Reserve the Store name and record the identity.
-2. Add `"targets": ["msix"]` plus a `windows.msix` block to `tauri.conf.json`.
-3. Build, sign through Partner Center, and run the Windows App Certification Kit.
+1. Reserve the Store name and paste the identity into `src-tauri/msix/identity.json`.
+2. Build with `node scripts/pack-msix.mjs --identity partner-center` and sign the result.
+3. Run the Windows App Certification Kit from an elevated prompt on a clean host.
 4. Publish the privacy policy at the URL the listing already names.
 5. Submit, then replace each FAIL above with the Partner Center reference.

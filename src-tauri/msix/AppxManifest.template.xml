@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Desktop Bridge package manifest for Zenith.
+
+  `makeappx pack` validates this against the Windows schema on every build, which
+  is why the placeholders are the only thing that differs between a local test
+  package and a submittable one: the shape is checked by the SDK, not by a regex
+  in this repository.
+
+  Why `runFullTrust`: Zenith's mutating actions repair Windows services, system
+  files and the component store. Those calls cannot run inside an AppContainer,
+  so the package is a full-trust desktop application. The capability is the one
+  restricted capability in the package and it is declared in the Store listing as
+  part of the certification note (docs/store/packaging.md).
+
+  Why no `appExecutionAlias`: an alias would add a second, MSIX-owned PATH entry
+  next to the CLI installer that already exists, and two owners for one name is
+  how a shell ends up running a stale binary. The CLI is installed by the app and
+  documented in README; the package does not compete for it.
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="{{IDENTITY_NAME}}"
+    Publisher="{{PUBLISHER}}"
+    Version="{{VERSION_4_PART}}"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Zenith</DisplayName>
+    <PublisherDisplayName>{{PUBLISHER_DISPLAY_NAME}}</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Diagnose and repair your Windows PC, safely.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.17763.0"
+      MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+    <Resource Language="tr-tr" />
+  </Resources>
+
+  <Applications>
+    <Application Id="Zenith" Executable="Zenith.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Zenith"
+        Description="Diagnose and repair your Windows PC, safely."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          Wide310x150Logo="Assets\Wide310x150Logo.png"
+          Square310x310Logo="Assets\Square310x310Logo.png"
+          ShortName="Zenith" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

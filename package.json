@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "msix:package": "node scripts/pack-msix.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:simulator": "node scripts/check-simulator.mjs",
     "check:locales": "node scripts/check-locales.mjs",
@@ -47,10 +48,12 @@
     "check:step-keys-negative": "node scripts/check-step-keys-negative.mjs",
     "icons:generate": "node scripts/generate-icons.mjs",
     "check:icons": "node scripts/check-icons.mjs",
+    "check:msix": "node scripts/check-msix.mjs",
     "check:installer": "node scripts/check-installer.mjs",
     "check:emoji": "node scripts/check-emoji.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
     "capture:setup": "node scripts/capture-setup.mjs",
+    "capture:boot": "node scripts/capture-boot.mjs",
     "capture:settings": "node scripts/capture-settings.mjs"
   },
   "dependencies": {

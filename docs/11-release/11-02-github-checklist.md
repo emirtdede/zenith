@@ -7,8 +7,8 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-046 |
 | Channel | GitHub open source (repository, release asset, CI) |
-| Tree under review | `1.0.0`, working tree at commit `755885d` plus the uncommitted redesign |
-| Reviewed on | 2026-11-23 |
+| Tree under review | `1.0.0`, release commit `feaa12f` on `main` |
+| Reviewed on | 2026-11-24 |
 
 This is the checklist the repository itself has to satisfy before a public
 release is announced. It is a measurement, not a plan: every row names the
@@ -27,11 +27,11 @@ newsletter.
 | G-01 | The licence is OSI-approved MIT and the file is the unmodified canonical text | `Get-Content LICENSE` | `LICENSE` | PASS |
 | G-02 | Copyright holder and year are correct for the publishing entity | `Get-Content LICENSE -TotalCount 3` | `LICENSE` | PASS |
 | G-03 | Version in `package.json`, `Cargo.toml`, `tauri.conf.json`, and the installer all agree | `node scripts/check-doc-counts.mjs`; `node scripts/check-contract.mjs` | `evidence/verify-final.log` | PASS |
-| G-04 | Git tag exists for the released version | `git tag --list` | local tag `1.0.0` | FAIL - the tag is local only; it is not on the published repository, so `https://github.com/emirtdede/zenith/tree/1.0.0` does not resolve. Owner action: push the tag with the release commit. |
+| G-04 | Git tag exists for the released version | `git ls-remote --tags origin`; `gh api repos/emirtdede/zenith/git/ref/tags/1.0.0` | tag `1.0.0` resolves to `755885d` | FAIL - a tag exists but not for this release: it points at the pre-redesign commit. Owner action: push an annotated `v1.0.0` at the release commit, which is also what starts `release.yml`. |
 | G-05 | Published repository description and licence are set | `https://github.com/emirtdede/zenith` | repository page | PASS |
-| G-06 | Repository topics are set so the project is discoverable | repository settings | none | FAIL - no topics. Owner action: add `windows`, `tauri`, `rust`, `diagnostics`, `self-healing`, `open-source`. |
-| G-07 | The default branch carries the reviewed tree | `git status --porcelain` | 134 modified paths | FAIL - this review is against an uncommitted tree; the published `main` still advertises 306 tests, 166 Vitest tests, three themes, and a shorter gate than the 31 steps this tree runs. Owner action: commit and push, then re-run this row. |
-| G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | none | FAIL - no run can exist for a commit that has not been pushed. |
+| G-06 | Repository topics are set so the project is discoverable | `gh api repos/emirtdede/zenith/topics` | `evidence/repo-settings.log` | PASS - `windows`, `tauri`, `rust`, `diagnostics`, `self-healing`, `open-source` |
+| G-07 | The default branch carries the reviewed tree | `git status --porcelain`; `git ls-remote --heads origin` | `main` and `development` both at `feaa12f` | PASS - the tree is committed and pushed; the working tree is clean and `main` is the reviewed commit |
+| G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | run `45302890400` | PASS - `verify` finished `success` on `windows-2022`, and the release commit is that commit's descendant with one documentation-only change |
 
 ## 2. README and public documentation
 
@@ -51,31 +51,31 @@ newsletter.
 | G-20 | Accessibility statement exists and is reachable from the app | `Get-Content public/legal/accessibility.md` | `public/legal/accessibility.md` | PASS |
 | G-21 | CONTRIBUTING explains the gate a change must pass | `Get-Content CONTRIBUTING.md` | `CONTRIBUTING.md` | PASS |
 | G-22 | CODE_OF_CONDUCT is present | `Get-Content CODE_OF_CONDUCT.md` | `CODE_OF_CONDUCT.md` | PASS |
-| G-23 | Issue templates exist | `.github/ISSUE_TEMPLATE/*` | none | FAIL - no issue forms. Owner action: add bug-report and feature-request forms that ask for version, build commit, and a support bundle. |
-| G-24 | Pull request template exists | `.github/pull_request_template.md` | none | FAIL - owner action: add a template whose first line is `npm run verify`. |
+| G-23 | Issue templates exist | `Get-ChildItem .github/ISSUE_TEMPLATE` | `.github/ISSUE_TEMPLATE/{bug_report,feature_request,config}.yml` | PASS - bug and feature forms ask for version, build commit, and a support bundle; `config.yml` routes security reports to the private advisory channel |
+| G-24 | Pull request template exists | `Get-Content .github/pull_request_template.md` | `.github/pull_request_template.md` | PASS - the first checkbox is `npm run verify` |
 
 ## 3. Security and supply chain
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-25 | No secret in the working tree or in any commit | `npm run check:secrets` | `evidence/gitleaks.log` | PASS - worktree and 5-commit history clean under the default rule set |
+| G-25 | No secret in the working tree or in any commit | `npm run check:secrets` | `evidence/gitleaks.log` | PASS - worktree and the full 14-commit history clean (5.86 MB scanned) under the default rule set |
 | G-26 | `.gitignore` excludes certificates, keys, `.env`, and build output | `Get-Content .gitignore` | `.gitignore` | PASS |
 | G-27 | Only non-secret configuration is documented in `.env.example` | `Get-Content .env.example` | `.env.example` | PASS |
 | G-28 | Dependency advisories are clean | `npm run check:deny` | `evidence/verify-final.log` | PASS |
 | G-29 | SBOM is generated from the real dependency graph and is current | `npm run check:sbom` | `evidence/verify-final.log` | PASS |
 | G-30 | Third-party licence notices are generated, not hand-written | `npm run check:licenses` | `evidence/verify-final.log` | PASS |
-| G-31 | Workflow actions are pinned to commit SHAs | inspection of `.github/workflows/verify.yml` | `uses: actions/checkout@v4` | FAIL - tags are mutable. Owner action: pin `checkout`, `setup-node`, and the Rust action to full SHAs and let Dependabot bump them. |
+| G-31 | Workflow actions are pinned to commit SHAs | `Select-String .github/workflows/*.yml -Pattern 'uses:'` | `.github/workflows/verify.yml`, `.github/workflows/release.yml` | PASS - seven uses across the two workflows, every one a 40-character commit SHA with the release tag in a comment |
 | G-32 | The workflow token is least-privilege | `Select-String .github/workflows/verify.yml -Pattern 'permissions'` | `contents: read` | PASS |
 | G-33 | Telemetry is off unless the user consents, and consent is tested | `npm run check:fe` | `evidence/vitest-counts.json` | PASS |
 | G-34 | Content Security Policy is restrictive and every remote origin is deliberate | `Select-String src-tauri/tauri.conf.json -Pattern 'csp'` | `src-tauri/tauri.conf.json` | PASS - `self`, `ipc:`, `http://ipc.localhost`, and `https://api.github.com` (the update feed) only |
-| G-35 | Secret scanning and push protection are enabled on the repository | repository security settings | not available from this machine | FAIL - owner action: enable both in Settings > Code security. A local gitleaks run cannot prove a server-side setting. |
-| G-36 | Dependabot is configured for npm and cargo | `.github/dependabot.yml` | none | FAIL - owner action: add weekly npm and cargo ecosystems. |
+| G-35 | Secret scanning and push protection are enabled on the repository | `gh api repos/emirtdede/zenith --jq '.security_and_analysis'` | `evidence/repo-settings.log` | PASS - `secret_scanning: enabled`, `secret_scanning_push_protection: enabled`, `dependabot_security_updates: enabled` |
+| G-36 | Dependabot is configured for npm and cargo | `Get-Content .github/dependabot.yml` | `.github/dependabot.yml` | PASS - weekly npm, cargo and github-actions updates, grouped by ecosystem, with the action pins kept fresh |
 
 ## 4. Quality gates
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-37 | The full release chain is green | `npm run verify` | `evidence/verify-final.log` | PASS - 31 steps, exit 0, on the tree that produced `release-20261123` |
+| G-37 | The full release chain is green | `npm run verify` | `evidence/verify-final.log` | PASS - 31 steps, exit 0, on the tree that produced `release-20261124` |
 | G-38 | Rust test suite | `cargo test --workspace --locked` | `evidence/verify-final.log` | PASS - 341 tests |
 | G-39 | Frontend test suite | `npm run check:fe` | `evidence/vitest-counts.json` | PASS - 196 tests in 14 files |
 | G-40 | TypeScript type check | `npx tsc --noEmit` | `evidence/verify-final.log` | PASS |
@@ -87,15 +87,15 @@ newsletter.
 | G-46 | Evidence ledger describes every artefact | `npm run check:evidence-ledger` | `evidence/verify-final.log` | PASS |
 | G-47 | Negative and mutation gates catch their own regressions | `npm run check:mutate-restore` and the mutation logs | `evidence/def1*.log` | PASS |
 | G-48 | A clean clone builds and verifies | `npm run verify` with `dist/` removed | `evidence/def167-clean-clone.log` | PASS |
-| G-49 | Desktop end-to-end journeys pass against the release binary | `npm run e2e -- --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | `evidence/e2e-final.log` | PASS - 3 journeys, 11 steps, 0 failures against the `release-20261123` binary |
+| G-49 | Desktop end-to-end journeys pass against the release binary | `npm run e2e -- --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | `evidence/e2e-final.log` | PASS - 3 journeys, 11 steps, 0 failures against the `release-20261124` binary |
 | G-50 | CI runs the same chain, not a hand-copied subset | `npm run check:workflows` | `evidence/verify-final.log` | PASS |
 
 ## 5. Build and release assets
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-51 | The release binary is built from this tree with the lockfile | `npm run tauri build`; `node scripts/check-build-identity.mjs` | `target/release/zenith.exe` | PASS - 6,629,888 bytes, `release-20261123`, no shipped source newer than the binary |
-| G-52 | The installer is built from the same commit as the binary | file timestamps and `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | PASS - `npm run tauri build` on 2026-11-24 produced the binary and the bundle in the same run, identity `release-20261123`, and `check-build-identity` passes against the pair |
+| G-51 | The release binary is built from this tree with the lockfile | `npm run tauri build`; `node scripts/check-build-identity.mjs` | `target/release/zenith.exe` | PASS - 6,628,352 bytes, `release-20261124`, no shipped source newer than the binary |
+| G-52 | The installer is built from the same commit as the binary | file timestamps and `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | PASS - `npm run tauri build` on 2026-11-24 produced the binary and the bundle in the same run, identity `release-20261124`, and `check-build-identity` passes against the pair |
 | G-53 | The installer and the binary are Authenticode-signed | `Get-AuthenticodeSignature target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | `NotSigned` | FAIL - DEF-028, no EV certificate on this machine. Owner action: supply the certificate and re-run `npm run tauri build`. |
 | G-54 | Installer icons are the project set, with no Tauri default | `npm run check:icons` | `evidence/verify-final.log` | PASS - 17 files reproduced byte-for-byte |
 | G-55 | The installer offers 73 languages and the NSIS list matches | `npm run check:installer` | `evidence/verify-final.log` | PASS - 73 rows, 71 real translations, 2 fall back to `en` |
@@ -124,23 +124,17 @@ newsletter.
 
 | ID | Blocker | Owner action |
 | :--- | :--- | :--- |
-| G-04 | Local-only tag | Push the tag with the release commit |
-| G-06 | No repository topics | Add six topics in repository settings |
-| G-07 | Uncommitted tree differs from the published default branch | Commit and push, then re-run `npm run verify` in CI |
-| G-08 | No CI run for the reviewed tree | Same commit that closes G-07 |
-| G-23 | No issue templates | Add bug and feature forms |
-| G-24 | No pull request template | Add `.github/pull_request_template.md` |
-| G-31 | Actions pinned by tag | Pin to SHAs, add Dependabot |
-| G-35 | Server-side secret scanning unverified | Enable secret scanning and push protection |
-| G-36 | No Dependabot configuration | Add `.github/dependabot.yml` |
+| G-04 | Tag `1.0.0` on the published repository points at the pre-redesign commit | Push an annotated `v1.0.0` at the release commit so `release.yml` can build it |
 | G-53 | Installer unsigned | Supply the EV certificate (DEF-028) |
-| G-57 | No checksums published | Attach `SHA256SUMS.txt` to the release |
-| G-58 | No provenance attestation | Add a release workflow with `actions/attest-build-provenance` |
+| G-57 | No published release asset to checksum | Let the tag push run `release.yml`, which attaches `SHA256SUMS.txt` to the draft |
+| G-58 | No provenance attestation | Same run: `attest-build-provenance` signs the installer and the binary |
 | G-60 | No ARM64 build | Install the ARM64 MSVC target and build |
 | G-61 | No real-host Windows matrix | Run the T-WIN matrix (DEF-047) |
-| G-63 | No release draft | Draft the release from CHANGELOG |
-| G-64 | Published README is stale | Follows from G-07 |
+| G-63 | No release draft | Same run: the workflow opens the draft from `11-04-release-notes-1.0.0.md` |
+| G-64 | Published README carries the pre-redesign text | Follows from the release run rebuilding the tree (G-07 closes on push) |
 
-Sixteen FAIL rows remain, all of them publication or owner-asset actions. Every
-one of them is a blocker for announcing the release; none of them is a defect in
-the code, and none is hidden in this document.
+Eight FAIL rows remain. Three of them (G-57, G-58, G-63) close mechanically when
+the tag is pushed, one (G-04) needs an annotated tag because the existing `1.0.0`
+tag still points at `755885d`, and the other four need an owner asset: an EV
+certificate, an ARM64 toolchain, and a real-host Windows matrix. None is a defect
+in the code, and none is hidden in this document.

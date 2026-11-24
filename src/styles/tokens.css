@@ -567,16 +567,23 @@ html[dir="rtl"] .animate-context-menu {
  * the compositor and costs no layout. Shape is not defined here: a skeleton
  * copies the real row's box from the same class, so the two are pixel-equal by
  * construction rather than by two sets of numbers that drift.
+ *
+ * The base tone is deliberately lifted above the resting surfaces. A placeholder
+ * drawn in `--surface-subtle` sits 1.1:1 from the canvas, which is invisible on
+ * a dark palette - a loading state nobody can see fails at the one job it has:
+ * telling the user the application is working, not frozen. Mixing `--text-muted`
+ * into `--surface-hover` lands near 2.4:1 in every palette, which reads as a
+ * placeholder without competing with real text.
  */
 .skeleton {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-sm);
-  background-color: var(--surface-subtle);
+  background-color: color-mix(in srgb, var(--surface-hover) 68%, var(--text-muted) 32%);
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--surface-hover) 82%, var(--text-muted) 18%) 50%,
+    color-mix(in srgb, var(--surface-hover) 40%, var(--text-muted) 60%) 50%,
     transparent 100%
   );
   background-size: 220% 100%;

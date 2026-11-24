@@ -59,6 +59,25 @@ const STORE_SCREENS = [
   { file: "05-activity", nav: "activity", expect: "ol.log" },
 ];
 
+// One picture per script, not per language: the point is that a glyph the
+// catalogue needs actually renders in the shipped binary, and that the four RTL
+// locales mirror the shell. Latin, Turkish Latin, Cyrillic, Devanagari, Arabic,
+// Hebrew, Japanese, Korean, and Simplified Chinese cover nine scripts and all
+// four RTL locales.
+const LOCALE_SAMPLES = [
+  { file: "01-latin-en", locale: "en", dir: "ltr" },
+  { file: "02-latin-tr", locale: "tr", dir: "ltr" },
+  { file: "03-cyrillic-ru", locale: "ru", dir: "ltr" },
+  { file: "04-devanagari-hi", locale: "hi", dir: "ltr" },
+  { file: "05-arabic-ar-rtl", locale: "ar", dir: "rtl" },
+  { file: "06-hebrew-he-rtl", locale: "he", dir: "rtl" },
+  { file: "07-japanese-ja", locale: "ja", dir: "ltr" },
+  { file: "08-korean-ko", locale: "ko", dir: "ltr" },
+  { file: "09-chinese-zh-CN", locale: "zh-CN", dir: "ltr" },
+  { file: "10-persian-fa-rtl", locale: "fa", dir: "rtl" },
+  { file: "11-urdu-ur-rtl", locale: "ur", dir: "rtl" },
+];
+
 function freePort() {
   return new Promise((resolve, reject) => {
     const server = createServer();
@@ -226,6 +245,58 @@ try {
     if (overflow > 0) problems.push(`store/${state.file}: ${overflow}px horizontal overflow`);
     console.log(`store/${state.file}.png  ${size.width}x${size.height}`);
   }
+
+  // --- script and direction samples ---------------------------------------
+  const localeDir = join(root, "locales");
+  mkdirSync(localeDir, { recursive: true });
+  await js("document.querySelector('[data-nav=\"settings\"]')?.click(); return null;");
+  await sleep(260);
+  await js("document.querySelector('[data-tab=\"language\"]')?.click(); return null;");
+  await sleep(260);
+
+  for (const sample of LOCALE_SAMPLES) {
+    const chosen = await js(`
+      const label = document.querySelector(${JSON.stringify(`.language-name[lang="${sample.locale}"]`)});
+      if (!label) return false;
+      const button = label.closest('button');
+      if (!button) return false;
+      button.click();
+      return true;
+    `);
+    if (!chosen) {
+      problems.push(`locales/${sample.file}: no language button for ${sample.locale}`);
+      continue;
+    }
+    await sleep(420);
+    const observed = await js("return document.documentElement.dir;");
+    if (observed !== sample.dir) {
+      problems.push(`locales/${sample.file}: document direction is "${observed}", expected "${sample.dir}"`);
+    }
+    await js("document.querySelector('[data-nav=\"actions\"]')?.click(); return null;");
+    await sleep(320);
+    const file = join(localeDir, `${sample.file}.png`);
+    const size = await shot(file);
+    const overflow = await js(
+      "return document.documentElement.scrollWidth - document.documentElement.clientWidth;",
+    );
+    if (size.width < WIDTH || size.height < HEIGHT) {
+      problems.push(`locales/${sample.file}.png is ${size.width}x${size.height}, below ${WIDTH}x${HEIGHT}`);
+    }
+    if (overflow > 0) problems.push(`locales/${sample.file}: ${overflow}px horizontal overflow`);
+    const heading = await js("return document.querySelector('#main .page-title')?.textContent?.trim() ?? '';");
+    console.log(`locales/${sample.file}.png  ${size.width}x${size.height}  dir=${observed}  "${heading}"`);
+    await js("document.querySelector('[data-nav=\"settings\"]')?.click(); return null;");
+    await sleep(200);
+    await js("document.querySelector('[data-tab=\"language\"]')?.click(); return null;");
+    await sleep(200);
+  }
+
+  // Leave the profile in English so a later run starts from the same state.
+  await js(`
+    const label = document.querySelector('.language-name[lang="en"]');
+    label?.closest('button')?.click();
+    return null;
+  `);
 } finally {
   if (sessionId) {
     try {
@@ -242,4 +313,6 @@ if (problems.length > 0) {
   for (const problem of problems) console.error(`  - ${problem}`);
   process.exit(1);
 }
-console.log(`\n${TABS.length} settings tabs and ${STORE_SCREENS.length} Store screens at ${WIDTH}x${HEIGHT}`);
+console.log(
+  `\n${TABS.length} settings tabs, ${STORE_SCREENS.length} Store screens, and ${LOCALE_SAMPLES.length} script samples at ${WIDTH}x${HEIGHT}`,
+);

@@ -1,0 +1,14 @@
+{
+  "$comment": "MSIX identity. The Partner Center block is filled in when the name is reserved; until then scripts/pack-msix.mjs builds only a local test package and refuses to label it submittable.",
+  "testIdentity": {
+    "name": "Vellium.Zenith.LocalTest",
+    "publisher": "CN=Vellium Local Test",
+    "publisherDisplayName": "Vellium (local test)"
+  },
+  "partnerCenter": {
+    "name": null,
+    "publisher": null,
+    "publisherDisplayName": null,
+    "reservedOn": null
+  }
+}

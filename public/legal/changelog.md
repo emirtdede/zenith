@@ -49,6 +49,11 @@ First public release.
   the four Store tiles, the wide tile, the Store logo, and the tray icon.
 - A GitHub Releases update check with semantic version comparison. The Microsoft
   Store channel reports availability and never downloads an installer itself.
+- An MSIX packaging path for the Microsoft Store: `npm run msix:package` renders
+  the package manifest, validates it with the Windows SDK's own packer, and
+  `npm run check:msix` re-opens the package and measures its contents. The Store
+  identity is a separate reserved value, so the script refuses to label a local
+  test build submittable.
 
 ### Changed
 
@@ -75,7 +80,8 @@ First public release.
 - The installer and the binary are not Authenticode-signed in this build. The
   Trust Center reports the signature as unverified rather than valid.
 - 71 of the 73 languages fall back to English outside the translated chrome.
-- The Microsoft Store package (MSIX) is not produced yet; this release ships the
-  NSIS installer.
+- The Microsoft Store package can be built locally with `npm run msix:package`,
+  but the Store identity is not reserved and nothing has been submitted, so this
+  release ships the NSIS installer only.
 - Windows 10 and Windows 11 are both supported, but the real-host matrix is not
   complete.
