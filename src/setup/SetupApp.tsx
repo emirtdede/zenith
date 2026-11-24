@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import markUrl from "../../assets/zenith-mark.svg";
 import "./setup.css";
 import {
   SETUP_LANGUAGES,
@@ -131,23 +132,23 @@ function SoftBackdrop() {
 
 /* ------------------------------------------------------------------- logo --- */
 
-/** The application mark, monochrome-tinted for the wizard. */
+/**
+ * The application mark.
+ *
+ * The wizard renders the same `assets/zenith-mark.svg` the window icon, the
+ * taskbar, and the Store tiles are generated from, so the installer can never
+ * drift from the shipped brand: one square SVG, rasterised at build time.
+ */
 function SetupLogo({ size }: { size: number }) {
   return (
-    <svg
+    <img
       className="setup-logo"
+      src={markUrl}
       width={size}
       height={size}
-      viewBox="0 0 1024 1024"
-      role="img"
-      aria-label={APP_NAME}
-    >
-      <rect x="0" y="0" width="1024" height="1024" rx="220" fill="#0b0b0d" />
-      <rect x="40" y="40" width="944" height="944" rx="186" fill="none" stroke="#2a2a2e" strokeWidth="16" />
-      <path d="M512 132 L598 426 L892 512 L598 598 L512 892 L426 598 L132 512 L426 426 Z" fill="#fafafa" />
-      <path d="M512 300 L556 468 L724 512 L556 556 L512 724 L468 556 L300 512 L468 468 Z" fill="#0b0b0d" />
-      <circle cx="512" cy="512" r="42" fill="#fafafa" />
-    </svg>
+      alt={APP_NAME}
+      draggable={false}
+    />
   );
 }
 
@@ -274,7 +275,7 @@ export function SetupApp({
             {windowTitle}
           </span>
           <div className="setup-window-controls">
-            {mode === "uninstall" && activeScreen !== "progress" ? (
+            {mode === "uninstall" ? (
               <select
                 className="setup-lang-compact"
                 aria-label={t(strings, "language", vars)}
@@ -340,29 +341,29 @@ export function SetupApp({
               <div className="setup-progress-title">
                 {mode === "uninstall" ? t(strings, "removing", vars) : t(strings, "installing", vars)}
               </div>
-              <div className="setup-progress-block">
-                <div className="setup-progress-meta">
-                  <span className="setup-progress-status">
-                    {percent < 25
-                      ? t(strings, "preparing", vars)
-                      : percent < 85
-                        ? t(strings, "writing", vars)
-                        : t(strings, "finishing", vars)}
-                  </span>
-                  <span className="setup-progress-percent">{percent}%</span>
-                </div>
-                <div
-                  className="setup-progress-track"
-                  role="progressbar"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={percent}
-                >
-                  <div className="setup-progress-fill" style={{ width: `${percent}%` }} />
-                </div>
+            </div>
+            <div className="setup-progress-block">
+              <div className="setup-progress-meta">
+                <span className="setup-progress-status">
+                  {percent < 25
+                    ? t(strings, "preparing", vars)
+                    : percent < 85
+                      ? t(strings, "writing", vars)
+                      : t(strings, "finishing", vars)}
+                </span>
+                <span className="setup-progress-percent">{percent}%</span>
+              </div>
+              <div
+                className="setup-progress-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={percent}
+                aria-label={mode === "uninstall" ? t(strings, "removing", vars) : t(strings, "installing", vars)}
+              >
+                <div className="setup-progress-fill" style={{ width: `${percent}%` }} />
               </div>
             </div>
-            <div className="setup-footer">{t(strings, "footer", vars)}</div>
           </div>
         ) : null}
 
