@@ -42,8 +42,8 @@ npm run verify
 npm run e2e -- --app target/release/zenith.exe --driver "$env:TEMP\zenith-e2e\msedgedriver.exe"
 ```
 
-`npm run verify` is `check:locales && check:unused-keys && check:step-keys && check:step-keys-negative && check:contract && check:dashes && check:emoji && check:contrast && check:simulator && check:nonwindows && check:docs && build && check:fe && check:doc-counts && check:evidence-ledger && check:scorecard && check:ffi && check:licenses && check:deny && check:sbom && check:stubs && check:mutate-restore && check:verify-chain && check:resources && check:icons && check:installer && check:workflows && check:msrv && check:lint && check:rust-tests && check:bundle`
-The chain is thirty-one steps, each exits non-zero on failure, so it stops at the first broken gate.
+`npm run verify` is `check:locales && check:unused-keys && check:step-keys && check:step-keys-negative && check:contract && check:dashes && check:emoji && check:contrast && check:simulator && check:nonwindows && check:docs && check:checklists && check:checklists-mutation && build && check:fe && check:doc-counts && check:evidence-ledger && check:evidence-ledger-mutation && check:scorecard && check:ffi && check:licenses && check:deny && check:sbom && check:stubs && check:mutate-restore && check:verify-chain && check:resources && check:icons && check:installer && check:workflows && check:msrv && check:lint && check:rust-tests && check:bundle`
+The chain is thirty-four steps, each exits non-zero on failure, so it stops at the first broken gate.
 `check:resources` verifies `resources/manifest.json` is still a real contract: every asset carries an
 id, a path, a byte count, a SHA-256, a source and a licence; ids and paths are unique; no path escapes
 the directory; and every asset that happens to be present on the machine hashes to its pin. The
@@ -98,10 +98,11 @@ excluded - so `--port` is only needed to pin a known pair.
 | `check-icons` | 17 files reproduced byte-for-byte from `assets/zenith-mark.svg` | pass |
 | `check-installer` | 73 language rows, 52 NSIS names present in the pinned archive, 10 icon paths | pass |
 | `check-ffi` | 115 unsafe blocks + 2 unsafe impls, SAFETY pairing | pass |
-| `check-docs` | 118 F / 86 N traced, 93 test ids, 134 DEF ids | pass |
-| `check-doc-counts` | every "<n> tests/keys/rows" claim in the docs matched against the measured tree (169 rows / 160 closed / 196 vitest / 866 keys / 341 Rust); historical closure rows pass only when marked "at the time" | pass |
+| `check-docs` | 118 F / 86 N traced, 93 test ids, 169 DEF ids | pass |
+| `check-doc-counts` | every "<n> tests/keys/rows" claim in the docs matched against the measured tree (171 rows / 162 closed / 196 vitest / 866 keys / 341 Rust); historical closure rows pass only when marked "at the time" | pass |
+| `check:checklists` | both release checklists parsed as tables: 5 cells per row, ids contiguous 1..N, every verdict PASS or FAIL, summary counts equal the measured rows, FAIL register matches the body. Five mutation cases prove it catches a joined row, a missing closing pipe, an undecided verdict, count drift and a register omission | pass |
 | `check-evidence-ledger` | every artefact under `evidence/` has a ledger row, every row names a file that exists, no artefact is 0 bytes, and every `evidence/…` path a document cites resolves (DEF-132) | pass |
-| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 169 ids, 1..169, 160+9 | pass |
+| `check-scorecard` | rubric sums to 100; C1-C10 rows sum to 45 (v1) and 98 (v2); 2 withheld = 2 shortfall; owner's eight bands sum to 110 → 46.4/100, 1.4-point gap; register 171 ids, 1..171, 162+9 | pass |
 | `check-unused-keys` | every one of the 858 catalogue keys is referenced by `src/` (DEF-089 found 52 that were not) | 0 of 858 unreachable, pass |
 | `check-step-keys` | every `steps.*`/`error.*`/`remedy.*` key the core emits exists in both catalogues, and no `steps.*` key is emitted-less (DEF-088, DEF-090) | 39 catalogue keys, 0 missing, 0 orphaned, pass |
 | `check-scorecard-mutation` | 3 rubric mutations of `10-01` each rejected, file restored byte-identical | pass (exit 0, `evidence/scorecard-mutation.log`) |

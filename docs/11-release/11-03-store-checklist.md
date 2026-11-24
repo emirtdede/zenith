@@ -103,8 +103,8 @@ document says so rather than counting the file as progress.
 | Requirement rows | 42 |
 | `PASS` | 34 |
 | `FAIL` | 8 |
-| Tree under review | `4d1bf5f` on `main` |
-| Package under review | `Zenith_1.0.0_x64_test.msix`, 3,713,622 bytes, 38 content checks |
+| Tree under review | `v1.0.0` at `7b4f73b` on `main` |
+| Package under review | `Zenith_1.0.0_x64_test.msix`, 3,714,426 bytes, 38 content checks |
 | Commands re-run for this revision | `npm run msix:package`, `npm run check:msix`, `npm run check:icons`, `node scripts/capture-settings.mjs` |
 
 The eight `FAIL` rows need an account, a certificate, or a hosted URL. None of

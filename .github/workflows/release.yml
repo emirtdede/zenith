@@ -68,7 +68,7 @@ jobs:
       # duplication for its own sake: the artefact must come from a tree that
       # passed the gate, and "it passed on the branch" is a claim about a
       # different commit as soon as the tag moves.
-      - name: Release gate (31 steps)
+      - name: Release gate (34 steps)
         run: npm run verify
 
       # `tauri::generate_context!` embeds the frontend only; the identity the

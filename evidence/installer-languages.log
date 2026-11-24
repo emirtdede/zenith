@@ -1,2 +1,2 @@
-Installer holds: 52 NSIS translations for 73 UI locales (the rest fall back to the English installer), 10 icons, hooks with a silent-uninstall guard.
+﻿Installer holds: 52 NSIS translations for 73 UI locales (the rest fall back to the English installer), 10 icons, hooks with a silent-uninstall guard.
 Self-test holds: 6 language cases, including the DEF-168 shape.

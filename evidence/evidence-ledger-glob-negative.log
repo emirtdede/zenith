@@ -1,0 +1,8 @@
+# command: node scripts/check-evidence-ledger-mutation.mjs
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-24T06:04Z
+# exit: 0
+  PASS  glob row whose directory is missing
+  PASS  zero-byte artefact inside a covered glob
+  PASS  restored tree passes the gate
+check:evidence-ledger self-test holds: 2 blind spots reproduced, both caught.

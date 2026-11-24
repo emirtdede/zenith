@@ -230,7 +230,7 @@ and the verdict says so.
 
 | Claim | Evidence | Where |
 | :--- | :--- | :--- |
-| The release gate passes end to end | 31-step chain, exit 0 | `evidence/verify-final.log` |
+| The release gate passes end to end | 34-step chain, exit 0 | `evidence/verify-final.log` |
 | The release binary renders its own UI | `location.href` is `http://tauri.localhost/`, 22 action cards, 5 tabs, 6 nav destinations | WebDriver probe; sweep journal |
 | Every screen renders without overflow, blank paint or console error | 10 of 10 states pass | `evidence/screens/*.png` |
 | Card footers share a baseline | `footBottom` equal across each grid row; footer spread 0 | `measure-cards.mjs` |
@@ -238,7 +238,7 @@ and the verdict says so.
 | Every unsafe block and unsafe impl is documented | 106 blocks + 2 impls, 108 `SAFETY` comments | `check:ffi` |
 | No emoji, no fallback glyph, no typographic dash in production sources | 0 hits across 120 files | glyph sweep, `check:dashes` |
 | The bundle is self-contained | manifest, cargo resolution and `dist/` freshness all measured | `check:bundle` |
-| Counts in the documents match the tree | 341 Rust tests, 196 vitest tests in 14 files, 527 catalogue keys, 158 register rows (149 closed, 9 open) | `check:doc-counts` |
+| Counts in the documents match the tree | 341 Rust tests, 196 vitest tests in 14 files, 866 catalogue keys, 171 register rows (162 closed, 9 open) | `check:doc-counts` |
 
 Every artefact above has a row in the evidence ledger
 ([`evidence/README.md`](../../evidence/README.md)), which `check:evidence-ledger` enforces.

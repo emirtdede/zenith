@@ -1,3 +1,9 @@
-Running makensis to produce C:\Users\emir\Desktop\Zenith\target\release\bundle\nsis\Zenith_1.0.0_x64-setup.exe
-Finished 1 bundle at:
-C:\Users\emir\Desktop\Zenith\target\release\bundle\nsis\Zenith_1.0.0_x64-setup.exe (3.10 MiB)
+# command: $env:ZENITH_BUILD_COMMIT="release-20261124"; npm run tauri build
+# cwd: C:/Users/emir/Desktop/Zenith
+# started: 2026-11-24T05:41Z
+# exit: 0
+   Compiling zenith v1.0.0 (C:\Users\emir\Desktop\Zenith\src-tauri)
+       Built application at: C:\Users\emir\Desktop\Zenith\target\release\zenith.exe
+     Running makensis to produce C:\Users\emir\Desktop\Zenith\target\release\bundle\nsis\Zenith_1.0.0_x64-setup.exe
+    Finished 1 bundle at:
+        C:\Users\emir\Desktop\Zenith\target\release\bundle\nsis\Zenith_1.0.0_x64-setup.exe (3.10 MiB)

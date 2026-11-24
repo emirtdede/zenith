@@ -134,7 +134,7 @@ Zenith also ships the surfaces an IT team or an AI coding agent actually needs: 
 
 ### <img src="assets/icons/cpu.svg" width="20" height="20" align="absmiddle" alt="" /> Built to Be Verified
 - **341 Rust tests** (282 core, 57 shell, 2 catalogue-drift) and **196 Vitest tests** in 14 files.
-- A **31-step release gate** (`npm run verify`) that stops at the first failure: locale parity, contract count, dash and emoji bans, contrast, IPC contract, documentation counts, evidence ledger, SBOM, licence policy, FFI safety, installer contract, icon reproducibility, MSRV and lints, Rust tests, and a self-contained-bundle proof of the shipped binary.
+- A **34-step release gate** (`npm run verify`) that stops at the first failure: locale parity, contract count, dash and emoji bans, contrast, IPC contract, documentation counts, evidence ledger, SBOM, licence policy, FFI safety, installer contract, icon reproducibility, MSRV and lints, Rust tests, and a self-contained-bundle proof of the shipped binary.
 - A **file-by-file pre-deployment audit** with a verdict for every production source file: [`10-03`](docs/10-audit/10-03-pre-deployment-qa.md).
 
 ---
@@ -174,7 +174,7 @@ Zenith also ships the surfaces an IT team or an AI coding agent actually needs: 
 - **In-app and Windows native notifications** through one delivery layer, driven by four presets and a per-type channel matrix.
 
 ### Build, Test & Release
-- **`npm run verify`**: a **31-step** chain that runs the frontend gate, the Rust tests, the production build and a bundle proof, in that order.
+- **`npm run verify`**: a **34-step** chain that runs the frontend gate, the Rust tests, the production build and a bundle proof, in that order.
 - **`cargo test --workspace`**: **341 tests** across the core and the shell.
 - **`npm run test`**: **196 Vitest tests** across 14 files.
 - **GitHub Actions**: CI on `main` and `development`, running the same gate the release depends on.
@@ -185,7 +185,7 @@ Zenith also ships the surfaces an IT team or an AI coding agent actually needs: 
 
 ```tree
 Zenith/
-├── .github/workflows/            # CI: the same 31-step gate, on Windows
+├── .github/workflows/            # CI: the same 34-step gate, on Windows
 ├── assets/
 │   ├── vellium-banner.svg        # Black-and-white Vellium header banner
 │   ├── zenith-mark.svg           # Single icon source (1024 grid)
@@ -398,7 +398,7 @@ cargo test --workspace       # 341 Rust tests
 npm run e2e                  # tauri-driver + msedgedriver desktop journeys
 npm run check:locales        # 866-key parity and locale registry checks
 npm run check:contrast       # 520 WCAG 2.2 pairs across 14 palettes
-npm run verify               # the full 31-step gate, stops at the first failure
+npm run verify               # the full 34-step gate, stops at the first failure
 ```
 
 ### Build Installers

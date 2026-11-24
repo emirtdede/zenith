@@ -30,7 +30,7 @@ newsletter.
 | G-04 | Git tag exists for the released version | `git ls-remote --tags origin`; `git rev-parse "v1.0.0^{commit}"` | `v1.0.0` -> `7b4f73b` | PASS - the annotated `v1.0.0` was moved to the commit CI verified after the DEF-168 fix, and `https://github.com/emirtdede/zenith/tree/v1.0.0` resolves. The older lightweight `1.0.0` tag still points at `755885d` and is left in place because deleting a public tag is a separate decision |
 | G-05 | Published repository description and licence are set | `https://github.com/emirtdede/zenith` | repository page | PASS |
 | G-06 | Repository topics are set so the project is discoverable | `gh api repos/emirtdede/zenith/topics` | `evidence/repo-settings.log` | PASS - `windows`, `tauri`, `rust`, `diagnostics`, `self-healing`, `open-source` |
-| G-07 | The default branch carries the reviewed tree | `git status --porcelain`; `git ls-remote --heads origin` | `main` and `development` both at `7b4f73b`, which is what `v1.0.0` names | PASS - the tagged commit is the pushed head, so the tree under review is the tree a user can clone by tag |
+| G-07 | The default branch carries the reviewed tree | `git status --porcelain`; `git ls-remote --heads origin`; `git diff --name-only v1.0.0 -- src src-tauri crates assets resources` | `main` and `development` pushed; tag `v1.0.0` names `7b4f73b` | PASS - the tree under review is what `v1.0.0` names, and nothing a user installs differs from it: the third command prints nothing, so every path changed since the tag is under `docs/`, `evidence/`, `scripts/`, `.github/`, or is `package.json`, `README.md`, `CHANGELOG.md`, or a bundled legal document the application displays. A commit count is deliberately not stated: it grows with every evidence commit and would be a claim that keeps expiring |
 | G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | run `45328204501` | PASS - `verify` finished `success` on `windows-2022` for `7b4f73b`, the commit `v1.0.0` points at |
 
 ## 2. README and public documentation
@@ -75,7 +75,7 @@ newsletter.
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-37 | The full release chain is green | `npm run verify` | `evidence/verify-final.log` | PASS - 31 steps, exit 0, on the tree that produced `release-20261124` |
+| G-37 | The full release chain is green | `npm run verify` | `evidence/verify-final.log` | PASS - 34 steps, exit 0, on the tree that produced `release-20261124` |
 | G-38 | Rust test suite | `cargo test --workspace --locked` | `evidence/verify-final.log` | PASS - 341 tests |
 | G-39 | Frontend test suite | `npm run check:fe` | `evidence/vitest-counts.json` | PASS - 196 tests in 14 files |
 | G-40 | TypeScript type check | `npx tsc --noEmit` | `evidence/verify-final.log` | PASS |
@@ -84,8 +84,8 @@ newsletter.
 | G-43 | IPC contract: docs, attributes, handler, and renderer agree on 15 commands | `npm run check:contract` | `evidence/verify-final.log` | PASS |
 | G-44 | WCAG contrast across every palette and mode | `npm run check:contrast` | `evidence/verify-final.log` | PASS - 520 checks, 14 palettes |
 | G-45 | Every `unsafe` block pairs with a `SAFETY` comment | `npm run check:ffi` | `evidence/verify-final.log` | PASS - 115 blocks, 2 impls |
-| G-46 | Evidence ledger describes every artefact | `npm run check:evidence-ledger` | `evidence/verify-final.log` | PASS |
-| G-47 | Negative and mutation gates catch their own regressions | `npm run check:mutate-restore` and the mutation logs | `evidence/def1*.log` | PASS |
+| G-46 | Evidence ledger describes every artefact | `npm run check:evidence-ledger` | `evidence/verify-final.log` | PASS - 146 artefacts at every depth under `evidence/`, 97 described by name and the rest covered by eight glob rows; each glob must now match at least one real file, which is the check whose absence let `screens/locales/*.png` be described while the directory did not exist |
+| G-47 | Negative and mutation gates catch their own regressions | `npm run check:mutate-restore` and the mutation logs | `evidence/def1*.log`, `evidence/evidence-ledger-glob-negative.log` | PASS - every gate that could silently stop measuring has a mutation case, including the two added in this revision: the checklist parser (five cases: joined rows, a missing closing pipe, an undecided verdict, count drift, a dropped register row) and the evidence ledger (a missing glob directory and a zero-byte file below the top level) |
 | G-48 | A clean clone builds and verifies | `npm run verify` with `dist/` removed | `evidence/def167-clean-clone.log` | PASS |
 | G-49 | Desktop end-to-end journeys pass against the release binary | `npm run e2e -- --app target/release/zenith.exe --driver %TEMP%\zenith-e2e\msedgedriver.exe` | `evidence/e2e-final.log` | PASS - 3 journeys, 11 steps, 0 failures against the `release-20261124` binary |
 | G-50 | CI runs the same chain, not a hand-copied subset | `npm run check:workflows` | `evidence/verify-final.log` | PASS |
@@ -94,11 +94,11 @@ newsletter.
 
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
-| G-51 | The release binary is built from this tree with the lockfile | `npm run tauri build`; `node scripts/check-build-identity.mjs` | `target/release/zenith.exe` | PASS - 6,628,352 bytes, `release-20261124`, no shipped source newer than the binary |
-| G-52 | The installer is built from the same commit as the binary | `npm run tauri build`; `node scripts/check-build-identity.mjs`; `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe`, `evidence/installer-build.log` | PASS - one `npm run tauri build` produced both artefacts under identity `release-20261124`; `check-build-identity` passes against the pair, and the bundle is 3,255,718 bytes built from a stock 67-language NSIS cache, so it is reproducible off this machine |
+| G-51 | The release binary is built from this tree with the lockfile | `npm run tauri build`; `node scripts/check-build-identity.mjs` | `target/release/zenith.exe` | PASS - the local rebuild from this tree is 6,628,864 bytes with embedded identity `release-20261124`, and `check-build-identity` finds no shipped source newer than it. The asset users download was built by CI from the same tree and is a different size (its own build stamp and compression), which is why the two numbers are not made to agree |
+| G-52 | The installer is built from the same commit as the binary | `npm run tauri build`; `node scripts/check-build-identity.mjs`; `npm run check:installer` | `target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe`, `evidence/installer-build.log` | PASS - one `npm run tauri build` produced both artefacts under identity `release-20261124` and `check-build-identity` passes against the pair. The bundle is 3,255,256 bytes and was built on an NSIS cache holding only the pinned archive's own 67 language files, so its 52 declared translations resolve on a machine that has never had a language file added by hand |
 | G-53 | The installer and the binary are Authenticode-signed | `Get-AuthenticodeSignature target/release/bundle/nsis/Zenith_1.0.0_x64-setup.exe` | `NotSigned` | FAIL - DEF-028, no EV certificate on this machine. Owner action: supply the certificate and re-run `npm run tauri build`. |
 | G-54 | Installer icons are the project set, with no Tauri default | `npm run check:icons` | `evidence/verify-final.log` | PASS - 17 files reproduced byte-for-byte |
-| G-55 | The installer language list matches the 73-locale registry and every declared translation exists in the pinned NSIS archive | `npm run check:installer` | `evidence/installer-languages.log` | PASS - 73 registry rows, 52 translations the pinned NSIS 3.11 archive actually contains, 21 rows declared as English-installer fallbacks; six self-test cases including the DEF-168 shape, and the gate reads the archive inventory rather than this machine's cache 
+| G-55 | The installer language list matches the 73-locale registry and every declared translation exists in the pinned NSIS archive | `npm run check:installer` | `evidence/installer-languages.log` | PASS - 73 registry rows, 52 translations the pinned NSIS 3.11 archive actually contains, 21 rows declared as English-installer fallbacks; six self-test cases including the DEF-168 shape, and the gate reads the archive inventory rather than this machine's cache |
 | G-56 | Uninstall deletes user data only when the user asks | `src-tauri/installer/hooks.nsh` | `evidence/verify-final.log` | PASS - gated on `$DeleteAppDataCheckboxState` |
 | G-57 | SHA-256 checksums are published next to the release asset | `gh release download v1.0.0`; `Get-FileHash` | draft release `Zenith v1.0.0`, `SHA256SUMS.txt` | PASS - the release carries `SHA256SUMS.txt` with one line per binary, and the downloaded installer hashes to `a6989e5d...1c71e93`, which is the line the file states |
 | G-58 | GitHub build-provenance attestation is attached | `gh attestation verify Zenith_1.0.0_x64-setup.exe --repo emirtdede/zenith` | Sigstore bundle in run `45330291458` | PASS - `gh attestation verify` exits 0 on the downloaded installer and returns a Sigstore bundle whose certificate names `release.yml` at `refs/tags/v1.0.0` |
@@ -124,8 +124,8 @@ newsletter.
 | `PASS` | 64 |
 | `FAIL` | 2 |
 | Tree under review | `v1.0.0` at `7b4f73b` on `main` |
-| Release | draft `Zenith v1.0.0` from run `45330291458`: installer 3,287,840 bytes, `SHA256SUMS.txt`, Sigstore attestation |
-| Commands re-run for this revision | `npm run verify` (31 steps), `npm run check:secrets` over the full history, `npm run e2e` (3 journeys), `npm run check:msix`, `npm run check:arm64`, `gh attestation verify` |
+| Release | draft `Zenith v1.0.0` from run `45330291458`: installer 3,287,840 bytes, `SHA256SUMS.txt`, Sigstore attestation. The local rebuild in G-51 and G-52 is a separate artefact of the same tree, so its sizes differ |
+| Commands re-run for this revision | `npm run verify` (34 steps), `npm run check:secrets` over the full history, `npm run e2e` (3 journeys), `npm run check:msix`, `npm run check:arm64`, `gh attestation verify` |
 
 Two `FAIL` rows remain, and neither is a defect in this tree: one needs a
 certificate this project cannot issue to itself, and one needs hardware that is

@@ -15,7 +15,7 @@
     "check:contract": "node scripts/check-contract.mjs",
     "check:stubs": "cargo run -q -p zenith-core --bin zenith-audit -- --all",
     "check:rust-tests": "cargo test --workspace",
-    "verify": "npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:step-keys-negative && npm run check:contract && npm run check:dashes && npm run check:emoji && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run build && npm run check:fe && npm run check:doc-counts && npm run check:evidence-ledger && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run check:mutate-restore && npm run check:verify-chain && npm run check:resources && npm run check:icons && npm run check:installer && npm run check:workflows && npm run check:msrv && npm run check:lint && npm run check:rust-tests && npm run check:bundle",
+    "verify": "npm run check:locales && npm run check:unused-keys && npm run check:step-keys && npm run check:step-keys-negative && npm run check:contract && npm run check:dashes && npm run check:emoji && npm run check:contrast && npm run check:simulator && npm run check:nonwindows && npm run check:docs && npm run check:checklists && npm run check:checklists-mutation && npm run build && npm run check:fe && npm run check:doc-counts && npm run check:evidence-ledger && npm run check:evidence-ledger-mutation && npm run check:scorecard && npm run check:ffi && npm run check:licenses && npm run check:deny && npm run check:sbom && npm run check:stubs && npm run check:mutate-restore && npm run check:verify-chain && npm run check:resources && npm run check:icons && npm run check:installer && npm run check:workflows && npm run check:msrv && npm run check:lint && npm run check:rust-tests && npm run check:bundle",
     "test": "vitest run",
     "check:fe": "vitest run --reporter=default --reporter=json --outputFile=evidence/vitest-counts.json",
     "check:nonwindows": "node scripts/audit-nonwindows.mjs",
@@ -55,7 +55,11 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "capture:setup": "node scripts/capture-setup.mjs",
     "capture:boot": "node scripts/capture-boot.mjs",
-    "capture:settings": "node scripts/capture-settings.mjs"
+    "capture:settings": "node scripts/capture-settings.mjs",
+    "check:checklists": "node scripts/check-checklists.mjs",
+    "check:checklists-mutation": "node scripts/check-checklists-mutation.mjs",
+    "report:release": "node scripts/generate-release-report.mjs",
+    "check:evidence-ledger-mutation": "node scripts/check-evidence-ledger-mutation.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",

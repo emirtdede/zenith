@@ -14,8 +14,8 @@ This is the complete, enterprise-grade document set for Zenith. It replaces the 
 v1.0.0 master specification, which scored **51 raw points across bands weighted to 110 (46.4/100)** under
 the owner's original eight-band assessment, and **45/100** when re-scored under the ten-criterion rubric in
 [`10-audit/10-01-scorecard.md`](10-audit/10-01-scorecard.md). The register
-([`10-audit/10-02-deficiency-register.md`](10-audit/10-02-deficiency-register.md)) tracks **169 rows:
-160 closed with a named owner document and closure evidence, 9 open with a named owner and an honest
+([`10-audit/10-02-deficiency-register.md`](10-audit/10-02-deficiency-register.md)) tracks **171 rows:
+162 closed with a named owner document and closure evidence, 9 open with a named owner and an honest
 reason**. The open nine are not hidden in this library: three are release blockers (DEF-028 EV
 certificate, DEF-047 VM suite, DEF-050 CI pipeline), which is why the scorecard reports 98 rather than
 100 and states plainly that it is not a shipping clearance. The release pass itself is recorded twice:
@@ -62,6 +62,7 @@ contract wins and a gate fails. Document control and the approval history are in
 | 23 | [10-02 Deficiency Register](10-audit/10-02-deficiency-register.md) | Everyone | Trace of every fix |
 | 24 | [10-03 Pre-Deployment QA](10-audit/10-03-pre-deployment-qa.md) | Owner, QA | File-by-file audit: a verdict for every production source |
 | 25 | [10-04 Release Fix Record](10-audit/10-04-release-fix-record.md) | Eng | What changed in the release pass and how it was proved |
+| 26 | [11-05 Release Readiness Report](11-release/11-05-final-report.md) | Owner, Release Eng | Both channels' verdicts in one generated table |
 
 Supporting layers:
 
@@ -114,11 +115,16 @@ docs/
 │   └── 08-04-risk-register.md                  24 scored risks
 ├── 09-enterprise/
 │   └── 09-01-telemetry-extension.md            commercial fleet tier
-└── 10-audit/
+├── 10-audit/
     ├── 10-01-scorecard.md                      rubric, evidence, 98/100
     ├── 10-02-deficiency-register.md            every v1.0.0 defect and its closure
     ├── 10-03-pre-deployment-qa.md              file-by-file audit, verdict per source
     └── 10-04-release-fix-record.md             what the release pass changed, and proof
+└── 11-release/
+    ├── 11-02-github-checklist.md             66 rows, command and evidence per row
+    ├── 11-03-store-checklist.md              42 rows, Partner Center and package per row
+    ├── 11-04-release-notes-1.0.0.md          the notes the release draft carries
+    └── 11-05-final-report.md                 both channels, generated from the two checklists
 ```
 
 ---

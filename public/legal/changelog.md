@@ -67,6 +67,17 @@ First public release.
   preferences patch. The IPC surface remains at 15 commands.
 - The loading state is the shell's own geometry rather than a centred word, so
   the first frame and the loaded frame share a layout.
+- The release gate is 34 steps. Two of the additions decide documents that were
+  previously trusted: `check:checklists` parses both release checklists and
+  refuses a row with a missing cell, a gap in the ids, an undecided verdict, or a
+  summary that disagrees with the rows, and `check:evidence-ledger` now walks
+  `evidence/` at every depth and requires each glob row to match a real file. Both
+  ship with mutation self-tests, so a gate that stops measuring fails the chain
+  instead of passing it.
+- The installer's language list is measured against the pinned NSIS archive (52
+  translations for 73 interface locales) rather than against whatever the
+  building machine happens to have cached, and the setup wizard names
+  `C:\Program Files\Zenith`, the directory the per-machine installer writes.
 
 ### Security
 

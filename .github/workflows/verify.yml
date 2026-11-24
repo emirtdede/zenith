@@ -119,7 +119,7 @@ jobs:
       # Thirty-one steps. Each one is a named gate in `package.json`, and
       # `check:verify-chain` fails if the chain gains or loses a step without the
       # test plan being updated to say so.
-      - name: Release gate (31 steps)
+      - name: Release gate (34 steps)
         run: npm run verify
 
       # A failed run is only useful if the output survives. The gate writes

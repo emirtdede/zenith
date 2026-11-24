@@ -33,7 +33,7 @@
  * quietly reappearing.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -113,22 +113,66 @@ notes.push(`ledger rows: ${described.size} described, ${removed.size} recorded a
 
 // ---------------------------------------------------------------- 1 + 3 ------
 // Every artefact on disk must be described, and must not be empty.
-const onDisk = readdirSync(EVIDENCE, { withFileTypes: true })
-  .filter((e) => e.isFile() && /\.(log|json|png)$/i.test(e.name))
-  .map((e) => e.name)
-  .sort();
+// Every artefact under `evidence/`, at any depth, as evidence-relative POSIX
+// paths. The first version of this gate read only the top level, which is how
+// the eleven `screens/locales/*.png` samples could be described in the ledger
+// while the directory did not exist.
+function walkEvidence(dir, out = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkEvidence(full, out);
+    } else if (/\.(log|json|png)$/i.test(entry.name)) {
+      out.push(relative(EVIDENCE, full).split(sep).join("/"));
+    }
+  }
+  return out;
+}
+
+const onDisk = walkEvidence(EVIDENCE).sort();
+
+// A ledger glob such as `screens/locales/*.png` matches within one path segment.
+function globToRegExp(glob) {
+  const escaped = glob
+    .split("*")
+    .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, (ch) => `\\${ch}`))
+    .join("[^/]*");
+  return new RegExp(`^${escaped}$`);
+}
+
+const globMatchers = [...globRows].map((glob) => ({ glob, re: globToRegExp(glob) }));
+
+// Each glob row must resolve to at least one real file. This is the check whose
+// absence let `screens/locales/*.png` be described while the directory was
+// missing: the row was collected, then never used.
+for (const { glob, re } of globMatchers) {
+  const matched = onDisk.filter((file) => re.test(file));
+  if (matched.length === 0) {
+    problems.push(
+      `the ledger describes ${glob}, but no file under evidence/ matches it (DEF-132)`,
+    );
+  }
+}
 
 for (const file of onDisk) {
-  if (removed.has(file)) {
+  const base = file.includes("/") ? file.slice(file.lastIndexOf("/") + 1) : file;
+
+  if (removed.has(file) || (file.includes("/") && removed.has(base))) {
     problems.push(
       `${file} is recorded as removed but is on disk: either describe it or delete it (DEF-132)`,
     );
     continue;
   }
-  if (!described.has(file)) {
+
+  // A row may name the file exactly, name the bare file name (the top-level
+  // rows are written that way), or cover it with a glob.
+  const byName = described.has(file) || described.has(base);
+  const byGlob = globMatchers.some(({ re }) => re.test(file));
+  if (!byName && !byGlob) {
     problems.push(`${file} is on disk but no ledger row describes it (DEF-132)`);
   }
-  const size = statSync(join(EVIDENCE, file)).size;
+
+  const size = statSync(join(EVIDENCE, file.split("/").join(sep))).size;
   if (size === 0) {
     problems.push(
       `${file} is 0 bytes: an empty artefact cannot distinguish a silent pass from a truncated redirect (DEF-132)`,
