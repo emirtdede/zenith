@@ -7,7 +7,7 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-047 |
 | Channel | Microsoft Store (MSIX/APPX, Partner Center) |
-| Tree under review | `1.0.0`, release commit `feaa12f` on `main` |
+| Tree under review | `1.0.0`, tag `v1.0.0` at `4d1bf5f` on `main` |
 | Reviewed on | 2026-11-24 |
 
 The Store channel is not a repackaging of the GitHub channel. A Store package is
@@ -98,7 +98,18 @@ document says so rather than counting the file as progress.
 
 ## 7. Summary
 
-<!-- STATS -->
+| Measure | Value |
+| :--- | :--- |
+| Requirement rows | 42 |
+| `PASS` | 34 |
+| `FAIL` | 8 |
+| Tree under review | `4d1bf5f` on `main` |
+| Package under review | `Zenith_1.0.0_x64_test.msix`, 3,713,622 bytes, 38 content checks |
+| Commands re-run for this revision | `npm run msix:package`, `npm run check:msix`, `npm run check:icons`, `node scripts/capture-settings.mjs` |
+
+The eight `FAIL` rows need an account, a certificate, or a hosted URL. None of
+them needs code in this tree, and the document keeps them `FAIL` rather than
+treating a locally built package as a submission.
 
 ### 7.1 FAIL register
 

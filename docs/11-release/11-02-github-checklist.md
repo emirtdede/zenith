@@ -7,7 +7,7 @@
 | Owner | Release Engineering |
 | Closes | REQ-N-046 |
 | Channel | GitHub open source (repository, release asset, CI) |
-| Tree under review | `1.0.0`, release commit `feaa12f` on `main` |
+| Tree under review | `1.0.0`, tag `v1.0.0` at `4d1bf5f` on `main` |
 | Reviewed on | 2026-11-24 |
 
 This is the checklist the repository itself has to satisfy before a public
@@ -27,11 +27,11 @@ newsletter.
 | G-01 | The licence is OSI-approved MIT and the file is the unmodified canonical text | `Get-Content LICENSE` | `LICENSE` | PASS |
 | G-02 | Copyright holder and year are correct for the publishing entity | `Get-Content LICENSE -TotalCount 3` | `LICENSE` | PASS |
 | G-03 | Version in `package.json`, `Cargo.toml`, `tauri.conf.json`, and the installer all agree | `node scripts/check-doc-counts.mjs`; `node scripts/check-contract.mjs` | `evidence/verify-final.log` | PASS |
-| G-04 | Git tag exists for the released version | `git ls-remote --tags origin`; `gh api repos/emirtdede/zenith/git/ref/tags/1.0.0` | tag `1.0.0` resolves to `755885d` | FAIL - a tag exists but not for this release: it points at the pre-redesign commit. Owner action: push an annotated `v1.0.0` at the release commit, which is also what starts `release.yml`. |
+| G-04 | Git tag exists for the released version | `git ls-remote --tags origin`; `git rev-parse "v1.0.0^{commit}"` | `v1.0.0` -> `4d1bf5f` | PASS - annotated `v1.0.0` pushed at the verified tree, so `https://github.com/emirtdede/zenith/tree/v1.0.0` resolves. The older lightweight `1.0.0` tag still points at `755885d` and is left in place because deleting a public tag is a separate decision |
 | G-05 | Published repository description and licence are set | `https://github.com/emirtdede/zenith` | repository page | PASS |
 | G-06 | Repository topics are set so the project is discoverable | `gh api repos/emirtdede/zenith/topics` | `evidence/repo-settings.log` | PASS - `windows`, `tauri`, `rust`, `diagnostics`, `self-healing`, `open-source` |
-| G-07 | The default branch carries the reviewed tree | `git status --porcelain`; `git ls-remote --heads origin` | `main` and `development` both at `feaa12f` | PASS - the tree is committed and pushed; the working tree is clean and `main` is the reviewed commit |
-| G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | run `45302890400` | PASS - `verify` finished `success` on `windows-2022`, and the release commit is that commit's descendant with one documentation-only change |
+| G-07 | The default branch carries the reviewed tree | `git status --porcelain`; `git ls-remote --heads origin` | `main` and `development` both at `38c4dd8`, tagged `v1.0.0` at `4d1bf5f` | PASS - the tree is committed and pushed; the tagged commit is the ancestor of the current head and adds only checklist text |
+| G-08 | The last commit on the default branch is green in CI | Actions run for that SHA | run `45314127880` | PASS - `verify` finished `success` on `windows-2022` for `4d1bf5f`, the commit `v1.0.0` points at |
 
 ## 2. README and public documentation
 
@@ -112,29 +112,35 @@ newsletter.
 | ID | Requirement | Verification | Evidence | Result |
 | :--- | :--- | :--- | :--- | :--- |
 | G-63 | Release notes are written from CHANGELOG, not from commit titles | release draft | none | FAIL - owner action: open the release draft for tag `1.0.0`. |
-| G-64 | The published README matches this tree | compare repository README with `README.md` | published README is the pre-redesign text | FAIL - consequence of G-07. |
+| G-64 | The published README matches this tree | `gh api repos/emirtdede/zenith/contents/README.md --jq .sha` vs `git rev-parse HEAD:README.md` | both `3537f450` | PASS - the default branch carries this README, blob for blob |
 | G-65 | A rollback plan exists for a bad release | `Get-Content docs/08-delivery/08-02-ci-cd-release.md` | release document | PASS |
 | G-66 | Supported versions and their support window are stated | `public/legal/support.md` | support policy | PASS |
 
 ## 7. Summary
 
-<!-- STATS -->
+| Measure | Value |
+| :--- | :--- |
+| Requirement rows | 66 |
+| `PASS` | 60 |
+| `FAIL` | 6 |
+| Tree under review | `v1.0.0` at `4d1bf5f` on `main` |
+| Commands re-run for this revision | `npm run verify` (31 steps), `npm run check:secrets` over 14 commits, `npm run e2e` (3 journeys), `npm run check:msix` |
 
-### 7.1 FAIL register
+The six `FAIL` rows are listed below with the owner action that closes each one.
+No row is `PASS` because it looks likely to work: every one names a command and a
+file, and the file is the output of that command against this tree.
 
 | ID | Blocker | Owner action |
 | :--- | :--- | :--- |
-| G-04 | Tag `1.0.0` on the published repository points at the pre-redesign commit | Push an annotated `v1.0.0` at the release commit so `release.yml` can build it |
 | G-53 | Installer unsigned | Supply the EV certificate (DEF-028) |
 | G-57 | No published release asset to checksum | Let the tag push run `release.yml`, which attaches `SHA256SUMS.txt` to the draft |
 | G-58 | No provenance attestation | Same run: `attest-build-provenance` signs the installer and the binary |
 | G-60 | No ARM64 build | Install the ARM64 MSVC target and build |
 | G-61 | No real-host Windows matrix | Run the T-WIN matrix (DEF-047) |
 | G-63 | No release draft | Same run: the workflow opens the draft from `11-04-release-notes-1.0.0.md` |
-| G-64 | Published README carries the pre-redesign text | Follows from the release run rebuilding the tree (G-07 closes on push) |
 
-Eight FAIL rows remain. Three of them (G-57, G-58, G-63) close mechanically when
-the tag is pushed, one (G-04) needs an annotated tag because the existing `1.0.0`
-tag still points at `755885d`, and the other four need an owner asset: an EV
+Six FAIL rows remain. Three of them (G-57, G-58, G-63) close when the release
+workflow that `v1.0.0` started finishes, and this row set is updated from its
+output rather than in advance. The other three need an owner asset: an EV
 certificate, an ARM64 toolchain, and a real-host Windows matrix. None is a defect
 in the code, and none is hidden in this document.
